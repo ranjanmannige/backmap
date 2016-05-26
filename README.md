@@ -34,7 +34,7 @@ Preprint at: http://arxiv.org/abs/1511.03011
 
 If you just want the code to calculate a Ramachandran number, then don't worry about cloning this Github account: just use the python code at the bottom:
 
-```
+```python
 # PARAMTERS FOR THE RAMACHANDRAN NUMBER
 # The ranges for phi and psi are [-180,180]. 
 # Any other value will be garbled (so, remember to 
