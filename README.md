@@ -1,4 +1,5 @@
 # plotmap
+<pre>
 ============================================
         _       _     __  __    _    ____  
   _ __ | | ___ | |_  |  \/  |  / \  |  _ \ 
@@ -6,7 +7,7 @@
  | |_) | | (_) | |_  | |  | |/ ___ \|  __/ 
  | .__/|_|\___/ \__| |_|  |_/_/   \_\_|      v 0.0.0.0.0.0.0...
  |_|                 (Multi-angle Picture)
-
+</pre>
 This tool provides easily readable "pictures" of protein conformations, 
 ensembles, and trajectories saved as either a combined protein databank 
 (PDB) structure file, or a directory of such files, and produces graphs.
@@ -28,7 +29,9 @@ The Ramachandran number concept is based on the manuscript:
 Mannige, Kundu, Whitelam (2016) "The Ramachandran number: an order parameter for protein geometry" 
 Preprint at: http://arxiv.org/abs/1511.03011
 
+<pre>
 ============================================
+</pre>
 
 If you just want the code to calculate a Ramachandran number, then don't worry about cloning this Github account: just use the python code at the bottom:
 
