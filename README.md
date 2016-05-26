@@ -12,8 +12,10 @@ ensembles, and trajectories saved as either a combined protein databank
 (PDB) structure file, or a directory of such files, and produces graphs.
 
 Usage:
+```
 python plotmap.py -pdb ProteinDatabankStructureFilename.pdb
 python plotmap.py -pdb /directory/containing/pdbs/
+```
 
 Output (the x-axis always represents the models/structures listed in the PDB):<br>
 filename.rcode.his.eps  (y-axis: Ramachandran number (R); color: frequency of R in model)<br>
