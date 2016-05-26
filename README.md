@@ -15,17 +15,17 @@ Usage:
 python plotmap.py -pdb ProteinDatabankStructureFilename.pdb
 python plotmap.py -pdb /directory/containing/pdbs/
 
-Output (the x-axis always represents the models/structures listed in the PDB):
-filename.rcode.his.eps  (y-axis: Ramachandran number (R); color: frequency of R in model)
-filename.rcode.ss.eps   (y-axis: residue #; color: by secondary structure HELIX: red, SHEET: blue, PPII: cyan)
-filename.rcode.raw.eps  (y-axis: residue #; color: by chirality L: Blue, D: Red: Extended: White)
-filename.rcode.rmsd.eps (y-axis: residue #; color: RMSD in R from first model)
+Output (the x-axis always represents the models/structures listed in the PDB):<br>
+filename.rcode.his.eps  (y-axis: Ramachandran number (R); color: frequency of R in model)<br>
+filename.rcode.ss.eps   (y-axis: residue #; color: by secondary structure HELIX: red, SHEET: blue, PPII: cyan)<br>
+filename.rcode.raw.eps  (y-axis: residue #; color: by chirality L: Blue, D: Red: Extended: White)<br>
+filename.rcode.rmsd.eps (y-axis: residue #; color: RMSD in R from first model)<br>
 filename.rcode.rmsf.eps (y-axis: residue #; color: RMSF in R from the previous model)
 
 Additionally, each graph is accompanied by "_colorbar.eps", which are keys.
 
-The Ramachandran number concept is based on the manuscript:
-Mannige, Kundu, Whitelam (2016) "The Ramachandran number: an order parameter for protein geometry" 
+The Ramachandran number concept is based on the manuscript:<br>
+Mannige, Kundu, Whitelam (2016) "The Ramachandran number: an order parameter for protein geometry" <br>
 Preprint at: http://arxiv.org/abs/1511.03011
 
 --------------------------------------------------
