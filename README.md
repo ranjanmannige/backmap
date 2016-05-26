@@ -34,28 +34,36 @@ If you just want the code to calculate a Ramachandran number, then don't worry a
 
 ```
 # PARAMTERS FOR THE RAMACHANDRAN NUMBER
-bound = 360.0 # This does not change
+# The ranges for phi and psi are [-180,180]. 
+# Any other value will be garbled (so, remember to 
+# convert your angles so that it fits this range.
+bound = 360.0 # This does not chang
 rho_scaling = 10.0 # This is sigma in the manuscript (Mannige, Kundu, Whitelam, 2016)
 multiplier = int(round(rho_scaling*(bound*(2.0**0.5)),0)) # For internal reference
 
-def ramachandran_number_collapse(x,y):
+def raw_ramachandran_number_collapse(x,y):
+	x = float(x)
+	y = float(y)
 	a = round(rho_scaling*(x-y + bound)/numpy.sqrt(2.0),0)
 	b = round(rho_scaling*(x+y + bound)/numpy.sqrt(2.0),0)
 	return round(a,0) + round(b,0)*multiplier
 #
-def ramachandran_number_collapse_zigzag(x,y):
-	a = round(rho_scaling*(x-y + bound)/numpy.sqrt(2.0),0)
-	b = round(rho_scaling*(x+y + bound)/numpy.sqrt(2.0),0)
-	if b % 2.0 == 0:
-		# "b" is even
-		a = multiplier - a
-	return round(a,0) + round(b,0)*multiplier
-#
-def ramachandran_number_expand(z):
+def raw_ramachandran_number_expand(z):
 	z = float(z)
 	x = (numpy.sqrt(2.0)*np.mod(z,multiplier)/rho_scaling     - bound + numpy.sqrt(2.0)*np.floor(z / multiplier)/rho_scaling - bound )/2.0
 	y = (numpy.sqrt(2.0)*np.floor(z / multiplier)/rho_scaling - bound - numpy.sqrt(2.0)*np.mod(z, multiplier)/rho_scaling + bound)/2.0
 	return x,y
+
+phi = -60
+psi = -60
+# To get the raw Ramachandran number:
+raw_R = raw_ramachandran_number_collapse(phi,psi)
+# To get the (much more useful) normalized Ramachandran number:
+# First getting the lowest and highest possible unnormalized R numbers
+raw_R_min = raw_ramachandran_number_collapse(-180,-180)
+raw_R_max = raw_ramachandran_number_collapse(180,180)
+# Finally, the normalized R number is ...
+R = float(raw_R - raw_R_min)/(raw_R_max-raw_R_min)
 ```
 
 
