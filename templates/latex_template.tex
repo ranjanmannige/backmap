@@ -1,0 +1,95 @@
+\documentclass[10pt]{article}         %% What type of document you're writing.
+%\documentclass[aps,prb,reprint,longbibliography]{revtex4-1}
+\usepackage[letterpaper,bindingoffset=0.0in,left=1in,right=1in,top=1in,bottom=1in,footskip=.25in]{geometry}
+
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{grffile}
+\usepackage{cancel}
+\usepackage{hyperref}
+%\usepackage{calrsfs} % for \cal
+
+% The following metadata will show up in the PDF properties
+\hypersetup{
+  pdfproducer= none,  % producer of the document
+  pdfcreator = none,  % producer of the document
+  colorlinks = true,
+  allcolors = black, %-- use this if you want to set all links to the same color
+}
+
+%\usepackage{comment}
+%\excludecomment{figure}
+%\documentclass[aps,prb,reprint,groupedaddress]{revtex4-1}
+%\linespread{1.5}
+%\documentclass[aps,rmp,reprint,groupedaddress]{revtex4-1}
+%\documentclass[aps,rmp,reprint,groupedaddress]{revtex4-1}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{amsmath}
+
+\usepackage{array}
+
+\usepackage{bm}
+\usepackage[english]{babel}
+% You should use BibTeX and apsrev.bst for references
+% Choosing a journal automatically selects the correct APS
+% BibTeX style file (bst file), so only uncomment the line
+% below if necessary.
+%\bibliographystyle{apsrev4-1}
+
+% include graphics with the command \includegraphics
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usepackage{ifthen}
+\usepackage{xstring}
+
+\usepackage[T1]{fontenc}
+
+%\newcommand{\fn}{ubiquitin_stretch}
+%\newcommand{\fn}{nanosheet_birth}
+%\newcommand{\fn}{nanosheet_traj}
+\newcommand{\fn}{FILEBASE}
+\newcommand{\centerit}[1]{\noindent\textcolor{white}{.}\hfil#1\hfil\newline}
+
+\date{\vspace{-5ex}}
+
+\begin{document}
+%\title{The ${\mathcal{R}}$eport for \url{\fn}}
+
+%\begin{abstract}
+%SOMETHING
+%\end{abstract}
+
+%\maketitle must follow title, authors, abstract, \pacs, and \keywords
+%\maketitle
+\centerit{{\huge The ${\mathcal{R}}$eport for \texttt{\url{\fn}.pdb}}}
+
+\vfill
+
+\begin{tabular}{m{0.3\linewidth} m{0.3\linewidth} m{0.3\linewidth}}
+\hfil \LARGE Structure \hfil & \hfil \LARGE Ramachandran \hfil & \hfil \LARGE\textcolor{white}{.}~~ ${\mathcal{R}}$ code \hfil \\
+\hfil                        & \hfil \LARGE plot \hfil         &                                         \\
+\hfil\includegraphics[width=0.2\textwidth]{\fn/\fn_pdb_first.pdb.dat.png}\hfil&
+\hfil\includegraphics[height=0.3\textwidth]{\fn/\fn_ramachandran_first.eps}\hfil&
+\hfil\includegraphics[height=0.25\textwidth]{\fn/\fn_bars_first.eps}\hfil\\
+\end{tabular}
+
+\vfill
+
+\centerit{{\LARGE${\mathcal{R}}$ code}}
+\newline
+\centerit{\includegraphics[height=0.28\textwidth]{\fn/\fn_bars.eps}}
+\centerit{Each column represents an ${\mathcal{R}}$-histogram (${\mathcal{R}}$ code)}
+\centerit{of one frame within \texttt{\url{\fn}.pdb}}
+
+\vfill
+\centerit{{\LARGE${\mathcal{R}}$ graph}}
+\newline
+\centerit{\includegraphics[height=0.3\textwidth]{\fn/\fn_resno_vs_r_model_first.eps}}
+\centerit{Relationship between residue \# and $\mathcal{R}$ (first frame)}
+
+\vfill
+
+\end{document}
