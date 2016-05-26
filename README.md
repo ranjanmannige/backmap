@@ -1,7 +1,6 @@
 # plotmap
-<pre>
 ============================================
-        _       _     __  __    _    ____  
+<pre>        _       _     __  __    _    ____  
   _ __ | | ___ | |_  |  \/  |  / \  |  _ \ 
  | '_ \| |/ _ \| __| | |\/| | / _ \ | |_) |
  | |_) | | (_) | |_  | |  | |/ ___ \|  __/ 
@@ -29,9 +28,7 @@ The Ramachandran number concept is based on the manuscript:
 Mannige, Kundu, Whitelam (2016) "The Ramachandran number: an order parameter for protein geometry" 
 Preprint at: http://arxiv.org/abs/1511.03011
 
-<pre>
 ============================================
-</pre>
 
 If you just want the code to calculate a Ramachandran number, then don't worry about cloning this Github account: just use the python code at the bottom:
 
