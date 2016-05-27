@@ -1,0 +1,137 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%Document-Fonts: Times-Roman
+%%Pages: 1
+%%BoundingBox: 0 0 4000.0 2500.0
+%%LanguageLevel: 1
+%%EndComments
+%%BeginProlog
+%%EndProlog
+10.0 dup scale
+% -------------
+% Define text
+/Times-Roman findfont
+0.6 scalefont
+setfont
+% ----------------------------------------------------------------
+% STRING STUFF
+% -------------
+% Find the heighth of the character string 
+/FindHeight { 
+gsave 
+   (0) true charpath 
+   flattenpath pathbbox 
+   exch pop exch sub 
+   /height exch def pop 
+   grestore }
+def 
+% -------------
+% Center the string vertically and horizontally 
+/ccshow { 
+   FindHeight 
+   height 2 div neg 
+   exch dup stringwidth pop 
+   2 div neg 
+   3 -1 roll rmoveto 
+   show } 
+def 
+% -------------
+% Center the string vertically and horizontally 
+/ccshowrotate { 
+   90 rotate
+   FindHeight
+   height 2 div neg 
+   exch dup stringwidth pop 
+   2 div neg 
+   3 -1 roll rmoveto
+   show 
+   90 neg rotate
+   } 
+def 
+% -------------
+% Left justify and center vertically 
+/lcshow { 
+   FindHeight 
+   0 
+   height 2 div neg 
+   rmoveto 
+   show } 
+def 
+% -------------
+% Right justify and center vertically 
+/rcshow { 
+   FindHeight 
+   height 2 div neg 
+   exch dup stringwidth pop neg 
+   3 -1 roll rmoveto 
+   show } 
+def 
+% -------------
+% Center horizontally and set to top vertically 
+/ctshow { 
+   FindHeight 
+   height neg 
+   exch dup stringwidth pop 
+   2 div neg 
+   3 -1 roll rmoveto 
+   show } 
+def 
+% -------------
+% Left justify and set to top vertically 
+/ltshow { 
+   FindHeight 
+   0 
+   height neg 
+   rmoveto 
+   show } 
+def 
+% -------------
+% Right justify and set to top vertically 
+/rtshow { 
+   FindHeight 
+   height neg 
+   exch dup stringwidth pop neg 
+   3 -1 roll rmoveto 
+   show } 
+def 
+% -------------
+% Center horizontally and set to bottom vertically 
+/cbshow { 
+   0 
+   exch dup stringwidth pop 
+   2 div neg 
+   3 -1 roll rmoveto 
+   show } 
+def 
+% -------------
+% Left justify and set to bottom vertically 
+/lbshow { show } def 
+% Right Justify and set to bottom vertically 
+/rbshow { 
+   0 
+   exch dup stringwidth pop neg 
+   3 -1 roll rmoveto 
+   show } 
+def 
+% -------------
+1.000 0.000 0.000 setrgbcolor
+50.0000000000 50.0000000000 moveto
+200.0000000000 50.0000000000 lineto
+200.0000000000 200.0000000000 lineto
+50.0000000000 200.0000000000 lineto
+closepath
+fill
+0.001 0.001 0.001 setrgbcolor
+0.4 setlinewidth
+stroke
+0.000 0.000 1.000 setrgbcolor
+200.0000000000 50.0000000000 moveto
+350.0000000000 50.0000000000 lineto
+350.0000000000 200.0000000000 lineto
+200.0000000000 200.0000000000 lineto
+closepath
+fill
+stroke
+
+% -------------
+showpage
+%%Trailer

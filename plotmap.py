@@ -45,8 +45,14 @@ polyproline = (0,1,1)
 #sheet       = (1,1,0)
 #polyproline = (0,1,0)
 
+showeps = 1
 dofilter = 0
 do_vmd_etc = 0
+
+showrmsd  = 0
+showrmsf  = 1
+showrcode = 1
+showhis   = 1
 
 bins = 100
 pdbfn = ""
@@ -69,6 +75,209 @@ import os
 import Geometry
 import PeptideBuilder
 import Bio.PDB
+
+
+if 0:
+	import numpy as np
+	import matplotlib.pyplot as plt
+	from matplotlib.colors import LinearSegmentedColormap
+	"""
+	
+	Example: suppose you want red to increase from 0 to 1 over the bottom
+	half, green to do the same over the middle half, and blue over the top
+	half.  Then you would use:
+	
+	cdict = {'red':   ((0.0,  0.0, 0.0),
+			(0.5,  1.0, 1.0),
+			(1.0,  1.0, 1.0)),
+	
+		'green': ((0.0,  0.0, 0.0),
+			(0.25, 0.0, 0.0),
+			(0.75, 1.0, 1.0),
+			(1.0,  1.0, 1.0)),
+
+		'blue':  ((0.0,  0.0, 0.0),
+			(0.5,  0.0, 0.0),
+			(1.0,  1.0, 1.0))}
+	
+	If, as in this example, there are no discontinuities in the r, g, and b
+	components, then it is quite simple: the second and third element of
+	each tuple, above, is the same--call it "y".  The first element ("x")
+	defines interpolation intervals over the full range of 0 to 1, and it
+	must span that whole range.  In other words, the values of x divide the
+	0-to-1 range into a set of segments, and y gives the end-point color
+	values for each segment.
+	
+	Now consider the green. cdict['green'] is saying that for
+	0 <= x <= 0.25, y is zero; no green.
+	0.25 < x <= 0.75, y varies linearly from 0 to 1.
+	x > 0.75, y remains at 1, full green.
+
+	If there are discontinuities, then it is a little more complicated.
+	Label the 3 elements in each row in the cdict entry for a given color as
+	(x, y0, y1).  Then for values of x between x[i] and x[i+1] the color
+	value is interpolated between y1[i] and y0[i+1].
+
+	Going back to the cookbook example, look at cdict['red']; because y0 !=
+	y1, it is saying that for x from 0 to 0.5, red increases from 0 to 1,
+	but then it jumps down, so that for x from 0.5 to 1, red increases from
+	0.7 to 1.  Green ramps from 0 to 1 as x goes from 0 to 0.5, then jumps
+	back to 0, and ramps back to 1 as x goes from 0.5 to 1.
+
+	row i:   x  y0  y1
+			/
+		/
+	row i+1: x  y0  y1
+
+	Above is an attempt to show that for x in the range x[i] to x[i+1], the
+	interpolation is between y1[i] and y0[i+1].  So, y0[0] and y1[-1] are
+	never used.
+
+	"""
+
+
+	cdict1 = {'red':   ((0.0, 0.0, 0.0),
+			(0.5, 0.0, 0.1),
+			(1.0, 1.0, 1.0)),
+
+		'green': ((0.0, 0.0, 0.0),
+			(1.0, 0.0, 0.0)),
+
+		'blue':  ((0.0, 0.0, 1.0),
+			(0.5, 0.1, 0.0),
+			(1.0, 0.0, 0.0))
+		}
+
+	cdict2 = {'red':   ((0.0, 0.0, 0.0),
+			(0.5, 0.0, 1.0),
+			(1.0, 0.1, 1.0)),
+
+		'green': ((0.0, 0.0, 0.0),
+			(1.0, 0.0, 0.0)),
+
+		'blue':  ((0.0, 0.0, 0.1),
+			(0.5, 1.0, 0.0),
+			(1.0, 0.0, 0.0))
+		}
+
+	cdict3 = {'red': ((0.0, 0.0, 0.0), (0.25, 0.0, 0.0), (0.5, 0.8, 1.0), (0.75, 1.0, 1.0), (1.0, 0.4, 1.0)),
+		'green': ((0.0, 0.0, 0.0), (0.25, 0.0, 0.0), (0.5, 0.9, 0.9), (0.75, 0.0, 0.0), (1.0, 0.0, 0.0)),
+		'blue':  ((0.0, 0.0, 0.4), (0.25, 1.0, 1.0), (0.5, 1.0, 0.8), (0.75, 0.0, 0.0), (1.0, 0.0, 0.0))
+		}
+	helix_start = 0.31
+	helix_end   = 0.39
+	sheet_start = 0.45
+	sheet_end   = 0.62
+	polyproline_end = 0.66
+	
+	# c stands for color, bc stands for background color
+	c1 = [0,0,0] # black
+	c2 = [1,1,0] # yellow 
+	c3 = [1,0,0] # red
+	c4 = [0,0,1] # blue
+	bc = [1,1,1] # white
+	
+	cdict3 = {
+	#                         black  black           white  white         yellow  red             white  white         blue   blue
+		'red':   ((0.00,  c1[0], c1[0]), (0.25,  bc[0], bc[0]), (0.50, c2[0], c3[0]), (0.75,  bc[0], bc[0]), (1.0, c4[0], c4[0])), 
+		'green': ((0.00,  c1[1], c1[1]), (0.25,  bc[1], bc[1]), (0.50, c2[1], c3[1]), (0.75,  bc[1], bc[1]), (1.0, c4[1], c4[1])),
+		'blue':  ((0.00,  c1[2], c1[2]), (0.25,  bc[2], bc[2]), (0.50, c2[2], c3[2]), (0.75,  bc[2], bc[2]), (1.0, c4[2], c4[2])) 
+	}
+	cmap = LinearSegmentedColormap('BlueRed2', cdict2)
+	plt.register_cmap(cmap=blue_red2)
+	cmap = plt.get_cmap('BlueRed2')
+	
+	# Make a modified version of cdict3 with some transparency
+	# in the middle of the range.
+	cdict4 = cdict3.copy()
+	cdict4['alpha'] = ((0.0, 1.0, 1.0),
+			#   (0.25,1.0, 1.0),
+			(0.5, 0.3, 0.3),
+			#   (0.75,1.0, 1.0),
+			(1.0, 1.0, 1.0))
+
+
+	# Now we will use this example to illustrate 3 ways of
+	# handling custom colormaps.
+	# First, the most direct and explicit:
+
+	blue_red1 = LinearSegmentedColormap('BlueRed1', cdict1)
+
+	# Second, create the map explicitly and register it.
+	# Like the first method, this method works with any kind
+	# of Colormap, not just
+	# a LinearSegmentedColormap:
+
+	blue_red2 = LinearSegmentedColormap('BlueRed2', cdict2)
+	plt.register_cmap(cmap=blue_red2)
+
+	# Third, for LinearSegmentedColormap only,
+	# leave everything to register_cmap:
+
+	plt.register_cmap(name='BlueRed3', data=cdict3)  # optional lut kwarg
+	plt.register_cmap(name='BlueRedAlpha', data=cdict4)
+
+	# Make some illustrative fake data:
+
+	x = np.arange(0, np.pi, 0.1)
+	y = np.arange(0, 2*np.pi, 0.1)
+	X, Y = np.meshgrid(x, y)
+	Z = np.cos(X) * np.sin(Y) * 10
+
+	# Make the figure:
+
+	plt.figure(figsize=(6, 9))
+	plt.subplots_adjust(left=0.02, bottom=0.06, right=0.95, top=0.94, wspace=0.05)
+
+	# Make 4 subplots:
+
+	plt.subplot(2, 2, 1)
+	plt.imshow(Z, interpolation='nearest', cmap=blue_red1)
+	plt.colorbar()
+
+	plt.subplot(2, 2, 2)
+	cmap = plt.get_cmap('BlueRed2')
+	plt.imshow(Z, interpolation='nearest', cmap=cmap)
+	plt.colorbar()
+
+	# Now we will set the third cmap as the default.  One would
+	# not normally do this in the middle of a script like this;
+	# it is done here just to illustrate the method.
+
+	plt.rcParams['image.cmap'] = 'BlueRed3'
+
+	plt.subplot(2, 2, 3)
+	plt.imshow(Z, interpolation='nearest')
+	plt.colorbar()
+	plt.title("Alpha = 1")
+
+	# Or as yet another variation, we can replace the rcParams
+	# specification *before* the imshow with the following *after*
+	# imshow.
+	# This sets the new default *and* sets the colormap of the last
+	# image-like item plotted via pyplot, if any.
+	#
+
+	plt.subplot(2, 2, 4)
+	# Draw a line with low zorder so it will be behind the image.
+	plt.plot([0, 10*np.pi], [0, 20*np.pi], color='c', lw=20, zorder=-1)
+
+	plt.imshow(Z, interpolation='nearest')
+	plt.colorbar()
+
+	# Here it is: changing the colormap for the current image and its
+	# colorbar after they have been plotted.
+	plt.set_cmap('BlueRedAlpha')
+	plt.title("Varying alpha")
+	#
+
+	plt.suptitle('Custom Blue-Red colormaps', fontsize=16)
+
+	plt.show()
+	exit()
+	# BAAAAAAAAAAAAAAAAAAAAAAAAA
+
+
 
 show_graphs = 1
 
@@ -132,8 +341,37 @@ cdict = {
           'blue': ((0.00,  1.00, 1.00), (helix_start,  1.00, helixR[2]), (helix_end,  helixR[2], 1.00), (sheet_start,  1.00, sheet[2]), (sheet_end,  sheet[2], polyproline[2]), (polyproline_end, polyproline[2], 1), (1, 1,1))  
         }
 
+
 colors    = [(1,1,1), (1,1,1), helixR, (1,1,1), sheet, sheet, polyproline, (1,1,1), (1,1,1)]
 positions = [ 0.00  , 0.30   ,  0.37 ,  0.44  ,  0.54,  0.57,      0.62  ,  0.70  ,  1.00  ]
+
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
+# c stands for color, bc stands for background color
+c1 = [0,0,0] # black
+c2 = [1,1,0] # yellow 
+c3 = [1,0,0] # red
+c4 = [0,0,1] # blue
+bc = [1,1,1] # white
+
+cdict3 = {
+#                         black  black           white  white         yellow  red             white  white         blue   blue
+	'red':   ((0.00,  c1[0], c1[0]), (0.25,  bc[0], bc[0]), (0.50, c2[0], c3[0]), (0.75,  bc[0], bc[0]), (1.0, c4[0], c4[0])), 
+	'green': ((0.00,  c1[1], c1[1]), (0.25,  bc[1], bc[1]), (0.50, c2[1], c3[1]), (0.75,  bc[1], bc[1]), (1.0, c4[1], c4[1])),
+	'blue':  ((0.00,  c1[2], c1[2]), (0.25,  bc[2], bc[2]), (0.50, c2[2], c3[2]), (0.75,  bc[2], bc[2]), (1.0, c4[2], c4[2])) 
+}
+
+# More dramatic version
+cdict3 = {
+#                         white  white           black  yellow         white  white           white  white         blue   blue
+	'red':   ((0.00,  bc[0], bc[0]), (0.25,  c1[0], c2[0]), (0.50, bc[0], bc[0]), (0.75,  c3[0], c4[0]), (1.0, bc[0], bc[0])), 
+	'green': ((0.00,  bc[1], bc[1]), (0.25,  c1[1], c2[1]), (0.50, bc[1], bc[1]), (0.75,  c3[1], c4[1]), (1.0, bc[1], bc[1])),
+	'blue':  ((0.00,  bc[2], bc[2]), (0.25,  c1[2], c2[2]), (0.50, bc[2], bc[2]), (0.75,  c3[2], c4[2]), (1.0, bc[2], bc[2])) 
+}
+cmapTEST = LinearSegmentedColormap('BlackYellowRedBlue', cdict3)
+#plt.register_cmap(cmap=cmapTEST)
+#cmap = plt.get_cmap('BlackYellowRedBlue')
 
 
 #generate the colormap with 1024 interpolated values
@@ -303,10 +541,10 @@ def xyz_to_image(X,Y,Z):
 	#
 	return imagex,imagey,imagez
 
-# An modiviedd version of the alpha version of the Talbot, Lin, Hanrahan tick mark generator for matplotlib.
+# A modified version of the alpha version of the Talbot, Lin, Hanrahan tick mark generator for matplotlib.
 # Described in "An Extension of Wilkinson's Algorithm for Positioning Tick Labels on Axes"
 # by Justin Talbot, Sharon Lin, and Pat Hanrahan, InfoVis 2010. http://vis.stanford.edu/files/2010-TickLabels-InfoVis.pdf
-# Implementation modified from that provided by Justin Talbot
+# Implementation modified by Ranjan Mannige from that provided by Justin Talbot
 def Extended(vmin, vmax, density_val = 1, steps = None):
 	if steps is None:
 		steps = [1, 5, 2, 2.5, 4, 3]
@@ -419,8 +657,6 @@ def Extended(vmin, vmax, density_val = 1, steps = None):
 	best = extended(vmin, vmax, density_val * size + 1.0, only_inside=True, w=[0.25, 0.2, 0.5, 0.05])
 	locs = np.arange(best[4]) * best[2] + best[0]
 	return locs
-	
-	
 
 def ps_draw_shape(X,Y,linewidth=1,linecolor=(0,0,0),fill=1,fillcolor=(0.6,0.6,0.6)):
 	""" 
@@ -443,18 +679,19 @@ def ps_draw_shape(X,Y,linewidth=1,linecolor=(0,0,0),fill=1,fillcolor=(0.6,0.6,0.
 	if not ( isinstance(fillcolor, list) or isinstance(fillcolor, tuple) ):
 		fillcolor = (fillcolor,fillcolor,fillcolor)
 	
-	# setting the fill color
-	ps_text+= "%.3f %.3f %.3f setrgbcolor\n"%fillcolor
-	
 	# starting to draw placing the cursor at the first point
 	ps_text+= "%.10f %.10f moveto\n"%(X[0],Y[0])
 	
 	for x,y in zip(X[1:],Y[1:]):
 		ps_text+= "%.10f %.10f lineto\n"%(x,y)
-	
 	ps_text+= "closepath\n"
+	
 	if fill:
+	#	ps_text+= "gsave\n"
+		ps_text+= "%.3f %.3f %.3f setrgbcolor\n"%fillcolor
 		ps_text+= "fill\n"
+	#	ps_text+= "grestore\n"
+	
 	if linewidth:
 		ps_text+= "%.3f %.3f %.3f setrgbcolor\n"%linecolor
 		ps_text+= str(linewidth)+" setlinewidth\n"
@@ -495,7 +732,6 @@ REVISION HISTORY
 	20140313 -- Small changes made and code posted online
 	20140320 -- Added the ability to set the position of each color
 '''
-
 def make_cmap(colors, position=None, bit=False):
 	'''
 	make_cmap takes a list of tuples which contain RGB values. The RGB
@@ -784,6 +1020,11 @@ def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap
 			page_yticks.append(pagey)
 	
 	usermaterial = ""
+	
+	
+	zmin = round(sorted(pageZ)[0],0)
+	zmax = round(sorted(pageZ)[-1],0)
+	
 	for x,y,z in zip(pageX,pageY,pageZ):
 		
 		round_number = 10
@@ -796,7 +1037,8 @@ def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap
 		Xs = [xmin,xmax,xmax,xmin]
 		Ys = [ymin,ymin,ymax,ymax]
 		
-		heat = cmap(z)
+		#heat = cmap(z)
+		heat = cmap(float(z-zmin)/float(zmax-zmin))
 		
 		usermaterial += ps_draw_shape(Xs,Ys,linewidth=0,linecolor=0,fillcolor=heat[:3])
 	
@@ -926,6 +1168,7 @@ def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap
 	f.close()
 	if showeps:#show_graphs:
 		os.system("evince "+fn)
+		raw_input()
 		
 	print "WRITTEN TO:",fn
 	
@@ -987,38 +1230,61 @@ def get_resid_to_dssp(fn):
 	return resno_to_sstype
 
 # PARAMTERS FOR THE RAMACHANDRAN NUMBER
-bound = 360.0 # This does not change
+# The ranges for phi and psi are [-180,180]. 
+# Any other value will be garbled (so, remember to 
+# convert your angles so that it fits this range.
+import math
+bound = 360.0 # This does not chang
 rho_scaling = 10.0 # This is sigma in the manuscript (Mannige, Kundu, Whitelam, 2016)
 multiplier = int(round(rho_scaling*(bound*(2.0**0.5)),0)) # For internal reference
+multiplier_by_two = round(rho_scaling*(bound*(2.0**0.5)),0)/2.0 # For internal reference
 
-def ramachandran_number_collapse(x,y):
-	a = round(rho_scaling*(x-y + bound)/numpy.sqrt(2.0),0)
-	b = round(rho_scaling*(x+y + bound)/numpy.sqrt(2.0),0)
-	return round(a,0) + round(b,0)*multiplier
+# To get the raw Ramachandran number from phi and psi:
+def raw_ramachandran_number_collapse(phi,psi):
+	phi = float(phi)
+	psi = float(psi)
+	a = round(rho_scaling*(phi-psi + bound)/math.sqrt(2.0),0)
+	b = round(rho_scaling*(phi+psi + bound)/math.sqrt(2.0),0)
+	return a + b*multiplier
 #
-def ramachandran_number_collapse_zigzag(x,y):
-	a = round(rho_scaling*(x-y + bound)/numpy.sqrt(2.0),0)
-	b = round(rho_scaling*(x+y + bound)/numpy.sqrt(2.0),0)
-	if b % 2.0 == 0:
-		# "b" is even
-		a = multiplier - a
-	return round(a,0) + round(b,0)*multiplier
-#
-def ramachandran_number_expand(z):
+# Original phi and psi values are easily obtained from the *raw* Ramachandran number
+def raw_ramachandran_number_expand(z):
 	z = float(z)
-	x = (numpy.sqrt(2.0)*np.mod(z,multiplier)/rho_scaling     - bound + numpy.sqrt(2.0)*np.floor(z / multiplier)/rho_scaling - bound )/2.0
-	y = (numpy.sqrt(2.0)*np.floor(z / multiplier)/rho_scaling - bound - numpy.sqrt(2.0)*np.mod(z, multiplier)/rho_scaling + bound)/2.0
-	return x,y
-#
-def ramachandran_number_expand_zigzag(z):
-	#a = 
-	#b =
-	z = float(z)
-	x = (numpy.sqrt(2.0)*np.mod(z,multiplier)/rho_scaling     - bound + numpy.sqrt(2.0)*np.floor(z / multiplier)/rho_scaling - bound )/2.0
-	y = (numpy.sqrt(2.0)*np.floor(z / multiplier)/rho_scaling - bound - numpy.sqrt(2.0)*np.mod(z, multiplier)/rho_scaling + bound)/2.0
-	if round(y,0) % 2.0 == 0:
-		x = multiplier - x
-	return x,y
+	phi = (math.sqrt(2.0)*np.mod(z,multiplier)/rho_scaling     - bound + math.sqrt(2.0)*np.floor(z / multiplier)/rho_scaling - bound )/2.0
+	psi = (math.sqrt(2.0)*np.floor(z / multiplier)/rho_scaling - bound - math.sqrt(2.0)*np.mod(z, multiplier)/rho_scaling + bound)/2.0
+	return phi,psi
+
+# First getting the lowest and highest possible unnormalized R numbers
+raw_R_min = raw_ramachandran_number_collapse(-180,-180)
+raw_R_max = raw_ramachandran_number_collapse(180,180)
+# To get the normalized Ramachandran number from the raw Ramachandran number 
+def normalized_ramachandran_number(phi,psi):
+	raw_R = raw_ramachandran_number_collapse(phi,psi)
+	R = float(raw_R - raw_R_min)/(raw_R_max-raw_R_min)
+	return R
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+def normalized_ramachandran_number(phi,psi):
+	# with a twist!
+	phi = float(phi)
+	psi = float(psi)
+	a = round(rho_scaling*(phi-psi + bound)/math.sqrt(2.0),0)
+	b = round(rho_scaling*(phi+psi + bound)/math.sqrt(2.0),0)
+	
+	raw_r = a + b*multiplier
+	final_r = float(raw_r - raw_R_min)/float(raw_R_max - raw_R_min)
+	if a >= multiplier_by_two:
+		final_r = final_r * -1.0
+	return final_r
+
+#To the Ramachandran number function, set "if 0:" to "if 1:"
+if 0:
+	current_phi = -60
+	current_psi = -60
+	# To get the normalized Ramachandran number:
+	R = normalized_ramachandran_number(current_phi,current_psi)
+	print "R(phi="+str(current_phi)+",psi="+str(current_psi)+") = "+str(R)
+
 #
 def histogram2d(X_vals,Y_vals,cmap=plt.cm.Blues,xyrange=[],title="",fn=""):
 	print "fn:",fn
@@ -1290,10 +1556,6 @@ def read_pdb(pdbblock):
 	model_to_chain_to_resno_atom_to_vals = {}
 	# structure (models) -> model -> chain -> residue -> atom
 	
-	rho_min= ramachandran_number_collapse(-180.0,-180.0)
-	rho_max= ramachandran_number_collapse(180.0,180.0)
-	
-	
 	#t0 = time.time()
 	#print "#\treading...",
 	for model_index in range(len(models)):
@@ -1334,9 +1596,6 @@ def read_pdb(pdbblock):
 				del model_to_chain_to_resno_atom_to_vals[model_number]
 				model_number-=1
 	#
-	#t1 = time.time()
-	#print "time:",t1-t0
-	#print "\tcalculating r...",
 	for model in sorted(model_to_chain_to_resno_atom_to_vals.keys()):
 		for chain in sorted(model_to_chain_to_resno_atom_to_vals[model].keys()):
 			for resno in sorted(model_to_chain_to_resno_atom_to_vals[model][chain].keys()):
@@ -1369,19 +1628,15 @@ def read_pdb(pdbblock):
 						
 						phi = calculate_dihedral_angle(numpy.array([a,b,c,d]))
 						psi = calculate_dihedral_angle(numpy.array([b,c,d,e]))
-						
-						unnormalized_rho = ramachandran_number_collapse(phi,psi)
-						rho = float(unnormalized_rho - rho_min)/(rho_max - rho_min)
+						rho = normalized_ramachandran_number(phi,psi)
 						#print rho
 						#if rho < 0.5:
 						#	print (phi,psi)
-							
-						model_to_chain_to_resno_atom_to_vals[model][chain][ip]["phi"] = phi
-						model_to_chain_to_resno_atom_to_vals[model][chain][ip]["psi"] = psi
-						model_to_chain_to_resno_atom_to_vals[model][chain][ip]["r"] = rho
-	t2 = time.time()
+						
+						model_to_chain_to_resno_atom_to_vals[model][chain][i]["phi"] = phi
+						model_to_chain_to_resno_atom_to_vals[model][chain][i]["psi"] = psi
+						model_to_chain_to_resno_atom_to_vals[model][chain][i]["r"] = rho
 	
-	#print "time:",t2-t1
 	return model_to_chain_to_resno_atom_to_vals
 
 # Draw the mapping between phi,psi and Ramachandran number
@@ -1389,13 +1644,13 @@ def show_ramachandran_mapping(cmap=plt.get_cmap("Paired"),stepsize=10):
 	PHI = []
 	PSI = []
 	RHO = []
-	rho_max = ramachandran_number_collapse(360.0,360.0)
-	rho_min = ramachandran_number_collapse(0.0,0.0)
+	rho_max = raw_ramachandran_number_collapse(180.0,180.0)
+	rho_min = raw_ramachandran_number_collapse(-180.0,-180.0)
 	for phi in range(0,361,stepsize):
 		for psi in range(0,361,stepsize):
 			PHI.append(phi)
 			PSI.append(psi)
-			unnormalized_rho = ramachandran_number_collapse(phi,psi)
+			unnormalized_rho = raw_ramachandran_number_collapse(phi,psi)
 			RHO.append(float(unnormalized_rho - rho_min)/(rho_max - rho_min))
 	x=np.array(PHI)
 	y=np.array(PSI)
@@ -1406,10 +1661,10 @@ def show_ramachandran_mapping(cmap=plt.get_cmap("Paired"),stepsize=10):
 	fn = "rho"
 	fn_bar = fn+"_colorbar.eps"
 	print "#WRITING TO:",fn_bar
-	make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=cmap, fn=fn_bar, yscaling=0.5,xtitle="Key",ytitle="R")
+	make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=cmap, fn=fn_bar, yscaling=0.5,xtitle="Key",ytitle="R",showeps=showeps)
 	#
 	print "#WRITING TO:",fn+".eps"
-	make2Dfigure(x,y,z,fn+".eps",cmap=cmap,yscaling=1,xtitle="phi",ytitle="psi",xlabels=range(-360,361,90),ylabels=range(-360,361,90))
+	make2Dfigure(x,y,z,fn+".eps",cmap=cmap,yscaling=1,xtitle="phi",ytitle="psi",xlabels=range(-360,361,90),ylabels=range(-360,361,90),showeps=showeps)
 	#
 	return 1
 
@@ -1421,6 +1676,8 @@ if __name__ == "__main__":
 		print "Must provide '-pdb' parameter. Exiting."
 		exit(0)
 	for i in range(len(sys.argv)):
+		if sys.argv[i] == "-rmsd":
+			showrmsd = 1
 		if sys.argv[i] == "-pdb":
 			if len(sys.argv) <= i+1:
 				print "MUST PROVIDE PDB NAME."
@@ -1480,16 +1737,12 @@ if __name__ == "__main__":
 		pdbblock +="\n\nEND\n\n"+f.read()
 		f.close()
 
-	rho_max = ramachandran_number_collapse(360,360)
-	rho_min = ramachandran_number_collapse(0,0)
-	
 	offset = 0
 	# structure -> model -> chain -> residue -> atom -> 'x','y','z','phi','psi','r'
 	print "# Parsing the PDB (structure) data"
 	structure = read_pdb(pdbblock)
 	print "\t...done"
-
-
+	
 	# FIRST, GETTING THE DIFFERENT CHAIN IDs
 	chains = []
 	for model in sorted(structure.keys()):
@@ -1510,23 +1763,24 @@ if __name__ == "__main__":
 						Y.append(resno)
 						Z.append(structure[model][chain][resno]["r"])
 		
-		
-		fn = target_base+".rcode.ss.eps"
 		for i in range(dofilter):
 			Z = median_filter(Z)
-		make2Dfigure(X,Y,Z,fn, cmap=secondarystructure_cmap, xtitle="Model #",ytitle="Residue #")#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
-		fn = fn+".colorbar.eps"
-		color_bar_range = np.arange(0,1.01,0.01)
-		make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=secondarystructure_cmap, fn=fn, ytitle="R")#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
-		
-		
-		fn = target_base+".rcode.raw.eps"
-		for i in range(dofilter):
-			Z = median_filter(Z)
-		make2Dfigure(X,Y,Z,fn, cmap=plt.get_cmap("seismic_r"), xtitle="Model #",ytitle="Residue #")#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
-		fn = fn+".colorbar.eps"
-		color_bar_range = np.arange(0,1.01,0.01)
-		make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=plt.get_cmap("seismic_r"), fn=fn, ytitle="R")#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
+			
+		if showrcode:
+			sortedZ = sorted(Z)
+			
+			#fn = target_base+".rcode.ss.eps"
+			#cbfn = fn+".colorbar.eps"
+			#color_bar_range = np.arange(round(sortedZ[0],0),round(sortedZ[-1],0)+0.005,0.01)
+			#make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=secondarystructure_cmap, fn=cbfn, ytitle="R",showeps=0)#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
+			#make2Dfigure(X,Y,Z,fn, cmap=secondarystructure_cmap, xtitle="Model #",ytitle="Residue #",showeps=showeps)#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
+			
+			fn = target_base+".rcode.eps"
+			cbfn = fn+".colorbar.eps"
+			color_bar_range = np.arange(round(sortedZ[0],0),round(sortedZ[-1],0)+0.005,0.01)
+			cmap = cmapTEST #plt.get_cmap("seismic_r")
+			make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=cmap, fn=cbfn, ytitle="R",showeps=0)#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
+			make2Dfigure(X,Y,Z,fn, cmap=cmap, xtitle="Model #",ytitle="Residue #",showeps=showeps)#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
 		
 		# ----------------------------------
 		xy_to_z = {}
@@ -1535,109 +1789,100 @@ if __name__ == "__main__":
 		
 		# ----------------------------------
 		# RMSD from reference time
-		reference_index = 0
-		reference_time = sorted(set(X))[0]
-		xy_to_z_rmsd = {}
-		for (x,y) in xy_to_z.keys():
-			xy_to_z_rmsd[(x,y)] = abs(xy_to_z[(x,y)]-xy_to_z[(reference_time,y)])
-		
-		X = []
-		Y = []
-		Z = []
-		for (x,y) in xy_to_z_rmsd.keys():
-			z = xy_to_z_rmsd[(x,y)]
-			X.append(x)
-			Y.append(y)
-			Z.append(z)
-		
-		if 0:#normalize
-			if max(Z):
-				for i in range(len(Z)):
-					Z[i] = Z[i]/max(Z)
-		
-		fn = target_base+".rcode.rmsd"+str(reference_index)+".eps"
-		make2Dfigure(X,Y,Z,fn, cmap=plt.get_cmap("Reds"), xtitle="Model #",ytitle="RMSD (R)")#, cmap=plt.get_cmap("gray"))#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
-		fn = fn+".colorbar.eps"
-		make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=plt.get_cmap("Reds"), ytitle="RMSD (R)", fn=fn, yscaling=0.5)#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
-		color_bar_range = np.arange(0,1.01,0.01)
-		
-		# ----------------------------------
-		# FLuctuations from previous time
-		x_sorted = sorted(set(X))
-		xy_to_z_fluc = {}
-		for (x,y) in xy_to_z.keys():
-			current_x_index = x_sorted.index(x)
-			previous_x_index = current_x_index-1
-			if previous_x_index < 0:
-				previous_x_index = 0
-			previous_x = x_sorted[previous_x_index]
-			xy_to_z_fluc[(x,y)] = abs(xy_to_z[(x,y)]-xy_to_z[(previous_x,y)])
-		
-		X = []
-		Y = []
-		Z = []
-		for (x,y) in xy_to_z_fluc.keys():
-			z = xy_to_z_fluc[(x,y)]
-			X.append(x)
-			Y.append(y)
-			Z.append(z)
-		if 1:#normalize
-			if max(Z):
-				for i in range(len(Z)):
-					Z[i] = Z[i]/max(Z)
-		fn = target_base+".rcode.rmsf.eps"
-		make2Dfigure(X,Y,Z,fn, cmap=plt.get_cmap("Blues"), xtitle="Model #",ytitle="RMSD (R)")#, cmap=plt.get_cmap("gray"))#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
-		
-		fn = fn+".colorbar.eps"
-		color_bar_range = np.arange(0,1.01,0.01)
-		make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=plt.get_cmap("Blues"), ytitle="RMSD (R)", fn=fn, yscaling=0.5)#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
-		# ----------------------------------
-		#
-		#
-		X=[]
-		Y=[]
-		Z=[]
-		lastcolumnx = []
-		lastcolumny = []
-		lastcolumnz = []
-		firstcolumnx = []
-		firstcolumny = []
-		firstcolumnz = []
-		count = 0
-
-		for model in sorted(structure.keys()):
-			count += 1
-			Rs = []
-			for chain in sorted(structure[model].keys()):
-				for resno in structure[model][chain].keys():
-					if "r" in structure[model][chain][resno]:
-						Rs.append(structure[model][chain][resno]["r"])
+		if showrmsd:
+			reference_index = 0
+			reference_time = sorted(set(X))[0]
+			xy_to_z_rmsd = {}
+			for (x,y) in xy_to_z.keys():
+				xy_to_z_rmsd[(x,y)] = abs(xy_to_z[(x,y)]-xy_to_z[(reference_time,y)])
 			
-			if len(Rs):
-				a,b = np.histogram(Rs,bins=bins,range=[0,1])
-				for i in range(len(a)):
-					X.append(model)
-					Y.append(float(b[i]+b[i+1])/2.0)
-					Z.append(float(a[i])/np.max(a))
-					if count == 1:
-						firstcolumnx.append(model)
-						firstcolumny.append(float(b[i]+b[i+1])/2.0)
-						firstcolumnz.append(float(a[i])/np.max(a))
-					if count == len(structure.keys()):
-						lastcolumnx.append(model)
-						lastcolumny.append(float(b[i]+b[i+1])/2.0)
-						lastcolumnz.append(float(a[i])/np.max(a))
-		#
-		fn = target_base+".rcode.his.eps"
-		for i in range(dofilter):
-			Z = median_filter(Z)
-		make2Dfigure(X,Y,Z,fn, cmap=plt.get_cmap("gray_r"), xtitle="Model #",ytitle="R")#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
+			X = []
+			Y = []
+			Z = []
+			for (x,y) in xy_to_z_rmsd.keys():
+				z = xy_to_z_rmsd[(x,y)]
+				X.append(x)
+				Y.append(y)
+				Z.append(z)
+			
+			if 0:#normalize
+				if max(Z):
+					for i in range(len(Z)):
+						Z[i] = Z[i]/max(Z)
+			
+			fn = target_base+".rcode.rmsd"+str(reference_index)+".eps"
+			cbfn = fn+".colorbar.eps"
+			color_bar_range = np.arange(0,1.01,0.01)
+			make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=plt.get_cmap("Reds"), ytitle="RMSD (R)", fn=cbfn, yscaling=0.5,showeps=0)#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
+			make2Dfigure(X,Y,Z,fn, cmap=plt.get_cmap("Reds"), xtitle="Model #",ytitle="RMSD (R)",showeps=showeps)#, cmap=plt.get_cmap("gray"))#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
 		
-		fn = fn+".colorbar.eps"
-		color_bar_range = np.arange(0,1.01,0.01)
-		make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=plt.get_cmap("gray_r"), ytitle="P(R)/max(P(R))", fn=fn, yscaling=0.5)#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
-		
-
+		# ----------------------------------
+		# Fluctuations from previous time
+		if showrmsf:
+			x_sorted = sorted(set(X))
+			xy_to_z_fluc = {}
+			for (x,y) in xy_to_z.keys():
+				current_x_index = x_sorted.index(x)
+				previous_x_index = current_x_index-1
+				if previous_x_index < 0:
+					previous_x_index = 0
+				previous_x = x_sorted[previous_x_index]
+				xy_to_z_fluc[(x,y)] = abs(xy_to_z[(x,y)]-xy_to_z[(previous_x,y)])
+			
+			X = []
+			Y = []
+			Z = []
+			for (x,y) in xy_to_z_fluc.keys():
+				z = xy_to_z_fluc[(x,y)]
+				X.append(x)
+				Y.append(y)
+				Z.append(z)
+			if 1:#normalize
+				if max(Z):
+					for i in range(len(Z)):
+						Z[i] = Z[i]/max(Z)
+			
+			fn = target_base+".rcode.rmsf.eps"
+			cbfn = fn+".colorbar.eps"
+			color_bar_range = np.arange(0,1.01,0.01)
+			
+			make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=plt.get_cmap("Blues"), ytitle="RMSF (R)", fn=cbfn, yscaling=0.5,showeps=0)#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
+			make2Dfigure(X,Y,Z,fn, cmap=plt.get_cmap("Blues"), xtitle="Model #",ytitle="RMSF (R)",showeps=showeps)#, cmap=plt.get_cmap("gray"))#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
+		# ----------------------------------
+		if showhis:
+			X=[]
+			Y=[]
+			Z=[]
+			for model in sorted(structure.keys()):
+				Rs = []
+				if chain in structure[model]:
+					for resno in structure[model][chain].keys():
+						if "r" in structure[model][chain][resno]:
+							Rs.append(structure[model][chain][resno]["r"])
+				if len(Rs):
+					a,b = np.histogram(Rs,bins=np.arange(-1.01,1.03,0.02))
+					for i in range(len(a)):
+						X.append(model)
+						Y.append(float(b[i]+b[i+1])/2.0)
+						Z.append(float(a[i])/np.max(a))
+			#
+			fn = target_base+".rcode.his.eps"
+			cbfn = fn+".colorbar.eps"
+			
+			color_bar_range = np.arange(0,1.01,0.01)
+			make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=plt.get_cmap("gray_r"), ytitle="P(R)/max(P(R))", fn=cbfn, yscaling=0.5,showeps=0)#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
+			
+			for i in range(dofilter):
+				Z = median_filter(Z)
+			
+			demeY = []
+			for x,y in zip(X,Y):
+				if x == X[0]:
+					demeY.append(y)
+			print sorted(demeY)
+			make2Dfigure(X,Y,Z,fn, cmap=plt.get_cmap("gray_r"), xtitle="Model #",ytitle="R",showeps=showeps)#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
+	
+	
 	if do_vmd_etc:
 		# writing first and last 
 		ms = pdbblock.split("\nEND\n")#|TER)\n",pdbblock,re.MULTILINE)
@@ -1770,7 +2015,7 @@ if __name__ == "__main__":
 			"E":sheet_par_template,
 			"B":sheet_par_template
 		}
-
+		
 		for model_key in [sorted(structure.keys())[0],sorted(structure.keys())[-1]]:
 			start_end = "first"
 			if model_key != 1:
@@ -1950,9 +2195,8 @@ if __name__ == "__main__":
 				PSI=np.array(PSI)
 				WEIGHT=np.array(WEIGHT)
 				
-				
 				fn = fn[:-len(".dat")]+"_histogram.eps"
-				make2Dfigure(PHI,PSI,WEIGHT,fn=fn,yscaling=1,xtitle="phi",ytitle="psi",xlabels=range(-180,181,90),ylabels=range(-180,181,90),showeps=1)
+				make2Dfigure(PHI,PSI,WEIGHT,fn=fn,yscaling=1,xtitle="phi",ytitle="psi",xlabels=range(-180,181,90),ylabels=range(-180,181,90),showeps=showeps)
 				#raw_input()
 				
 				X=[]
@@ -1970,14 +2214,14 @@ if __name__ == "__main__":
 				color_bar_range = np.arange(0,1.01,0.01)
 				fn = fn[:-len(".dat")]+"_r1_colorbar.eps"
 				print "#WRITING TO:",fn
-				make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=secondarystructure_cmap, fn=fn, ytitle="R",showeps=1)#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
+				make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=secondarystructure_cmap, fn=fn, ytitle="R",showeps=0)#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
 				fn = fn[:-len(".dat")]+"_r1.eps"
 				print "#WRITING TO:",fn
 				
 				#make2Dfigure(X,Y,Z,fn, cmap=secondarystructure_cmap, xtitle="Model #",ytitle="Residue #",showeps=1)#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
 				for i in range(dofilter):
 					Z = median_filter(Z)
-				make2Dfigure(X,Y,Z,fn, cmap=secondarystructure_cmap, xtitle="Model #",ytitle="Residue #",showeps=1)#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
+				make2Dfigure(X,Y,Z,fn, cmap=secondarystructure_cmap, xtitle="Model #",ytitle="Residue #",showeps=showeps)#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
 				
 			#raw_input()
 			
