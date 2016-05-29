@@ -47,7 +47,7 @@ signed = 0
 rrange = [0,1]
 colortype = "Chirality" # can be SecondaryStructure
 
-showeps = 1
+showeps = 0
 dofilter = 0
 do_vmd_etc = 0
 
@@ -86,6 +86,8 @@ forcedmin = False
 
 show_graphs = 1
 default_fontsize = 22
+colorbarXscaling = 0.08
+defaultXscaling  = 2.0
 
 SCALE = 10.0 # For the postscript output
 
@@ -458,11 +460,10 @@ if 0:
 	exit()
 
 # DRAWS POSTSCRIPT/EPS FILES USING INFORMATION IN Xoriginal, Yoriginal, Zoriginal
-def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap=plt.get_cmap('gray_r'),yscaling=0.5,xtitle="",ytitle="",xticks=[],xlabels=[],yticks=[],ylabels=[],horizontallines=[],verticallines=[],title="",showeps=0):
+def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap=plt.get_cmap('gray_r'),xscaling=defaultXscaling,xtitle="",ytitle="",xticks=[],xlabels=[],yticks=[],ylabels=[],horizontallines=[],verticallines=[],title="",showeps=0):
 	if fn == 0 or str(fn)[-len(".eps"):] !=".eps":
 		print "NO EPS FILENAME GIVEN. EXITING."
 		exit()
-	
 	
 	if len(horizontallines):
 		newadditionlines = {}
@@ -520,7 +521,8 @@ def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap
 	Xsorted = sorted(set(X))
 	Ysorted = sorted(set(Y))
 	
-	# Working on setting up the dimensions of the grawing's frame 
+	# Working on setting up the dimensions of the drawing's frame 
+	"""
 	# X
 	xmin = Xsorted[0]
 	xmax = Xsorted[-1]
@@ -531,11 +533,25 @@ def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap
 	ymin = Ysorted[0]
 	ymax = Ysorted[-1]
 	pageMinY = 2.5
-	pageMaxY = pageMinY + (pageMaxX-pageMinX)*yscaling
+	pageMaxY = pageMinY + (pageMaxX-pageMinX)*xscaling
+	"""
+	pageMinY = 2.5  # Arbitrary values
+	pageMaxY = 14.5 #16.0 # Arbitrary values
+	pageMinX = 3.0
+	pageMaxX = pageMinX + float(pageMaxY-pageMinY)*xscaling
 	
+	xmin = Xsorted[0]
+	xmax = Xsorted[-1]
+	ymin = Ysorted[0]
+	ymax = Ysorted[-1]
+	
+	title_alignment_type = "cbshow"
 	if len(Xsorted) == 1:
-		pageMaxX = 5.5
-	
+		if xscaling == defaultXscaling: # then no new value was provided by the user
+			pageMaxX = 6.0
+		title_alignment_type = "rbshow"
+			
+		
 	
 	# Actual values of each position
 	pageX = [] # this will be filled later
@@ -658,7 +674,6 @@ def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap
 	
 	usermaterial = ""
 	
-	
 	zmin = round(sorted(pageZ)[0],0)
 	zmax = round(sorted(pageZ)[-1],0)
 	
@@ -675,8 +690,10 @@ def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap
 		Ys = [ymin,ymin,ymax,ymax]
 		
 		#heat = cmap(z)
-		heat = cmap(float(z-zmin)/float(zmax-zmin))
-		
+		zmax_minus_zmin = float(zmax-zmin)
+		heat = cmap(0)
+		if zmax_minus_zmin:
+			heat = cmap(float(z-zmin)/zmax_minus_zmin)
 		usermaterial += ps_draw_shape(Xs,Ys,linewidth=0,linecolor=0,fillcolor=heat[:3])
 	
 	# Drawing the frame
@@ -721,13 +738,20 @@ def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap
 		usermaterial += "("+str(xtitle)+")  ctshow\n"
 	#
 	if len(ytitle):
-		# Adding the x label!
+		# Adding the y label!
 		textx = float(pageMinX)/3.0
 		texty = pageMinY + float(pageMaxY-pageMinY)/2.0
 		usermaterial += "%.10f %.10f moveto\n"%(textx,texty)
-		#usermaterial += "90 rotate\n"
 		usermaterial += "("+str(ytitle)+")  ccshowrotate\n"
-		#usermaterial += "90 neg rotate\n"
+	#
+	if len(title):
+		# Adding the title!
+		textx = pageMinX + float(pageMaxX-pageMinX)/2.0
+		texty = float(pageMaxY)+float(pageMaxY)*0.02
+		if title_alignment_type == "rbshow":
+			textx = pageMaxX
+		usermaterial += "%.10f %.10f moveto\n"%(textx,texty)
+		usermaterial += "("+str(title)+") "+title_alignment_type+"\n"
 	# 
 	for i in range(len(page_xticks)):
 		if len(str(xlabels[i])):
@@ -820,7 +844,7 @@ def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap
 		#plt.xticks(np.arange(0.5,10.5),range(0,10))
 		plt.rc("font", size=default_fontsize)
 		plt.axis(extent)
-		plt.axes().set_aspect(abs((extent[1]-extent[0])/(extent[3]-extent[2]))*yscaling)
+		plt.axes().set_aspect(abs((extent[1]-extent[0])/(extent[3]-extent[2]))/xscaling)
 		plt.show()
 	
 	return 1
@@ -870,45 +894,42 @@ def get_resid_to_dssp(fn):
 # convert your angles so that it fits this range.
 import math
 bound = 360.0 # This does not chang
-rho_scaling = 10.0 # This is sigma in the manuscript (Mannige, Kundu, Whitelam, 2016)
-multiplier = int(round(rho_scaling*(bound*(2.0**0.5)),0)) # For internal reference
-multiplier_by_two = round(rho_scaling*(bound*(2.0**0.5)),0)/2.0 # For internal reference
+sigma = 10.0 # This is sigma in the manuscript (Mannige, Kundu, Whitelam, 2016)
+multiplier = int(round(sigma*(bound*(2.0**0.5)),0)) # For internal reference
+multiplier_by_two = round(sigma*(bound*(2.0**0.5)),0)/2.0 # For internal reference
 
 # To get the raw Ramachandran number from phi and psi:
 def raw_ramachandran_number_collapse(phi,psi):
 	phi = float(phi)
 	psi = float(psi)
-	a = round(rho_scaling*(phi-psi + bound)/math.sqrt(2.0),0)
-	b = round(rho_scaling*(phi+psi + bound)/math.sqrt(2.0),0)
+	a = round(sigma*(phi-psi + bound)/math.sqrt(2.0),0)
+	b = round(sigma*(phi+psi + bound)/math.sqrt(2.0),0)
 	return a + b*multiplier
 #
 # Original phi and psi values are easily obtained from the *raw* Ramachandran number
 def raw_ramachandran_number_expand(z):
 	z = float(z)
-	phi = (math.sqrt(2.0)*np.mod(z,multiplier)/rho_scaling     - bound + math.sqrt(2.0)*np.floor(z / multiplier)/rho_scaling - bound )/2.0
-	psi = (math.sqrt(2.0)*np.floor(z / multiplier)/rho_scaling - bound - math.sqrt(2.0)*np.mod(z, multiplier)/rho_scaling + bound)/2.0
+	phi = (math.sqrt(2.0)*np.mod(z,multiplier)/sigma     - bound + math.sqrt(2.0)*np.floor(z / multiplier)/sigma - bound )/2.0
+	psi = (math.sqrt(2.0)*np.floor(z / multiplier)/sigma - bound - math.sqrt(2.0)*np.mod(z, multiplier)/sigma + bound)/2.0
 	return phi,psi
 
 # First getting the lowest and highest possible unnormalized R numbers
 raw_R_min = raw_ramachandran_number_collapse(-180,-180)
 raw_R_max = raw_ramachandran_number_collapse(180,180)
 
-"""
-# To get the normalized Ramachandran number from the raw Ramachandran number 
-def normalized_ramachandran_number(phi,psi):
-	raw_R = raw_ramachandran_number_collapse(phi,psi)
-	R = float(raw_R - raw_R_min)/(raw_R_max-raw_R_min)
-	return R
-"""
-# This one normalized the ramachandran number such that it ranges now from -1 to 1
+# However, we normally does not 
+# If signed == 0, then we have the normal R number ranging from 0 to 1.
+# If signed != 0, then the R number ranges from -1 to 1. Here, those R
+#                 numbers associated with regions to the RIGHT of the 
+#                 positive-sloped diagonal are multipled by -1.
 def normalized_ramachandran_number(phi,psi, signed=0):
 	# was this: 
 	#raw_R  = raw_ramachandran_number_collapse(phi,psi)
 	#final_r = float(raw_R - raw_R_min)/(raw_R_max-raw_R_min)
 	phi = float(phi)
 	psi = float(psi)
-	a = round(rho_scaling*(phi-psi + bound)/math.sqrt(2.0),0)
-	b = round(rho_scaling*(phi+psi + bound)/math.sqrt(2.0),0)
+	a = round(sigma*(phi-psi + bound)/math.sqrt(2.0),0)
+	b = round(sigma*(phi+psi + bound)/math.sqrt(2.0),0)
 	raw_r = a + b*multiplier
 	final_r = float(raw_r - raw_R_min)/float(raw_R_max - raw_R_min)
 	if signed:
@@ -916,16 +937,26 @@ def normalized_ramachandran_number(phi,psi, signed=0):
 			final_r = final_r * -1.0
 	return final_r
 
-def getR(phi,psi, signed):
-	return normalized_ramachandran_number(phi,psi,signed)
-
 #To see how the Ramachandran number function works, set "if 0:" to "if 1:"
 if 0:
-	current_phi = -60
+	current_phi = -55
 	current_psi = -60
-	# To get the normalized Ramachandran number:
-	R = getR(current_phi,current_psi)
-	print "R(phi="+str(current_phi)+",psi="+str(current_psi)+") = "+str(R)
+	# unsigned R
+	R = normalized_ramachandran_number(current_phi,current_psi,signed=0)
+	print "       R(phi="+str(current_phi)+",psi="+str(current_psi)+") = "+str(R)
+	# signed R
+	R = normalized_ramachandran_number(current_phi,current_psi,signed=1)
+	print "signed R(phi="+str(current_phi)+",psi="+str(current_psi)+") = "+str(R)
+	print
+	current_phi = -65
+	current_psi = -60
+	# unsigned R
+	R = normalized_ramachandran_number(current_phi,current_psi,signed=0)
+	print "       R(phi="+str(current_phi)+",psi="+str(current_psi)+") = "+str(R)
+	# signed R
+	R = normalized_ramachandran_number(current_phi,current_psi,signed=1)
+	print "signed R(phi="+str(current_phi)+",psi="+str(current_psi)+") = "+str(R)
+	exit()
 
 #
 def histogram2d(X_vals,Y_vals,cmap=plt.cm.Blues,xyrange=[],title="",fn="", pairtype='rho'):
@@ -1270,7 +1301,7 @@ def read_pdb(pdbblock):
 						
 						phi = calculate_dihedral_angle(numpy.array([a,b,c,d]))
 						psi = calculate_dihedral_angle(numpy.array([b,c,d,e]))
-						rho = getR(phi,psi,signed)
+						rho = normalized_ramachandran_number(phi,psi,signed)
 						#print rho
 						#if rho < 0.5:
 						#	print (phi,psi)
@@ -1303,10 +1334,10 @@ def show_ramachandran_mapping(cmap=plt.get_cmap("Paired"),stepsize=10):
 	fn = "rho"
 	fn_bar = fn+"_colorbar.eps"
 	print "#WRITING TO:",fn_bar
-	make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=cmap, fn=fn_bar, yscaling=0.5,xtitle="Key",ytitle="R",showeps=showeps)
+	make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=cmap, fn=fn_bar, xscaling=colorbarXscaling,xtitle="Key",ytitle="R",showeps=showeps)
 	#
 	print "#WRITING TO:",fn+".eps"
-	make2Dfigure(x,y,z,fn+".eps",cmap=cmap,yscaling=1,xtitle="phi",ytitle="psi",xlabels=range(-360,361,90),ylabels=range(-360,361,90),showeps=showeps)
+	make2Dfigure(x,y,z,fn+".eps",cmap=cmap,xscaling=2.0,xtitle="phi",ytitle="psi",xlabels=range(-360,361,90),ylabels=range(-360,361,90),showeps=showeps)
 	#
 	return 1
 
@@ -1380,7 +1411,8 @@ if __name__ == "__main__":
 	#	target_dir = pdbdir+"/report/"
 	if not os.path.isdir(target_dir):
 		os.makedirs(target_dir)
-	target_base = target_dir.rstrip("/")+"/"+os.path.basename(pdbfilenames[0])[:-len(".pdb")]
+	NAME = os.path.basename(pdbfilenames[0])[:-len(".pdb")]
+	target_base = target_dir.rstrip("/")+"/"+NAME
 
 	# JUST "CLEVERLY" ARRANGING THE FILENAMES 
 	# (e.g., pdbfilenames = [something2part1,something1part2,something1part1,something10part1]
@@ -1408,9 +1440,13 @@ if __name__ == "__main__":
 		for chain in sorted(structure[model].keys()):
 			chains.append(chain)
 	chains = list(sorted(set(chains)))
-
+	
+	
+	
 	# FINALLY, WE WILL GO THROUGH EACH CHAIN AND PRODUCE GRAPHS
+	batchedfilenames = {}
 	for chain in chains:
+		filenames = []	
 		print "CHAIN:",chain
 		X=[]
 		Y=[]
@@ -1425,18 +1461,20 @@ if __name__ == "__main__":
 		
 		for i in range(dofilter):
 			Z = median_filter(Z)
-			
+		
+		
 		if showrcode:
 			sortedZ = sorted(Z)
 			
-			fn = target_base+".rcode.eps"
+			fn = target_base+"_chain_"+chain+".rcode.eps"
 			cbfn = fn+".colorbar.eps"
+			filenames.append(fn); filenames.append(cbfn)
 			color_bar_range = np.arange(rrange[0],rrange[-1]+0.005,0.01)
 			cmap = rcode_cmap
 			# colorbar
-			make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=cmap, fn=cbfn, ytitle="R",showeps=0)
+			make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=cmap, fn=cbfn, title="R",showeps=0,xscaling=colorbarXscaling)
 			# data
-			make2Dfigure(X,Y,Z,fn, cmap=cmap, xtitle="Model #",ytitle="Residue #",showeps=showeps)
+			make2Dfigure(X,Y,Z,fn, cmap=cmap, xtitle="Model #",ytitle="Residue #",title="R (ch:`%s')"%chain,showeps=showeps)
 		
 		# ----------------------------------
 		xy_to_z = {}
@@ -1466,11 +1504,12 @@ if __name__ == "__main__":
 					for i in range(len(Z)):
 						Z[i] = Z[i]/max(Z)
 			
-			fn = target_base+".rcode.rmsd"+str(reference_index)+".eps"
+			fn = target_base+"_chain_"+chain+".rcode.rmsd"+str(reference_index)+".eps"
 			cbfn = fn+".colorbar.eps"
+			filenames.append(fn); filenames.append(cbfn)
 			color_bar_range = np.arange(0,1.01,0.01)
-			make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=plt.get_cmap("Reds"), ytitle="RMSD (R)", fn=cbfn, yscaling=0.5,showeps=0)#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
-			make2Dfigure(X,Y,Z,fn, cmap=plt.get_cmap("Reds"), xtitle="Model #",ytitle="RMSD (R)",showeps=showeps)#, cmap=plt.get_cmap("gray"))#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
+			make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=plt.get_cmap("Reds"), ytitle="", fn=cbfn, showeps=0,xscaling=colorbarXscaling, title="RMSD")
+			make2Dfigure(X,Y,Z,fn, cmap=plt.get_cmap("Reds"), xtitle="Model #",ytitle="Residue #",showeps=showeps,title="RMSD (ch:`%s')"%chain)
 		
 		# ----------------------------------
 		# Fluctuations from previous time
@@ -1498,12 +1537,12 @@ if __name__ == "__main__":
 					for i in range(len(Z)):
 						Z[i] = Z[i]/max(Z)
 			
-			fn = target_base+".rcode.rmsf.eps"
+			fn = target_base+"_chain_"+chain+".rcode.rmsf.eps"
 			cbfn = fn+".colorbar.eps"
+			filenames.append(fn); filenames.append(cbfn)
 			color_bar_range = np.arange(0,1.01,0.01)
-			
-			make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=plt.get_cmap("Blues"), ytitle="RMSF (R)", fn=cbfn, yscaling=0.5,showeps=0)#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
-			make2Dfigure(X,Y,Z,fn, cmap=plt.get_cmap("Blues"), xtitle="Model #",ytitle="RMSF (R)",showeps=showeps)#, cmap=plt.get_cmap("gray"))#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
+			make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=plt.get_cmap("Blues"), title="RMSF", fn=cbfn, showeps=0,xscaling=colorbarXscaling)
+			make2Dfigure(X,Y,Z,fn, cmap=plt.get_cmap("Blues"), xtitle="Model #",ytitle="Residue #",showeps=showeps, title="RMSF (ch:`%s')"%chain)
 		# ----------------------------------
 		if showhis:
 			X=[]
@@ -1516,30 +1555,82 @@ if __name__ == "__main__":
 						if "r" in structure[model][chain][resno]:
 							Rs.append(structure[model][chain][resno]["r"])
 				if len(Rs):
-					a,b = np.histogram(Rs,bins=np.arange(rrange[0]-0.01,rrange[-1]+0.03,0.02))
+					bins = np.arange(rrange[0]-0.005,rrange[-1]+0.01,0.01)
+					if rrange[0] < 0:
+						bins = np.arange(rrange[0]-0.01,rrange[-1]+0.02,0.02)
+					a,b = np.histogram(Rs,bins=bins)
 					for i in range(len(a)):
 						X.append(model)
 						Y.append(float(b[i]+b[i+1])/2.0)
 						Z.append(float(a[i])/np.max(a))
 			#
-			fn = target_base+".rcode.his.eps"
+			fn = target_base+"_chain_"+chain+".rcode.his.eps"
 			cbfn = fn+".colorbar.eps"
-			
+			filenames.append(fn); filenames.append(cbfn)
 			color_bar_range = np.arange(0,1.01,0.01)
-			make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=plt.get_cmap("gray_r"), ytitle="P(R)/max(P(R))", fn=cbfn, yscaling=0.5,showeps=0)#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
+			make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=plt.get_cmap("gray_r"), title="P(R)", fn=cbfn, showeps=0,xscaling=colorbarXscaling)
 			
 			for i in range(dofilter):
 				Z = median_filter(Z)
 			
-			demeY = []
-			for x,y in zip(X,Y):
-				if x == X[0]:
-					demeY.append(y)
-			print sorted(demeY)
-			make2Dfigure(X,Y,Z,fn, cmap=plt.get_cmap("gray_r"), xtitle="Model #",ytitle="R",showeps=showeps)#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
+			make2Dfigure(X,Y,Z,fn, cmap=plt.get_cmap("gray_r"), xtitle="Model #",ytitle="R",showeps=showeps, title="P(R) (ch:`%s')"%chain)
+		batchedfilenames[chain] = copy.deepcopy(filenames)
 	
-	
-	if do_vmd_etc:
+	if 1:#do_vmd_etc:
+		
+		f = open("templates/template.tex","r")
+		latexblock = f.read()
+		f.close()
+		
+		USERMATERIAL  = r"\newcommand{\w}{0.15}"+"\n"
+		USERMATERIAL += r"\newcommand{\h}{0.4}"+"\n"
+		USERMATERIAL += r"\newcommand{\hc}{0.4}"+"\n"
+		USERMATERIAL += r"\newcommand{\centerit}[1]{\noindent\textcolor{white}{.}\hfil#1\hfil\newline}"+"\n"
+		
+		
+		for chain in sorted(batchedfilenames.keys()):
+			#USERMATERIAL += r"\centerit{{\huge The ${\mathcal{R}}$eport for \texttt{\url{%s}.pdb}}}" % NAME +"\n"
+			USERMATERIAL += r"{\large The ${\mathcal{R}}$eport for \texttt{\url{%s}.pdb, chain (ch):`%s'}" %(NAME,chain) +"\n"
+			USERMATERIAL += r"\vfill"+"\n"
+			filenames = batchedfilenames[chain]
+			for i in range(len(filenames)/2):
+				fn1 = filenames[i*2]
+				fn2 = filenames[i*2+1]
+				USERMATERIAL += r"\noindent"
+				USERMATERIAL += r"\includegraphics[height=\h\textwidth]{%s}" % fn1[:-len('.eps')]+"\n"
+				USERMATERIAL += r"\includegraphics[height=\hc\textwidth]{%s}" % fn2[:-len('.eps')]+"\n"
+				USERMATERIAL += r"\newline"+"\n"
+			USERMATERIAL += r"\vfill"+"\n\n~\n"
+			if len(batchedfilenames.keys()) > 1:
+				USERMATERIAL += r"\clearpage"+"\n"
+		
+		outputfilename = target_base+".tex"
+		print "Writing to:",outputfilename
+		latexblock = latexblock.replace("USERMATERIAL",USERMATERIAL)
+		f = open(outputfilename,"w")
+		f.write(latexblock)
+		f.close()
+		
+		os.system("pdflatex -shell-escape -output-directory="+os.path.dirname(outputfilename)+" "+outputfilename)
+		print "OPENING:",outputfilename[:-len(".tex")]+".pdf"
+		os.system("evince "+outputfilename[:-len(".tex")]+".pdf")
+		os.system("rm "+outputfilename[:-len(".tex")]+".aux")
+		os.system("rm "+outputfilename[:-len(".tex")]+".log")
+		os.system("rm "+outputfilename[:-len(".tex")]+".out")
+		os.system("rm "+outputfilename[:-len(".tex")]+"*converted-to.pdf")
+	if 0:
+		basename = os.path.basename(pdbfn)[:-len(".pdb")]
+		texoutput = os.path.dirname(pdbfn)+"/"+basename+".tex"
+		pdfoutput = os.path.dirname(pdbfn)+"/"+basename+".pdf"
+
+		f = open("tmp.tex","w")
+		f.write(latexblock.replace("FILEBASE",basename))
+		f.close()
+
+		os.system("pdflatex tmp.tex")
+		os.system("cp tmp.tex "+texoutput)
+		os.system("cp tmp.pdf "+pdfoutput)
+		
 		# writing first and last 
 		ms = pdbblock.split("\nEND\n")#|TER)\n",pdbblock,re.MULTILINE)
 		pdbmodels = []
@@ -1852,7 +1943,7 @@ if __name__ == "__main__":
 				WEIGHT=np.array(WEIGHT)
 				
 				fn = fn[:-len(".dat")]+"_histogram.eps"
-				make2Dfigure(PHI,PSI,WEIGHT,fn=fn,yscaling=1,xtitle="phi",ytitle="psi",xlabels=range(-180,181,90),ylabels=range(-180,181,90),showeps=showeps)
+				make2Dfigure(PHI,PSI,WEIGHT,fn=fn,xscaling=1.0,xtitle="phi",ytitle="psi",xlabels=range(-180,181,90),ylabels=range(-180,181,90),showeps=showeps)
 				#raw_input()
 				
 				X=[]

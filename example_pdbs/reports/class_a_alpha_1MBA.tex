@@ -48,49 +48,28 @@
 
 \usepackage[T1]{fontenc}
 
-%\newcommand{\fn}{ubiquitin_stretch}
-%\newcommand{\fn}{nanosheet_birth}
-%\newcommand{\fn}{nanosheet_traj}
-\newcommand{\fn}{FILEBASE}
-\newcommand{\centerit}[1]{\noindent\textcolor{white}{.}\hfil#1\hfil\newline}
+\usepackage[cal=cm,scrscaled=1.05]{mathalfa}
 
 \date{\vspace{-5ex}}
 
 \begin{document}
-%\title{The ${\mathcal{R}}$eport for \url{\fn}}
-
-%\begin{abstract}
-%SOMETHING
-%\end{abstract}
-
-%\maketitle must follow title, authors, abstract, \pacs, and \keywords
-%\maketitle
-\centerit{{\huge The ${\mathcal{R}}$eport for \texttt{\url{\fn}.pdb}}}
-
+\newcommand{\w}{0.15}
+\newcommand{\h}{0.4}
+\newcommand{\hc}{0.4}
+\newcommand{\centerit}[1]{\noindent\textcolor{white}{.}\hfil#1\hfil\newline}
+{\large The ${\mathcal{R}}$eport for \texttt{\url{class_a_alpha_1MBA}.pdb, chain (ch):`'}
 \vfill
-
-\begin{tabular}{m{0.3\linewidth} m{0.3\linewidth} m{0.3\linewidth}}
-\hfil \LARGE Structure \hfil & \hfil \LARGE Ramachandran \hfil & \hfil \LARGE\textcolor{white}{.}~~ ${\mathcal{R}}$ code \hfil \\
-\hfil                        & \hfil \LARGE plot \hfil         &                                         \\
-\hfil\includegraphics[width=0.2\textwidth]{\fn/\fn_pdb_first.pdb.dat.png}\hfil&
-\hfil\includegraphics[height=0.3\textwidth]{\fn/\fn_ramachandran_first.eps}\hfil&
-\hfil\includegraphics[height=0.25\textwidth]{\fn/\fn_bars_first.eps}\hfil\\
-\end{tabular}
-
-\vfill
-
-\centerit{{\LARGE${\mathcal{R}}$ code}}
+\noindent\includegraphics[height=\h\textwidth]{/home/ranjan/Dropbox/ramachandran_number_paper2/git/plotmap/example_pdbs/reports/class_a_alpha_1MBA_chain_.rcode}
+\includegraphics[height=\hc\textwidth]{/home/ranjan/Dropbox/ramachandran_number_paper2/git/plotmap/example_pdbs/reports/class_a_alpha_1MBA_chain_.rcode.eps.colorbar}
 \newline
-\centerit{\includegraphics[height=0.28\textwidth]{\fn/\fn_bars.eps}}
-\centerit{Each column represents an ${\mathcal{R}}$-histogram (${\mathcal{R}}$ code)}
-\centerit{of one frame within \texttt{\url{\fn}.pdb}}
-
-\vfill
-\centerit{{\LARGE${\mathcal{R}}$ graph}}
+\noindent\includegraphics[height=\h\textwidth]{/home/ranjan/Dropbox/ramachandran_number_paper2/git/plotmap/example_pdbs/reports/class_a_alpha_1MBA_chain_.rcode.rmsf}
+\includegraphics[height=\hc\textwidth]{/home/ranjan/Dropbox/ramachandran_number_paper2/git/plotmap/example_pdbs/reports/class_a_alpha_1MBA_chain_.rcode.rmsf.eps.colorbar}
 \newline
-\centerit{\includegraphics[height=0.3\textwidth]{\fn/\fn_resno_vs_r_model_first.eps}}
-\centerit{Relationship between residue \# and $\mathcal{R}$ (first frame)}
-
+\noindent\includegraphics[height=\h\textwidth]{/home/ranjan/Dropbox/ramachandran_number_paper2/git/plotmap/example_pdbs/reports/class_a_alpha_1MBA_chain_.rcode.his}
+\includegraphics[height=\hc\textwidth]{/home/ranjan/Dropbox/ramachandran_number_paper2/git/plotmap/example_pdbs/reports/class_a_alpha_1MBA_chain_.rcode.his.eps.colorbar}
+\newline
 \vfill
+
+~
 
 \end{document}
