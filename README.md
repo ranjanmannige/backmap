@@ -27,12 +27,13 @@ filename.rcode.rmsf.eps (y-axis: residue #; color: RMSF in R from the previous m
 ---------------<br>
 #Additional tags<br>
 ---------------<br>
--h       -     Prints this message<br>
+<pre>-h       -     Prints this message<br>
 -ss      -     Color the ramachandran number codes (R-codes) by <br>
                secondary structure (default: color by chirality and sign)<br>
 -signed  -     Use the signed version of the ramachandran number<br>
 -rmsd    -     Also producee "filename.rcode.rmsd.eps"<br>
                (y-axis: residue #; color: RMSD in R from first model)<br>
+</pre>
 ---------------<br>
 Each graph is also accompanied by "_colorbar.eps", which are keys.<br>
 ---------------<br>
