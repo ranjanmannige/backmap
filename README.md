@@ -1,4 +1,3 @@
-# plotmap
 --------------------------------------------------
 <pre>        _       _     __  __    _    ____  
   _ __ | | ___ | |_  |  \/  |  / \  |  _ \ 
@@ -15,18 +14,18 @@ This tool provides easily readable "pictures" of protein conformations,
 ensembles, and trajectories saved as either a combined protein databank 
 (PDB) structure file, or a directory of such files, and produces graphs.
 -----<br>
-Usage<br>
+#Usage<br>
 -----<br>
 ```python plotmap.py -pdb ProteinDatabankStructureFilename.pdb
 python plotmap.py -pdb /directory/containing/pdbs/```
 ------<br>
-Output (the x-axis always represents the models/structures listed in the PDB)<br>
+#Output (the x-axis always represents the models/structures listed in the PDB)<br>
 ------<br>
 filename.rcode.eps      (y-axis: residue #; color: R number based on "-signed" and <rcode_cmap>)<br>
 filename.rcode.his.eps  (y-axis: Ramachandran number (R); color: frequency of R in model)<br>
 filename.rcode.rmsf.eps (y-axis: residue #; color: RMSF in R from the previous model)<br>
 ---------------<br>
-Additional tags<br>
+#Additional tags<br>
 ---------------<br>
 -h       -     Prints this message<br>
 -ss      -     Color the ramachandran number codes (R-codes) by <br>
