@@ -1313,36 +1313,35 @@ def read_pdb(pdbblock):
 	return model_to_chain_to_resno_atom_to_vals
 
 # Draw the mapping between phi,psi and Ramachandran number
-def show_ramachandran_mapping(cmap=plt.get_cmap("Paired"),stepsize=10):	
+def show_ramachandran_mapping(cmap=plt.get_cmap("Blues"),fn = "deme", stepsize=5,signed=0):
 	PHI = []
 	PSI = []
 	RHO = []
-	rho_max = raw_ramachandran_number_collapse(180.0,180.0)
-	rho_min = raw_ramachandran_number_collapse(-180.0,-180.0)
-	for phi in range(0,361,stepsize):
-		for psi in range(0,361,stepsize):
+	for phi in range(-180,181,stepsize):
+		for psi in range(-180,181,stepsize):
 			PHI.append(phi)
 			PSI.append(psi)
-			unnormalized_rho = raw_ramachandran_number_collapse(phi,psi)
-			RHO.append(float(unnormalized_rho - rho_min)/(rho_max - rho_min))
-	x=np.array(PHI)
-	y=np.array(PSI)
-	z=np.array(RHO)
+			normalizedr = normalized_ramachandran_number(phi,psi,signed=signed)
+			RHO.append(normalizedr)
+	X=np.array(PHI)
+	Y=np.array(PSI)
+	Z=np.array(RHO)
 	
 	color_bar_range = np.arange(0,1.01,0.01)
 	
-	fn = "rho"
-	fn_bar = fn+"_colorbar.eps"
-	print "#WRITING TO:",fn_bar
-	make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=cmap, fn=fn_bar, xscaling=colorbarXscaling,xtitle="Key",ytitle="R",showeps=showeps)
+	
+	if fn[-len(".eps"):] == ".eps":
+		fn = fn[:-len(".eps")]
+	
+	cbfn = fn+"_colorbar.eps"
+	fn = fn+".eps"
+	
+	print "#WRITING TO:",cbfn
+	make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=cmap, fn=cbfn, xscaling=colorbarXscaling,xtitle="Key",showeps=1)
 	#
-	print "#WRITING TO:",fn+".eps"
-	make2Dfigure(x,y,z,fn+".eps",cmap=cmap,xscaling=2.0,xtitle="phi",ytitle="psi",xlabels=range(-360,361,90),ylabels=range(-360,361,90),showeps=showeps)
+	print "#WRITING TO:",fn	make2Dfigure(X,Y,Z,fn,cmap=cmap,xscaling=1.0,xtitle="phi",ytitle="psi",xlabels=range(-180,181,90),ylabels=range(-180,181,90),showeps=1)
 	#
 	return 1
-
-# To see how the (phi,psi) to Ramachandran number mapping occurs, uncomment this:
-#show_ramachandran_mapping()
 
 if __name__ == "__main__":
 	if not "-pdb" in sys.argv:
@@ -1383,8 +1382,6 @@ if __name__ == "__main__":
 						print "Must have greater than 0 bins. Exiting."
 						exit(0)
 	
-	#
-	
 	colormap_name = colortype+'TwoColor'
 	if signed:
 		colormap_name = colortype+'FourColor'
@@ -1413,8 +1410,18 @@ if __name__ == "__main__":
 		os.makedirs(target_dir)
 	NAME = os.path.basename(pdbfilenames[0])[:-len(".pdb")]
 	target_base = target_dir.rstrip("/")+"/"+NAME
-
-	# JUST "CLEVERLY" ARRANGING THE FILENAMES 
+	
+	#
+	# To see how the (phi,psi) to Ramachandran number mapping occurs, set "if 0:" to "if 1:" below.
+	if 0:
+		phi_psi_to_ramachandran_number_filename = "phi_psi_to_r"
+		if signed:
+			phi_psi_to_ramachandran_number_filename+="_signed"
+		if colortype == "SecondaryStructure":
+			phi_psi_to_ramachandran_number_filename+="_ss"
+		show_ramachandran_mapping(signed=signed, cmap = rcode_cmap, fn=phi_psi_to_ramachandran_number_filename,stepsize=5)
+	
+	# JUST "CLEVERLY" ARRANGING THE FILENAMES, IF WE HAVE A SET OF FILENAMES RATHER THAN ONE
 	# (e.g., pdbfilenames = [something2part1,something1part2,something1part1,something10part1]
 	# pdbfilenames.sort() this list to: [something1part1,something1part2,something2part1,something10part1]
 	REXP = re.compile( r'\d+' )
