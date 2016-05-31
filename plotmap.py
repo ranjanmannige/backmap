@@ -400,19 +400,7 @@ def Extended(vmin, vmax, density_val = 1, steps = None):
 	return locs
 
 # MAKES PS CODE THAT DRAWS A POLYGON STARTING FORM (X[0],Y[0]) AND PROCEEDING TO (X[-1],Y[-1]).
-def ps_draw_shape(X,Y,linewidth=1,linecolor=(0,0,0),fill=1,fillcolor=(0.6,0.6,0.6)):
-	""" 
-	% This will create a red lined and blue filled triangle
-	0 0 1 setrgbcolor
-	100 100 moveto
-	200 100 lineto
-	150 150 lineto
-	closepath
-	gsave fill grestore
-	1 0 0 setrgbcolor
-	2 setlinewidth
-	stroke
-	"""
+def ps_draw_shape(X,Y,linewidth=0,linecolor=(0,0,0),fill=1,fillcolor=(0.6,0.6,0.6)):
 	ps_text = ""
 	
 	# Converting single values (presumably grayscale) to RGB values 
@@ -427,16 +415,16 @@ def ps_draw_shape(X,Y,linewidth=1,linecolor=(0,0,0),fill=1,fillcolor=(0.6,0.6,0.
 	for x,y in zip(X[1:],Y[1:]):
 		ps_text+= "%.10f %.10f lineto\n"%(x,y)
 	ps_text+= "closepath\n"
-	
+	#	
 	if fill:
-	#	ps_text+= "gsave\n"
+		ps_text+= "gsave\n"
 		ps_text+= "%.3f %.3f %.3f setrgbcolor\n"%fillcolor
 		ps_text+= "fill\n"
-	#	ps_text+= "grestore\n"
+		ps_text+= "grestore\n"
 	
 	if linewidth:
-		ps_text+= "%.3f %.3f %.3f setrgbcolor\n"%linecolor
 		ps_text+= str(linewidth)+" setlinewidth\n"
+		ps_text+= "%.3f %.3f %.3f setrgbcolor\n"%linecolor
 	ps_text+= "stroke"
 	
 	return ps_text+"\n"
@@ -461,6 +449,9 @@ if 0:
 
 # DRAWS POSTSCRIPT/EPS FILES USING INFORMATION IN Xoriginal, Yoriginal, Zoriginal
 def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap=plt.get_cmap('gray_r'),xscaling=defaultXscaling,xtitle="",ytitle="",xticks=[],xlabels=[],yticks=[],ylabels=[],horizontallines=[],verticallines=[],title="",showeps=0):
+	# Drawing the frame
+	frame_thickness = 0.06
+	
 	if fn == 0 or str(fn)[-len(".eps"):] !=".eps":
 		print "NO EPS FILENAME GIVEN. EXITING."
 		exit()
@@ -694,10 +685,13 @@ def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap
 		heat = cmap(0)
 		if zmax_minus_zmin:
 			heat = cmap(float(z-zmin)/zmax_minus_zmin)
-		usermaterial += ps_draw_shape(Xs,Ys,linewidth=0,linecolor=0,fillcolor=heat[:3])
-	
-	# Drawing the frame
-	frame_thickness = 0.05
+		usermaterial += ps_draw_shape(Xs,Ys,linewidth=frame_thickness/100,linecolor=heat[:3],fillcolor=heat[:3])
+		#                                             |
+		#                                          This extra padding is added 
+		#                                          so that the some PDF interpreters
+		#                                          dot not interpret the almost-zero 
+		#                                          space between squares to be white.	
+		
 	xmin = round(pageMinX - frame_thickness/2.0,3)
 	xmax = round(pageMaxX + frame_thickness/2.0,3)
 	ymin = round(pageMinY - frame_thickness/2.0,3)
@@ -1327,8 +1321,8 @@ def show_ramachandran_mapping(cmap=plt.get_cmap("Blues"),fn = "deme", stepsize=5
 	Y=np.array(PSI)
 	Z=np.array(RHO)
 	
-	color_bar_range = np.arange(0,1.01,0.01)
-	
+	#color_bar_range = np.arange(0,1.01,0.01)
+	color_bar_range = np.arange(rrange[0],rrange[-1]+0.005,0.01)
 	
 	if fn[-len(".eps"):] == ".eps":
 		fn = fn[:-len(".eps")]
@@ -1339,7 +1333,8 @@ def show_ramachandran_mapping(cmap=plt.get_cmap("Blues"),fn = "deme", stepsize=5
 	print "#WRITING TO:",cbfn
 	make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=cmap, fn=cbfn, xscaling=colorbarXscaling,xtitle="Key",showeps=1)
 	#
-	print "#WRITING TO:",fn	make2Dfigure(X,Y,Z,fn,cmap=cmap,xscaling=1.0,xtitle="phi",ytitle="psi",xlabels=range(-180,181,90),ylabels=range(-180,181,90),showeps=1)
+	print "#WRITING TO:",fn
+	make2Dfigure(X,Y,Z,fn,cmap=cmap,xscaling=1.0,xtitle="phi",ytitle="psi",xlabels=range(-180,181,90),ylabels=range(-180,181,90),showeps=1)
 	#
 	return 1
 
@@ -1413,13 +1408,14 @@ if __name__ == "__main__":
 	
 	#
 	# To see how the (phi,psi) to Ramachandran number mapping occurs, set "if 0:" to "if 1:" below.
-	if 0:
+	if 1:
 		phi_psi_to_ramachandran_number_filename = "phi_psi_to_r"
 		if signed:
 			phi_psi_to_ramachandran_number_filename+="_signed"
 		if colortype == "SecondaryStructure":
 			phi_psi_to_ramachandran_number_filename+="_ss"
 		show_ramachandran_mapping(signed=signed, cmap = rcode_cmap, fn=phi_psi_to_ramachandran_number_filename,stepsize=5)
+		exit()
 	
 	# JUST "CLEVERLY" ARRANGING THE FILENAMES, IF WE HAVE A SET OF FILENAMES RATHER THAN ONE
 	# (e.g., pdbfilenames = [something2part1,something1part2,something1part1,something10part1]
