@@ -1,0 +1,505 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%Document-Fonts: Times-Roman
+%%Pages: 1
+%%BoundingBox: 0 0 70.0 155.0
+%%LanguageLevel: 1
+%%EndComments
+%%BeginProlog
+%%EndProlog
+10.0 dup scale
+% -------------
+% Define text
+/Times-Roman findfont
+0.9 scalefont
+setfont
+% ----------------------------------------------------------------
+% STRING STUFF
+% -------------
+% Find the heighth of the character string 
+/FindHeight { 
+gsave 
+   (0) true charpath 
+   flattenpath pathbbox 
+   exch pop exch sub 
+   /height exch def pop 
+   grestore }
+def 
+% -------------
+% Center the string vertically and horizontally 
+/ccshow { 
+   FindHeight 
+   height 2 div neg 
+   exch dup stringwidth pop 
+   2 div neg 
+   3 -1 roll rmoveto 
+   show } 
+def 
+% -------------
+% Center the ROTATED string vertically and horizontally
+/ccshowrotate { 
+   90 rotate
+   FindHeight
+   height 2 div neg 
+   exch dup stringwidth pop 
+   2 div neg 
+   3 -1 roll rmoveto
+   show 
+   90 neg rotate
+   } 
+def 
+% -------------
+% Left justify and center vertically 
+/lcshow { 
+   FindHeight 
+   0 
+   height 2 div neg 
+   rmoveto 
+   show } 
+def 
+% -------------
+% Right justify and center vertically 
+/rcshow { 
+   FindHeight 
+   height 2 div neg 
+   exch dup stringwidth pop neg 
+   3 -1 roll rmoveto 
+   show } 
+def 
+% -------------
+% Center horizontally and set to top vertically 
+/ctshow { 
+   FindHeight 
+   height neg 
+   exch dup stringwidth pop 
+   2 div neg 
+   3 -1 roll rmoveto 
+   show } 
+def 
+% -------------
+% Left justify and set to top vertically 
+/ltshow { 
+   FindHeight 
+   0 
+   height neg 
+   rmoveto 
+   show } 
+def 
+% -------------
+% Right justify and set to top vertically 
+/rtshow { 
+   FindHeight 
+   height neg 
+   exch dup stringwidth pop neg 
+   3 -1 roll rmoveto 
+   show } 
+def 
+% -------------
+% Center horizontally and set to bottom vertically 
+/cbshow { 
+   0 
+   exch dup stringwidth pop 
+   2 div neg 
+   3 -1 roll rmoveto 
+   show } 
+def 
+% -------------
+% Left justify and set to bottom vertically 
+/lbshow { show } def 
+% Right Justify and set to bottom vertically 
+/rbshow { 
+   0 
+   exch dup stringwidth pop neg 
+   3 -1 roll rmoveto 
+   show } 
+def 
+% -------------
+2.9700000000 2.4700000000 moveto
+6.0300000000 2.4700000000 lineto
+6.0300000000 14.5300000000 lineto
+2.9700000000 14.5300000000 lineto
+closepath
+gsave
+1.000 1.000 1.000 setrgbcolor
+fill
+grestore
+0.06 setlinewidth
+0.000 0.000 0.000 setrgbcolor
+stroke
+3.0000000000 2.5000000000 moveto
+6.0000000000 2.5000000000 lineto
+6.0000000000 2.9615384615 lineto
+3.0000000000 2.9615384615 lineto
+closepath
+gsave
+0.080 0.080 1.000 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+0.080 0.080 1.000 setrgbcolor
+stroke
+3.0000000000 2.9615384615 moveto
+6.0000000000 2.9615384615 lineto
+6.0000000000 3.4230769231 lineto
+3.0000000000 3.4230769231 lineto
+closepath
+gsave
+0.123 0.123 1.000 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+0.123 0.123 1.000 setrgbcolor
+stroke
+3.0000000000 3.4230769231 moveto
+6.0000000000 3.4230769231 lineto
+6.0000000000 3.8846153846 lineto
+3.0000000000 3.8846153846 lineto
+closepath
+gsave
+0.116 0.116 1.000 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+0.116 0.116 1.000 setrgbcolor
+stroke
+3.0000000000 3.8846153846 moveto
+6.0000000000 3.8846153846 lineto
+6.0000000000 4.3461538462 lineto
+3.0000000000 4.3461538462 lineto
+closepath
+gsave
+0.971 0.971 1.000 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+0.971 0.971 1.000 setrgbcolor
+stroke
+3.0000000000 4.3461538462 moveto
+6.0000000000 4.3461538462 lineto
+6.0000000000 4.8076923077 lineto
+3.0000000000 4.8076923077 lineto
+closepath
+gsave
+0.943 0.943 1.000 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+0.943 0.943 1.000 setrgbcolor
+stroke
+3.0000000000 4.8076923077 moveto
+6.0000000000 4.8076923077 lineto
+6.0000000000 5.2692307692 lineto
+3.0000000000 5.2692307692 lineto
+closepath
+gsave
+0.059 0.059 1.000 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+0.059 0.059 1.000 setrgbcolor
+stroke
+3.0000000000 5.2692307692 moveto
+6.0000000000 5.2692307692 lineto
+6.0000000000 5.7307692308 lineto
+3.0000000000 5.7307692308 lineto
+closepath
+gsave
+1.000 0.843 0.843 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+1.000 0.843 0.843 setrgbcolor
+stroke
+3.0000000000 5.7307692308 moveto
+6.0000000000 5.7307692308 lineto
+6.0000000000 6.1923076923 lineto
+3.0000000000 6.1923076923 lineto
+closepath
+gsave
+0.964 0.964 1.000 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+0.964 0.964 1.000 setrgbcolor
+stroke
+3.0000000000 6.1923076923 moveto
+6.0000000000 6.1923076923 lineto
+6.0000000000 6.6538461538 lineto
+3.0000000000 6.6538461538 lineto
+closepath
+gsave
+1.000 0.930 0.930 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+1.000 0.930 0.930 setrgbcolor
+stroke
+3.0000000000 6.6538461538 moveto
+6.0000000000 6.6538461538 lineto
+6.0000000000 7.1153846154 lineto
+3.0000000000 7.1153846154 lineto
+closepath
+gsave
+0.094 0.094 1.000 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+0.094 0.094 1.000 setrgbcolor
+stroke
+3.0000000000 7.1153846154 moveto
+6.0000000000 7.1153846154 lineto
+6.0000000000 7.5769230769 lineto
+3.0000000000 7.5769230769 lineto
+closepath
+gsave
+1.000 0.983 0.983 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+1.000 0.983 0.983 setrgbcolor
+stroke
+3.0000000000 7.5769230769 moveto
+6.0000000000 7.5769230769 lineto
+6.0000000000 8.0384615385 lineto
+3.0000000000 8.0384615385 lineto
+closepath
+gsave
+1.000 0.983 0.983 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+1.000 0.983 0.983 setrgbcolor
+stroke
+3.0000000000 8.0384615385 moveto
+6.0000000000 8.0384615385 lineto
+6.0000000000 8.5000000000 lineto
+3.0000000000 8.5000000000 lineto
+closepath
+gsave
+0.957 0.957 1.000 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+0.957 0.957 1.000 setrgbcolor
+stroke
+3.0000000000 8.5000000000 moveto
+6.0000000000 8.5000000000 lineto
+6.0000000000 8.9615384615 lineto
+3.0000000000 8.9615384615 lineto
+closepath
+gsave
+0.929 0.929 1.000 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+0.929 0.929 1.000 setrgbcolor
+stroke
+3.0000000000 8.9615384615 moveto
+6.0000000000 8.9615384615 lineto
+6.0000000000 9.4230769231 lineto
+3.0000000000 9.4230769231 lineto
+closepath
+gsave
+1.000 0.904 0.904 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+1.000 0.904 0.904 setrgbcolor
+stroke
+3.0000000000 9.4230769231 moveto
+6.0000000000 9.4230769231 lineto
+6.0000000000 9.8846153846 lineto
+3.0000000000 9.8846153846 lineto
+closepath
+gsave
+0.971 0.971 1.000 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+0.971 0.971 1.000 setrgbcolor
+stroke
+3.0000000000 9.8846153846 moveto
+6.0000000000 9.8846153846 lineto
+6.0000000000 10.3461538462 lineto
+3.0000000000 10.3461538462 lineto
+closepath
+gsave
+1.000 0.948 0.948 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+1.000 0.948 0.948 setrgbcolor
+stroke
+3.0000000000 10.3461538462 moveto
+6.0000000000 10.3461538462 lineto
+6.0000000000 10.8076923077 lineto
+3.0000000000 10.8076923077 lineto
+closepath
+gsave
+0.929 0.929 1.000 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+0.929 0.929 1.000 setrgbcolor
+stroke
+3.0000000000 10.8076923077 moveto
+6.0000000000 10.8076923077 lineto
+6.0000000000 11.2692307692 lineto
+3.0000000000 11.2692307692 lineto
+closepath
+gsave
+1.000 0.930 0.930 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+1.000 0.930 0.930 setrgbcolor
+stroke
+3.0000000000 11.2692307692 moveto
+6.0000000000 11.2692307692 lineto
+6.0000000000 11.7307692308 lineto
+3.0000000000 11.7307692308 lineto
+closepath
+gsave
+0.130 0.130 1.000 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+0.130 0.130 1.000 setrgbcolor
+stroke
+3.0000000000 11.7307692308 moveto
+6.0000000000 11.7307692308 lineto
+6.0000000000 12.1923076923 lineto
+3.0000000000 12.1923076923 lineto
+closepath
+gsave
+1.000 0.939 0.939 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+1.000 0.939 0.939 setrgbcolor
+stroke
+3.0000000000 12.1923076923 moveto
+6.0000000000 12.1923076923 lineto
+6.0000000000 12.6538461538 lineto
+3.0000000000 12.6538461538 lineto
+closepath
+gsave
+0.080 0.080 1.000 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+0.080 0.080 1.000 setrgbcolor
+stroke
+3.0000000000 12.6538461538 moveto
+6.0000000000 12.6538461538 lineto
+6.0000000000 13.1153846154 lineto
+3.0000000000 13.1153846154 lineto
+closepath
+gsave
+0.102 0.102 1.000 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+0.102 0.102 1.000 setrgbcolor
+stroke
+3.0000000000 13.1153846154 moveto
+6.0000000000 13.1153846154 lineto
+6.0000000000 13.5769230769 lineto
+3.0000000000 13.5769230769 lineto
+closepath
+gsave
+0.130 0.130 1.000 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+0.130 0.130 1.000 setrgbcolor
+stroke
+3.0000000000 13.5769230769 moveto
+6.0000000000 13.5769230769 lineto
+6.0000000000 14.0384615385 lineto
+3.0000000000 14.0384615385 lineto
+closepath
+gsave
+0.080 0.080 1.000 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+0.080 0.080 1.000 setrgbcolor
+stroke
+3.0000000000 14.0384615385 moveto
+6.0000000000 14.0384615385 lineto
+6.0000000000 14.5000000000 lineto
+3.0000000000 14.5000000000 lineto
+closepath
+gsave
+0.986 0.986 1.000 setrgbcolor
+fill
+grestore
+6e-06 setlinewidth
+0.986 0.986 1.000 setrgbcolor
+stroke
+2.9700000000 3.6538461538 moveto
+3.1200000000 3.6538461538 lineto
+closepath
+0.048 setlinewidth
+0.000 0.000 0.000 setrgbcolor
+stroke
+2.8500000000 3.6538461538 moveto
+(4)  rcshow
+2.9700000000 5.5000000000 moveto
+3.1200000000 5.5000000000 lineto
+closepath
+0.048 setlinewidth
+0.000 0.000 0.000 setrgbcolor
+stroke
+2.8500000000 5.5000000000 moveto
+(8)  rcshow
+2.9700000000 7.3461538462 moveto
+3.1200000000 7.3461538462 lineto
+closepath
+0.048 setlinewidth
+0.000 0.000 0.000 setrgbcolor
+stroke
+2.8500000000 7.3461538462 moveto
+(12)  rcshow
+2.9700000000 9.1923076923 moveto
+3.1200000000 9.1923076923 lineto
+closepath
+0.048 setlinewidth
+0.000 0.000 0.000 setrgbcolor
+stroke
+2.8500000000 9.1923076923 moveto
+(16)  rcshow
+2.9700000000 11.0384615385 moveto
+3.1200000000 11.0384615385 lineto
+closepath
+0.048 setlinewidth
+0.000 0.000 0.000 setrgbcolor
+stroke
+2.8500000000 11.0384615385 moveto
+(20)  rcshow
+2.9700000000 12.8846153846 moveto
+3.1200000000 12.8846153846 lineto
+closepath
+0.048 setlinewidth
+0.000 0.000 0.000 setrgbcolor
+stroke
+2.8500000000 12.8846153846 moveto
+(24)  rcshow
+4.5000000000 1.2500000000 moveto
+(Model #)  ctshow
+1.0000000000 8.5000000000 moveto
+(Residue #)  ccshowrotate
+6.0000000000 14.7900000000 moveto
+(R (ch:`X')) rbshow
+2.9700000000 2.4700000000 moveto
+6.0300000000 2.4700000000 lineto
+6.0300000000 14.5300000000 lineto
+2.9700000000 14.5300000000 lineto
+closepath
+0.06 setlinewidth
+0.000 0.000 0.000 setrgbcolor
+stroke
+
+% -------------
+showpage
+%%Trailer

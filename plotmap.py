@@ -41,7 +41,7 @@ Preprint at: http://arxiv.org/abs/1511.03011
 
 #print helpme
 #exit()
-import sys
+import sys,string
 
 signed = 0
 rrange = [0,1]
@@ -49,16 +49,17 @@ colortype = "Chirality" # can be SecondaryStructure
 
 showeps = 0
 dofilter = 0
-do_vmd_etc = 0
 
 showrcode = 1
 showhis   = 1
 showrmsf  = 1
 showrmsd  = 0
+do_vmd_etc = 1
 
 bins = 100
 pdbfn = ""
 
+# python plotmap.py -pdb /home/ranjan/Desktop/old/pairing_functions/for_sharing/structures/nanosheet_birth_U7.pdb
 # python plotmap.py -pdb /home/ranjan/Desktop/old/pairing_functions/for_sharing/structures/nanosheet_traj.pdb
 # python plotmap.py -pdb /home/ranjan/Desktop/old/pairing_functions/for_sharing/structures/class_a_alpha_1MBA.pdb
 # python plotmap.py -pdb /home/ranjan/Desktop/old/pairing_functions/for_sharing/structures/class_c_a_plus_b_2ACY.pdb
@@ -95,6 +96,11 @@ SCALE = 10.0 # For the postscript output
 # ===================================================================================
 # SETTING UP SOME COLORMAPS
 
+COLORSWITCH = 0.45 # THIS IS THE POINT, FOR THE RED/BLUE AND RED/BLUE/YELLOW/BLACK 
+                   # COLOR SCHEME, WHERE THE SWITCH IN COLOR HAPPENS (NAIVELY 0.5, 
+                   # BUT BETA SHEETS SPILL TO THE "D" PORTION OF THE PLOT, SO IT 
+                   # IS 0.45
+
 # First, some definitions:
 # DEFINING COLORS BY CHIRALITY:
 # c stands for color, bc stands for background color             
@@ -125,15 +131,34 @@ polyproline = (0,1,1)
 # NEW COLOR SCHEME: color by backbone twist (expected range: R=[0,1])
 # ----------------
 # This lets you later on get the cmap by name 'TwoColor': cmap = plt.get_cmap('TwoColor')
-# POSITION: 0              0.25             0.5           0.75            1
-#    COLOR: | white - black | yellow - white | white - red | blue - white |
+# POSITION: 0        COLORSWITCH         1
+#    COLOR: | white - red | blue - white |
 cdict = {
 #                         white  white          red    blue          white  white
-	'red':   ((0.00,  bc[0], bc[0]), (0.5,  c3[0], c4[0]), (1.0, bc[0], bc[0])), 
-	'green': ((0.00,  bc[1], bc[1]), (0.5,  c3[1], c4[1]), (1.0, bc[1], bc[1])),
-	'blue':  ((0.00,  bc[2], bc[2]), (0.5,  c3[2], c4[2]), (1.0, bc[2], bc[2])) 
+	'red':   ((0.00,  bc[0], bc[0]), (COLORSWITCH,  c3[0], c4[0]), (1.0, bc[0], bc[0])), 
+	'green': ((0.00,  bc[1], bc[1]), (COLORSWITCH,  c3[1], c4[1]), (1.0, bc[1], bc[1])),
+	'blue':  ((0.00,  bc[2], bc[2]), (COLORSWITCH,  c3[2], c4[2]), (1.0, bc[2], bc[2])) 
 }
 cmap = LinearSegmentedColormap('ChiralityTwoColor', cdict)
+plt.register_cmap(cmap=cmap)
+# ----------------
+# NEW COLOR SCHEME: color by backbone twist, variant (expected range: R=[0,1])
+# ----------------
+cdict = {
+#                         white  white          blue   blue
+	'red':   ((0.00,  bc[0], bc[0]), (1.0,  c4[0], c4[0])), 
+	'green': ((0.00,  bc[1], bc[1]), (1.0,  c4[1], c4[1])),
+	'blue':  ((0.00,  bc[2], bc[2]), (1.0,  c4[2], c4[2]))
+}
+cmap = LinearSegmentedColormap('deleteme', cdict)
+plt.register_cmap(cmap=cmap)
+cdict = {
+#                                       white  white         blue   blue
+	'red':   ((0.00,  1, 1), (0.5,  bc[0], bc[0]), (1.0, c4[0], c4[0])), 
+	'green': ((0.00,  0, 0	), (0.5,  bc[1], bc[1]), (1.0, c4[1], c4[1])),
+	'blue':  ((0.00,  1, 1), (0.5,  bc[2], bc[2]), (1.0, c4[2], c4[2])) 
+}
+cmap = LinearSegmentedColormap('deletemeSigned', cdict)
 plt.register_cmap(cmap=cmap)
 # ----------------
 # NEW COLOR SCHEME: color by backbone twist, variant (expected range: R=[0,1])
@@ -142,10 +167,10 @@ plt.register_cmap(cmap=cmap)
 # POSITION: 0              0.25             0.5           0.75            1
 #    COLOR: | white - black | yellow - white | white - red | blue - white |
 cdict = {
-#                         red    red            white  white         blue   blue
-	'red':   ((0.00,  c3[0], c3[0]), (0.5,  bc[0], bc[0]), (1.0, c4[0], c4[0])), 
-	'green': ((0.00,  c3[1], c3[1]), (0.5,  bc[1], bc[1]), (1.0, c4[1], c4[1])),
-	'blue':  ((0.00,  c3[2], c3[2]), (0.5,  bc[2], bc[2]), (1.0, c4[2], c4[2])) 
+#                         red    red                    white  white         blue   blue
+	'red':   ((0.00,  c3[0], c3[0]), (COLORSWITCH,  bc[0], bc[0]), (1.0, c4[0], c4[0])), 
+	'green': ((0.00,  c3[1], c3[1]), (COLORSWITCH,  bc[1], bc[1]), (1.0, c4[1], c4[1])),
+	'blue':  ((0.00,  c3[2], c3[2]), (COLORSWITCH,  bc[2], bc[2]), (1.0, c4[2], c4[2])) 
 }
 cmap = LinearSegmentedColormap('ChiralityTwoColor_r', cdict)
 plt.register_cmap(cmap=cmap)
@@ -422,9 +447,9 @@ def ps_draw_shape(X,Y,linewidth=0,linecolor=(0,0,0),fill=1,fillcolor=(0.6,0.6,0.
 		ps_text+= "fill\n"
 		ps_text+= "grestore\n"
 	
-	if linewidth:
-		ps_text+= str(linewidth)+" setlinewidth\n"
-		ps_text+= "%.3f %.3f %.3f setrgbcolor\n"%linecolor
+	#if linewidth:
+	ps_text+= str(linewidth)+" setlinewidth\n"
+	ps_text+= "%.3f %.3f %.3f setrgbcolor\n"%linecolor
 	ps_text+= "stroke"
 	
 	return ps_text+"\n"
@@ -448,7 +473,7 @@ if 0:
 	exit()
 
 # DRAWS POSTSCRIPT/EPS FILES USING INFORMATION IN Xoriginal, Yoriginal, Zoriginal
-def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap=plt.get_cmap('gray_r'),xscaling=defaultXscaling,xtitle="",ytitle="",xticks=[],xlabels=[],yticks=[],ylabels=[],horizontallines=[],verticallines=[],title="",showeps=0):
+def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap=plt.get_cmap('gray_r'),xscaling=defaultXscaling,xtitle="",ytitle="",xticks=[],xlabels=False,yticks=[],ylabels=False,horizontallines=[],verticallines=[],title="",showeps=0):
 	# Drawing the frame
 	frame_thickness = 0.06
 	
@@ -513,19 +538,6 @@ def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap
 	Ysorted = sorted(set(Y))
 	
 	# Working on setting up the dimensions of the drawing's frame 
-	"""
-	# X
-	xmin = Xsorted[0]
-	xmax = Xsorted[-1]
-	pageMinX = 3.0  # Arbitrary values
-	pageMaxX = 16.0 # Arbitrary values
-	
-	# Y
-	ymin = Ysorted[0]
-	ymax = Ysorted[-1]
-	pageMinY = 2.5
-	pageMaxY = pageMinY + (pageMaxX-pageMinX)*xscaling
-	"""
 	pageMinY = 2.5  # Arbitrary values
 	pageMaxY = 14.5 #16.0 # Arbitrary values
 	pageMinX = 3.0
@@ -536,13 +548,18 @@ def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap
 	ymin = Ysorted[0]
 	ymax = Ysorted[-1]
 	
+	if len(xlim):
+		xmin=xlim[0]
+		xmax=xlim[-1]
+	if len(ylim):
+		ymin=ylim[0]
+		ymax=ylim[-1]
+	
 	title_alignment_type = "cbshow"
 	if len(Xsorted) == 1:
 		if xscaling == defaultXscaling: # then no new value was provided by the user
 			pageMaxX = 6.0
 		title_alignment_type = "rbshow"
-			
-		
 	
 	# Actual values of each position
 	pageX = [] # this will be filled later
@@ -561,8 +578,8 @@ def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap
 		xone_minus_xzero = xone - xzero
 		
 		# Calculate total "distance" in x direction
-		xmin = Xsorted[0]
-		xmax = Xsorted[-1]
+		#xmin = Xsorted[0]
+		#xmax = Xsorted[-1]
 		xmax_minus_xmin  = xmax - xmin
 		
 		# Finally, calculating the spacing!
@@ -586,8 +603,8 @@ def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap
 		yone = Ysorted[-1]
 		
 		# Calculate total "distance" in y direction
-		ymin = Ysorted[0]
-		ymax = Ysorted[-1]
+		#ymin = Ysorted[0]
+		#ymax = Ysorted[-1]
 		
 		# Finally, calculating the y spacing!
 		pageSpacingY = float((yone - yzero)*(pageMaxY - pageMinY))/(yone-yzero+ymax-ymin)
@@ -606,9 +623,10 @@ def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap
 	page_yticks = []
 	
 	if len(set(X)) > 1:
-		if len(xlabels) == 0:
-			xmin_for_extended = Xsorted[0]
-			xmax_for_extended = Xsorted[-1] #ax.xaxis.get_data_interval()[-1]
+		if xlabels == False:
+			# Then calculate xlabels
+			xmin_for_extended = xmin #Xsorted[0]
+			xmax_for_extended = xmax #Xsorted[-1] #ax.xaxis.get_data_interval()[-1]
 			xrange = xmax_for_extended-xmin_for_extended
 			xmin_for_extended, xmax_for_extended = (xmin_for_extended - xrange * 0.05, xmax_for_extended + xrange * 0.05)
 			xlabels = Extended(xmin_for_extended,xmax_for_extended,density_val=1.2)
@@ -636,19 +654,19 @@ def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap
 			
 	#
 	if len(set(Y)) > 1:
-		if len(ylabels) == 0:
-			ymin_for_extended = Ysorted[0]
-			ymax_for_extended = Ysorted[-1] #ax.yaxis.get_data_interval()[-1]
+		if ylabels == False:
+			ymin_for_extended = ymin #Ysorted[0]
+			ymax_for_extended = ymax #Ysorted[-1] #ax.yaxis.get_data_interval()[-1]
 			yrange = ymax_for_extended-ymin_for_extended
 			ymin_for_extended, ymax_for_extended = (ymin_for_extended - yrange * 0.05, ymax_for_extended + yrange * 0.05)		
 			ylabels = Extended(ymin_for_extended,ymax_for_extended,density_val=1.2)
 			yticks  = copy.deepcopy(ylabels)			
 		else:
 			if len(ylabels) == len(yticks):
-				# First we check if the user provided yticks with the ylabels
+				# First we check if the user provided xticks with the xlabels
 				pass
 			elif len(ylabels) == len(Ysorted):
-				# If this is the case, then we eypect the two to be 
+				# If this is the case, then we expect the two to be 
 				yticks = copy.deepcopy(Ysorted)
 			else:
 				yticks = []
@@ -656,8 +674,8 @@ def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap
 					if isinstance(y,float) or isinstance(y,int):
 						yticks.append(y)
 					else:
-						print "Ylabels are neither matched by 'yticks' nor by the number of y values. Eyiting."
-						eyit()
+						print "YLABELS ARE NEITHER MATCHED BY 'YTICKS' NOR BY THE NUMBER OF Y VALUES. EXITING."
+						exit()
 		for y in yticks:
 			#print [pageMinY, pageSpacingY, pageMaxY, y, ymin, ymax]
 			pagey = pageMinY + pageSpacingY*0.5 + float(pageMaxY - pageMinY - pageSpacingY)*(y - ymin)/(ymax-ymin)
@@ -665,9 +683,18 @@ def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap
 	
 	usermaterial = ""
 	
+	# DRAWING THE FRAME
+	xmin = round(pageMinX - frame_thickness/2.0,3)
+	xmax = round(pageMaxX + frame_thickness/2.0,3)
+	ymin = round(pageMinY - frame_thickness/2.0,3)
+	ymax = round(pageMaxY + frame_thickness/2.0,3)
+	Xs = [xmin,xmax,xmax,xmin]
+	Ys = [ymin,ymin,ymax,ymax]
+	usermaterial += ps_draw_shape(Xs,Ys,linewidth=frame_thickness,linecolor=0,fill=1,fillcolor=1)
+	
+	
 	zmin = round(sorted(pageZ)[0],0)
 	zmax = round(sorted(pageZ)[-1],0)
-	
 	for x,y,z in zip(pageX,pageY,pageZ):
 		
 		round_number = 10
@@ -685,20 +712,13 @@ def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap
 		heat = cmap(0)
 		if zmax_minus_zmin:
 			heat = cmap(float(z-zmin)/zmax_minus_zmin)
-		usermaterial += ps_draw_shape(Xs,Ys,linewidth=frame_thickness/100,linecolor=heat[:3],fillcolor=heat[:3])
+		usermaterial += ps_draw_shape(Xs,Ys,linewidth=frame_thickness/10000,linecolor=heat[:3],fillcolor=heat[:3])
 		#                                             |
 		#                                          This extra padding is added 
 		#                                          so that the some PDF interpreters
 		#                                          dot not interpret the almost-zero 
 		#                                          space between squares to be white.	
 		
-	xmin = round(pageMinX - frame_thickness/2.0,3)
-	xmax = round(pageMaxX + frame_thickness/2.0,3)
-	ymin = round(pageMinY - frame_thickness/2.0,3)
-	ymax = round(pageMaxY + frame_thickness/2.0,3)
-	Xs = [xmin,xmax,xmax,xmin]
-	Ys = [ymin,ymin,ymax,ymax]
-	usermaterial += ps_draw_shape(Xs,Ys,linewidth=frame_thickness,linecolor=0,fill=0,fillcolor=1)
 	
 	for i in range(len(page_yticks)):
 		if len(str(ylabels[i])):
@@ -812,6 +832,18 @@ def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap
 					usermaterial += "%.10f %.10f moveto\n"%(textx,texty)
 					usermaterial += "("+str(ylabel)+")  lcshow\n"
 	
+	
+	# DRAWING THE FRAME
+	xmin = round(pageMinX - frame_thickness/2.0,3)
+	xmax = round(pageMaxX + frame_thickness/2.0,3)
+	ymin = round(pageMinY - frame_thickness/2.0,3)
+	ymax = round(pageMaxY + frame_thickness/2.0,3)
+	Xs = [xmin,xmax,xmax,xmin]
+	Ys = [ymin,ymin,ymax,ymax]
+	usermaterial += ps_draw_shape(Xs,Ys,linewidth=frame_thickness,linecolor=0,fill=0,fillcolor=1)
+	
+	
+	
 	pstext = copy.deepcopy(postscript_template)
 	pstext = pstext.replace("SCALE",str(SCALE))
 	pstext = pstext.replace("XMAX" ,str(SCALE*(pageMaxX+1)))
@@ -825,7 +857,7 @@ def make2Dfigure(Xoriginal,Yoriginal,Zoriginal,fn=0,xlim=[],ylim=[],zlim=[],cmap
 		os.system("evince "+fn)
 		raw_input()
 		
-	print "WRITTEN TO:",fn
+	#print "#WRITTEN TO:",fn
 	
 	if 0: #Then also do a matplotlib version of the graph (This is in case someone wants to use matplolib in stead)
 		plt.clf() 
@@ -1191,7 +1223,125 @@ def calculate_dihedral_angle(p):
 	d = numpy.degrees(numpy.arctan2( y, x ))
 	return d
 
-def read_pdb(pdbblock):
+aa_three_to_one = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
+     'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N', 
+     'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W', 
+     'ALA': 'A', 'VAL':'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M'}
+
+from Bio import PDB
+def read_pdb(fn,signed=0):
+	p=PDB.PDBParser() #(PERMISSIVE=1)
+	structure=p.get_structure(fn[:-len(".pdb")], fn)
+	#for model in structure:
+	#	print [model.id]
+	model_to_chain_to_resno_atom_to_vals = {}
+	# structure (models) -> model -> chain -> residue -> atom
+	for model in structure:
+		model_number = model.id
+		#
+		if not model_number in model_to_chain_to_resno_atom_to_vals:
+			model_to_chain_to_resno_atom_to_vals[model_number] = {}
+		#
+		for chain in model:
+			segname = chain.id
+			if not segname in model_to_chain_to_resno_atom_to_vals[model_number]:
+				model_to_chain_to_resno_atom_to_vals[model_number][segname] = {}
+			
+			for residue in chain:
+				resname = residue.resname
+				resno   = residue.id[1]
+				
+				#
+				i = resno
+				im = i-1
+				ip = i+1
+				
+				neighbors_found = 1
+				try:
+					a = structure[model_number][segname][im]["C"].coord
+					b = structure[model_number][segname][i]["N"].coord
+					c = structure[model_number][segname][i]["CA"].coord
+					d = structure[model_number][segname][i]["C"].coord
+					e = structure[model_number][segname][ip]["N"].coord
+					
+					if not resno in model_to_chain_to_resno_atom_to_vals[model_number][segname]:
+						model_to_chain_to_resno_atom_to_vals[model_number][segname][resno] = {}
+					
+					model_to_chain_to_resno_atom_to_vals[model_number][segname][resno]["resname"] = resname
+					singleaa = resname
+					if resname in aa_three_to_one:
+						singleaa = aa_three_to_one[resname]
+					model_to_chain_to_resno_atom_to_vals[model_number][segname][resno]["aa"] = singleaa
+					model_to_chain_to_resno_atom_to_vals[model_number][segname][i]["n"]  = b
+					model_to_chain_to_resno_atom_to_vals[model_number][segname][i]["ca"] = c
+					model_to_chain_to_resno_atom_to_vals[model_number][segname][i]["c"]  = d
+				
+				except:
+					neighbors_found = 0
+				
+				if neighbors_found: #im in resids and ip in resids:
+					#phi = calculate_dihedral_angle(numpy.array([a,b,c,d]))
+					#psi = calculate_dihedral_angle(numpy.array([b,c,d,e]))
+					#rho = normalized_ramachandran_number(phi,psi,signed)
+					
+					phi_atoms = numpy.array([a,b,c,d])
+					psi_atoms = numpy.array([b,c,d,e])
+					
+					# CALCULATING PHI
+					# identical to: phi = calculate_dihedral_angle(numpy.array([a,b,c,d]))
+					p = phi_atoms
+					b = p[:-1] - p[1:]
+					b[0] *= -1
+					v = numpy.array( [ v - (v.dot(b[1])/b[1].dot(b[1])) * b[1] for v in [b[0], b[2]] ] )
+					# Normalize vectors
+					v /= numpy.sqrt(numpy.einsum('...i,...i', v, v)).reshape(-1,1)
+					b1 = b[1] / numpy.linalg.norm(b[1])
+					x = numpy.dot(v[0], v[1])
+					m = numpy.cross(v[0], b1)
+					y = numpy.dot(m, v[1])
+					phi = numpy.degrees(numpy.arctan2( y, x ))
+					
+					# CALCULATING PSI
+					# identical to: psi = calculate_dihedral_angle(numpy.array([b,c,d,e]))
+					p = psi_atoms
+					b = p[:-1] - p[1:]
+					b[0] *= -1
+					v = numpy.array( [ v - (v.dot(b[1])/b[1].dot(b[1])) * b[1] for v in [b[0], b[2]] ] )
+					# Normalize vectors
+					v /= numpy.sqrt(numpy.einsum('...i,...i', v, v)).reshape(-1,1)
+					b1 = b[1] / numpy.linalg.norm(b[1])
+					x = numpy.dot(v[0], v[1])
+					m = numpy.cross(v[0], b1)
+					y = numpy.dot(m, v[1])
+					psi = numpy.degrees(numpy.arctan2( y, x ))
+					
+					# CALCULATING RHO
+					# identical (in outcome) to: rho = normalized_ramachandran_number(phi,psi,signed)
+					sqrttwo        = math.sqrt(2.0)
+					psi_plus_bound = psi + bound
+					a = round(sigma*(phi-psi_plus_bound)/sqrttwo,0)
+					b = round(sigma*(phi+psi_plus_bound)/sqrttwo,0)
+					raw_r   = a + b*multiplier
+					rho = float(raw_r - raw_R_min)/(raw_R_max - raw_R_min)
+					if signed:
+						if a >= multiplier_by_two:
+							rho = rho * -1.0
+					#
+					model_to_chain_to_resno_atom_to_vals[model_number][segname][i]["phi"] = phi
+					model_to_chain_to_resno_atom_to_vals[model_number][segname][i]["psi"] = psi
+					model_to_chain_to_resno_atom_to_vals[model_number][segname][i]["r"] = rho
+					#
+				#
+			#
+		#
+		if not len(model_to_chain_to_resno_atom_to_vals[model_number]):
+			del model_to_chain_to_resno_atom_to_vals[model_number]
+	return model_to_chain_to_resno_atom_to_vals
+
+
+# OLD VERSION (IN HOUSE). IT IS FASTER THAN THE CURRENT "read_pdb", WHICH IS BIOPDB RUN, BUT IT IS NOT 
+# AS WELL TESTED.
+def read_pdb_old(fn,signed=0):
 	"""
 	ATOM     10 1H   LYS A   1       0.763   3.548  -0.564
 	ATOM     11 2H   LYS A   1       1.654   2.664   0.488
@@ -1205,17 +1355,18 @@ def read_pdb(pdbblock):
 	          |   |   |  |   |        |       |       |                     |
 	     atomno   |   |  |   |        x       y       z                 segname
 	       atom type  |  |   |                                          (CHAIN)
-	            restype  |   resno
+	            restype  |   3resno
 	                 chainID
 	"""
+	
+	f = open(fn,"r")
+	pdbblock = f.read()
+	f.close()
 	
 	getlines = re.compile("ATOM\s+(?P<atomno>\d+)\s+(?P<atomtype>\S+)\s+.(?P<resname>...)..\s+(?P<resno>\d+)\s+(?P<x>\-*\d+\.*\d*)\s+(?P<y>\-*\d+\.*\d*)\s+(?P<z>\-*\d+\.*\d*).{17}(?P<segname>.{5})",re.M)
 	getlines_short = re.compile("ATOM\s+(?P<atomno>\d+)\s+(?P<atomtype>\S+)\s+(?P<resname>...).(?P<segname>.)\s+(?P<resno>\d+)\s+(?P<x>\-*\d+\.*\d*)\s+(?P<y>\-*\d+\.*\d*)\s+(?P<z>\-*\d+\.*\d*)",re.M)
 	
 	resnos = []
-	resno_to_coordN  = {}
-	resno_to_coordC  = {}
-	resno_to_coordCA = {}
 	#models = pdbblock.split("\nEND\n")
 	models = re.split("\nEND|\nMODEL|\nTER",pdbblock)
 	
@@ -1306,6 +1457,62 @@ def read_pdb(pdbblock):
 	
 	return model_to_chain_to_resno_atom_to_vals
 
+# OLD VERSION (IN HOUSE). IT IS FASTER THAN THE CURRENT "read_pdb", WHICH IS BIOPDB RUN, BUT IT IS NOT 
+# AS WELL TESTED.
+def check_pdb(fn):
+	"""
+	ATOM     10 1H   LYS A   1       0.763   3.548  -0.564
+	ATOM     11 2H   LYS A   1       1.654   2.664   0.488
+	ATOM    482  N   PRO A  61      27.194  -5.761  14.684  1.00  9.09           N  
+	ATOM      2  CA  BLYSX   1     -77.937 -26.325   6.934  1.00  0.00      U1    
+	ATOM      3  CB  BLYSX   1     -79.612 -24.499   7.194  1.00  0.00      U1    
+	ATOM      4  CE  BLYSX   1     -80.894 -24.467   8.039  1.00  0.00      U1    
+	ATOM      5  NZ  BLYSX   1     -80.687 -24.160   9.434  1.00  0.00      U1    
+	ATOM      2  HT1 MET U   1       0.208   0.762 -12.141  0.00  0.00      UBIQ  
+	ATOM      3  HT2 MET U   1      -1.052  -0.551 -12.281  0.00  0.00      UBIQ  
+	          |   |   |  |   |        |       |       |                     |
+	     atomno   |   |  |   |        x       y       z                 segname
+	       atom type  |  |   |                                          (CHAIN)
+	            restype  |   resno
+	                 chainID
+	"""
+	
+	chainIDindex = 21
+	chainIDindexMinusOne = chainIDindex-1
+	lenATOM = len("ATOM ")
+	
+	chainIDpossibilities = ""
+	chainIDpossibilities+=string.uppercase # 'A' through 'Z'.
+	for i in range(10):
+		chainIDpossibilities+=str(i)
+	chainIDpossibilities+=string.lowercase # 'a' through 'z'.
+	lenchainIDpossibilities = len(chainIDpossibilities)
+	largestchainIDindex = 0
+	
+	made_changes = 0
+	f = open(fn,"r")
+	lines = f.readlines()
+	f.close()
+	
+	segname_to_chainID = {}
+	for i in range(len(lines)):
+		if len(lines[i]) > 67:
+			if lines[i][:lenATOM] == "ATOM ":
+				chainID = lines[i][chainIDindex].rstrip()
+				chainIDspacebefore = lines[i][chainIDindexMinusOne].rstrip()
+				if len(chainIDspacebefore): # This is because some CHARMM sidechains have four letters, and that trips biopython
+					pdb_is_possibly_problematic = 1
+				
+				if len(chainID)==0 or chainID=="X": # CHARMM SOMETIMES SAVES THE CHAINID AS 'X' IRRESPECTIVE OF SEGNAME
+					pdb_is_possibly_problematic = 1
+				#
+			#
+		#
+	if pdb_is_possibly_problematic:
+		return 0
+	else:
+		return 1
+
 # Draw the mapping between phi,psi and Ramachandran number
 def show_ramachandran_mapping(cmap=plt.get_cmap("Blues"),fn = "deme", stepsize=5,signed=0):
 	PHI = []
@@ -1331,17 +1538,20 @@ def show_ramachandran_mapping(cmap=plt.get_cmap("Blues"),fn = "deme", stepsize=5
 	fn = fn+".eps"
 	
 	print "#WRITING TO:",cbfn
-	make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=cmap, fn=cbfn, xscaling=colorbarXscaling,xtitle="Key",showeps=1)
+	make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=cmap, fn=cbfn, xscaling=colorbarXscaling,xtitle="Key",showeps=0)
 	#
 	print "#WRITING TO:",fn
-	make2Dfigure(X,Y,Z,fn,cmap=cmap,xscaling=1.0,xtitle="phi",ytitle="psi",xlabels=range(-180,181,90),ylabels=range(-180,181,90),showeps=1)
+	make2Dfigure(X,Y,Z,fn,cmap=cmap,xscaling=1.0,xtitle="phi",ytitle="psi",xlabels=range(-180,181,90),ylabels=range(-180,181,90),showeps=0)
 	#
 	return 1
 
 if __name__ == "__main__":
 	if not "-pdb" in sys.argv:
-		print "Must provide '-pdb' parameter. Exiting."
-		exit(0)
+		if "-h" in sys.argv or "-help" in sys.argv or "--help" in sys.argv:
+			pass
+		else:
+			print "Must provide '-pdb' parameter. Exiting."
+			exit(0)
 	for i in range(len(sys.argv)):
 		if sys.argv[i] == "-rmsd":
 			showrmsd = 1
@@ -1351,6 +1561,9 @@ if __name__ == "__main__":
 			rrange = [-1,1]
 		if sys.argv[i] == "-ss":
 			colortype = "SecondaryStructure" # default: chirality
+		if sys.argv[i] == "-h" or sys.argv[i] == "-help" or sys.argv[i] == "--help":
+			print helpme
+			exit(1)
 		if sys.argv[i] == "-pdb":
 			if len(sys.argv) <= i+1:
 				print helpme
@@ -1382,6 +1595,7 @@ if __name__ == "__main__":
 		colormap_name = colortype+'FourColor'
 	print "Using color map name:",colormap_name
 	rcode_cmap = plt.get_cmap(colormap_name)
+	#rcode_cmap = plt.get_cmap("deletemeSigned")
 	
 	pdbfn = os.path.abspath(pdbfn)
 	pdbdir = os.path.dirname(pdbfn)
@@ -1408,7 +1622,7 @@ if __name__ == "__main__":
 	
 	#
 	# To see how the (phi,psi) to Ramachandran number mapping occurs, set "if 0:" to "if 1:" below.
-	if 1:
+	if 0:
 		phi_psi_to_ramachandran_number_filename = "phi_psi_to_r"
 		if signed:
 			phi_psi_to_ramachandran_number_filename+="_signed"
@@ -1424,17 +1638,32 @@ if __name__ == "__main__":
 	def key_function( s ): return map(int, re.findall(REXP, s ))
 	pdbfilenames.sort( key=key_function)
 
-	pdbblock = ""
-	for pdbfn in pdbfilenames:
-		print "# Reading '"+pdbfn+"'"
-		f = open(pdbfn,"r")
-		pdbblock +="\n\nEND\n\n"+f.read()
-		f.close()
-
-	offset = 0
-	# structure -> model -> chain -> residue -> atom -> 'x','y','z','phi','psi','r'
 	print "# Parsing the PDB (structure) data"
-	structure = read_pdb(pdbblock)
+	# structure -> model -> chain -> residue -> atom -> 'x','y','z','phi','psi','r'
+	structure = {}
+	for pdbfn in pdbfilenames:
+		# Check if the PDB has no subunit IDs, and then check if segnames exist (right most column)
+		# and renaming the subunit IDs alphabetically and then numerically
+		
+		# READ PDB
+		if check_pdb(pdbfn):
+			latest_structure = read_pdb(pdbfn,signed)
+		else:
+			latest_structure = read_pdb_old(pdbfn,signed)
+		
+		# AGAIN: structure -> model -> chain -> residue -> atom -> 'x','y','z','phi','psi','r'
+		if len(structure.keys()):
+			largest_model_number = max(structure.keys())
+			# Then we already opened a previous file 
+			for model_number in latest_structure.keys():
+				# added the "1" since model numbers normally start from 0 (at least for BIOPDB):
+				new_model_number = largest_model_number+model_number+1 
+				# Finally, we rename the model_number key
+				latest_structure[new_model_number] = latest_structure.pop(model_number)
+		
+		# Adding the current models (renamed if they are the same as a previous files') 
+		# to the main structure dictionary
+		structure.update(latest_structure)
 	print "\t...done"
 	
 	# FIRST, GETTING THE DIFFERENT CHAIN IDs
@@ -1443,8 +1672,6 @@ if __name__ == "__main__":
 		for chain in sorted(structure[model].keys()):
 			chains.append(chain)
 	chains = list(sorted(set(chains)))
-	
-	
 	
 	# FINALLY, WE WILL GO THROUGH EACH CHAIN AND PRODUCE GRAPHS
 	batchedfilenames = {}
@@ -1516,7 +1743,7 @@ if __name__ == "__main__":
 		
 		# ----------------------------------
 		# Fluctuations from previous time
-		if showrmsf:
+		if 0:#showrmsf:
 			x_sorted = sorted(set(X))
 			xy_to_z_fluc = {}
 			for (x,y) in xy_to_z.keys():
@@ -1558,9 +1785,11 @@ if __name__ == "__main__":
 						if "r" in structure[model][chain][resno]:
 							Rs.append(structure[model][chain][resno]["r"])
 				if len(Rs):
-					bins = np.arange(rrange[0]-0.005,rrange[-1]+0.01,0.01)
+					step = 0.005
+					bins = np.arange(rrange[0]-step/2,rrange[-1]+step,step)
 					if rrange[0] < 0:
-						bins = np.arange(rrange[0]-0.01,rrange[-1]+0.02,0.02)
+						step = 0.005*2
+						bins = np.arange(rrange[0]+step/2,rrange[-1]+step,step)
 					a,b = np.histogram(Rs,bins=bins)
 					for i in range(len(a)):
 						X.append(model)
@@ -1576,10 +1805,14 @@ if __name__ == "__main__":
 			for i in range(dofilter):
 				Z = median_filter(Z)
 			
-			make2Dfigure(X,Y,Z,fn, cmap=plt.get_cmap("gray_r"), xtitle="Model #",ytitle="R",showeps=showeps, title="P(R) (ch:`%s')"%chain)
+			ylim = [0.29,0.71]
+			if signed:
+				ylim = [-0.71,0.71]
+			
+			make2Dfigure(X,Y,Z,fn, ylim=ylim,cmap=plt.get_cmap("gray_r"), xtitle="Model #",ytitle="R",showeps=showeps, title="P(R) (ch:`%s')"%chain)
 		batchedfilenames[chain] = copy.deepcopy(filenames)
 	
-	if 1:#do_vmd_etc:
+	if do_vmd_etc:
 		
 		f = open("templates/template.tex","r")
 		latexblock = f.read()
@@ -1621,373 +1854,4 @@ if __name__ == "__main__":
 		os.system("rm "+outputfilename[:-len(".tex")]+".log")
 		os.system("rm "+outputfilename[:-len(".tex")]+".out")
 		os.system("rm "+outputfilename[:-len(".tex")]+"*converted-to.pdf")
-	if 0:
-		basename = os.path.basename(pdbfn)[:-len(".pdb")]
-		texoutput = os.path.dirname(pdbfn)+"/"+basename+".tex"
-		pdfoutput = os.path.dirname(pdbfn)+"/"+basename+".pdf"
-
-		f = open("tmp.tex","w")
-		f.write(latexblock.replace("FILEBASE",basename))
-		f.close()
-
-		os.system("pdflatex tmp.tex")
-		os.system("cp tmp.tex "+texoutput)
-		os.system("cp tmp.pdf "+pdfoutput)
-		
-		# writing first and last 
-		ms = pdbblock.split("\nEND\n")#|TER)\n",pdbblock,re.MULTILINE)
-		pdbmodels = []
-		for pdbmodel in ms:
-			if len(pdbmodel.rstrip()) > 1:
-				pdbmodels.append(pdbmodel)
-		
-		lines_par_preamble = """with line
-		line on
-		line loctype world
-		line g0
-		line XSTART, 0.3, XSTOP, 0.3
-		line linewidth 4.0
-		line linestyle 3
-		line color 10
-		line arrow 0
-		line arrow type 0
-		line arrow length 1.000000
-		line arrow layout 1.000000, 1.000000
-		line def
-		with line
-		line on
-		line loctype world
-		line g0
-		line XSTART, 0.4, XSTOP, 0.4
-		line linewidth 4.0
-		line linestyle 3
-		line color 10
-		line arrow 0
-		line arrow type 0
-		line arrow length 1.000000
-		line arrow layout 1.000000, 1.000000
-		line def
-		with line
-		line on
-		line loctype world
-		line g0
-		line XSTART, 0.47, XSTOP, 0.47
-		line linewidth 4.0
-		line linestyle 3
-		line color 5
-		line arrow 0
-		line arrow type 0
-		line arrow length 1.000000
-		line arrow layout 1.000000, 1.000000
-		line def
-		with line
-		line on
-		line loctype world
-		line g0
-		line XSTART, 0.58, XSTOP, 0.58
-		line linewidth 4.0
-		line linestyle 3
-		line color 5
-		line arrow 0
-		line arrow type 0
-		line arrow length 1.000000
-		line arrow layout 1.000000, 1.000000
-		line def
-		line def
-		with line
-		line on
-		line loctype world
-		line g0
-		line XSTART, 0.2, XSTOP, 0.2
-		line linewidth 2
-		line linestyle 1
-		line color 1
-		line arrow 0
-		line arrow type 0
-		line arrow length 1.000000
-		line arrow layout 1.000000, 1.000000
-		line def
-		"""
-		
-		sheet_par_template = """with line
-		line on
-		line loctype world
-		line g0
-		line XSTART, YSTART, XSTOP, YSTOP
-		line linewidth 20.0
-		line linestyle 1
-		line color 5
-		line arrow 2
-		line arrow type 0
-		line arrow length 1.000000
-		line arrow layout 1.000000, 1.000000
-		line def
-		"""
-		
-		turn_par_template = """with line
-		line on
-		line loctype world
-		line g0
-		line XSTART, YSTART, XSTOP, YSTOP
-		line linewidth 7.0
-		line linestyle 1
-		line color 1
-		line arrow 0
-		line arrow type 0
-		line arrow length 1.000000
-		line arrow layout 1.000000, 1.000000
-		line def
-		"""
-
-		helix_par_template = """with line
-		line on
-		line loctype world
-		line g0
-		line XSTART, YSTART, XSTOP, YSTOP
-		line linewidth 20.0
-		line linestyle 1
-		line color 10
-		line arrow 0
-		line arrow type 0
-		line arrow length 1.000000
-		line arrow layout 1.000000, 1.000000
-		line def
-		"""
-		
-		secondary_structure_code_to_parameter_template = {
-			# helices
-			"G":helix_par_template,
-			"H":helix_par_template,
-			"I":helix_par_template,
-			# sheet
-			"T":turn_par_template,
-			# sheet
-			"E":sheet_par_template,
-			"B":sheet_par_template
-		}
-		
-		for model_key in [sorted(structure.keys())[0],sorted(structure.keys())[-1]]:
-			start_end = "first"
-			if model_key != 1:
-				start_end = "last"
-			
-			chain_to_resno_to_r = {}
-			chain_to_resno_to_phipsi = {}
-			for chain in structure[model_key].keys():
-				chain_to_resno_to_r[chain] = {}
-				chain_to_resno_to_phipsi[chain] = {}
-				for resno in structure[model_key][chain].keys():
-					if "r" in structure[model_key][chain][resno]:
-						chain_to_resno_to_r[chain][resno] = structure[model_key][chain][resno]["r"]
-						chain_to_resno_to_phipsi[chain][resno] = (structure[model_key][chain][resno]["phi"],structure[model_key][chain][resno]["psi"])
-			
-			# -------------------->
-			pdbmodel = pdbmodels[model_key-1]
-			getlines       = re.compile("ATOM\s+(?P<atomno>\d+)\s+(?P<atomtype>\S+)\s+.{5}\s+(?P<resno>\d+)\s+(?P<x>\-*\d+\.*\d*)\s+(?P<y>\-*\d+\.*\d*)\s+(?P<z>\-*\d+\.*\d*).{17}(?P<segname>.{5})",re.M)
-			getlines_short = re.compile("ATOM\s+(?P<atomno>\d+)\s+(?P<atomtype>\S+)\s+.{5}\s+(?P<resno>\d+)\s+(?P<x>\-*\d+\.*\d*)\s+(?P<y>\-*\d+\.*\d*)\s+(?P<z>\-*\d+\.*\d*)",re.M)
-			if not getlines.search(pdbmodel):
-				# then we have a PDB that does not have a segname, which DSSP chokes on
-				new_pdb_model = ""
-				for l in pdbmodel.split("\n"):
-					if getlines_short.match(l):
-						new_pdb_model += l+"                 A    \n"
-					else:
-						new_pdb_model += l+"\n"
-				pdbmodel = new_pdb_model
-			
-			tmp_pdb_fn = target_base+"_pdb_"+str(start_end)+".pdb"
-			
-			print "#WRITING TO:",tmp_pdb_fn
-			
-			f = open(tmp_pdb_fn,"w")
-			f.write(pdbmodel)
-			f.close()
-			
-			p = tmp_pdb_fn+".dat.png"
-			if not os.path.isfile(p): # then open structure file using vmd and draw snapshot
-				os.system("vmd -e templates/template.vmd -args "+tmp_pdb_fn)
-				# The output PNG from the previous command will be
-				os.system("convert "+p+" -trim "+p)
-				"tachyon -res 1338 1668 -aasamples 12 class_h_1BKV_pdb_first.pdb.dat -format PNG -o class_h_1BKV_pdb_first.pdb.dat.png"
-				
-			# G --> 3-turn helix
-			# H --> 4-turn helix (alpha helix)
-			# I --> 5-turn helix
-			# E --> strand
-			resno_to_dssp = get_resid_to_dssp(tmp_pdb_fn)
-			# <--------------------
-			
-			
-			# WRITING SECONDARY STRUCTURES
-			secondary_y_position = 0.2
-			# H (alpha-helix)
-			
-			parfile = lines_par_preamble.replace("XSTART",str(np.min(resno_to_dssp.keys()))).replace("XSTOP",str(np.max(resno_to_dssp.keys())))
-			for motifs_to_find in [["E","B"],["G","H","I"],["T"]]:
-				resnos = []
-				for resno in resno_to_dssp.keys():
-					if resno_to_dssp[resno] in motifs_to_find:
-						resnos.append(resno)
-				
-				if len(resnos):
-					previous_stretch = resnos[0]
-					startstop = []
-					for i in range(len(resnos)):
-						if i==0:
-							startstop.append(resnos[i])
-						elif resnos[i]-resnos[i-1] != 1:
-							startstop+=[resnos[i-1],resnos[i]]
-							if i == len(resnos)-1:
-								startstop.append(resnos[i])
-						elif i == len(resnos)-1:
-							startstop.append(resnos[i])
-					startstop_pairs = []
-					for i in range(len(startstop)/2):
-						startstop_pairs.append((startstop[i*2],startstop[i*2+1]))
-					
-					for xstart,xstop in startstop_pairs:
-						current_par = secondary_structure_code_to_parameter_template[resno_to_dssp[xstart]]
-						current_par = current_par.replace("XSTART",str(xstart))
-						current_par = current_par.replace("YSTART",str(secondary_y_position))
-						current_par = current_par.replace("XSTOP",str(xstop))
-						current_par = current_par.replace("YSTOP",str(secondary_y_position))
-						parfile += current_par
-			
-			current_par_fn = target_base+"_resno_vs_r_model_"+str(start_end)+".par"
-			f = open(current_par_fn,"w")
-			f.write(parfile)
-			f.close()
-			
-			fn = target_base+"_resno_vs_r_model_"+str(start_end)+".dat"
-			print "#Writing:",fn
-			f = open(fn,"w")
-			for chain in sorted(chain_to_resno_to_r.keys()):
-				f.write("#CHAIN"+chain+"\n")
-				for resno in chain_to_resno_to_r[chain].keys():
-					f.write(str(resno)+"\t"+str(chain_to_resno_to_r[chain][resno])+"\n")
-				f.write("\n\n")
-			f.close()
-			agrfile = fn[:-len(".dat")]+".agr"
-			psfile  = fn[:-len(".dat")]+".ps"
-			epsfile  = fn[:-len(".dat")]+".eps"
-			
-			#print sorted(resno_to_dssp.keys()),np.min(resno_to_dssp.keys())
-			os.system("xmgrace -par templates/residue_vs_r.par "+fn+" -pexec 'title "+'""'+"' -par "+current_par_fn+"  -world "+str(np.min(resno_to_dssp.keys()))+" 0 "+str(np.max(resno_to_dssp.keys()))+" 1  -hardcopy -saveall "+agrfile+" -printfile "+psfile)
-			#os.system("xmgrace -world ["+str(np.min(resno_to_dssp.keys()))+" 0 "+str(np.max(resno_to_dssp.keys()))+" 1]   "+agrfile+" -hardcopy -saveall "+agrfile+" -printfile "+psfile)
-			
-			#os.system("xmgrace "+fn+" -par "+current_par_fn+" -hardcopy -saveall "+agrfile+" -printfile "+psfile)
-			os.system("ps2eps -f --rotate=+ "+psfile)
-			#os.system("xmgrace "+agrfile)
-			#raw_input()
-			
-			#RAWR = []
-			RAWPHI = []
-			RAWPSI = []
-			
-			fn = target_base+"_ramachandran_"+str(start_end)+".dat"
-			print "#Writing:",fn
-			f = open(fn,"w")
-			for chain in sorted(chain_to_resno_to_phipsi.keys()):
-				f.write("#CHAIN"+chain+"\n")
-				for resno in chain_to_resno_to_phipsi[chain].keys():
-					f.write(str(chain_to_resno_to_phipsi[chain][resno][0])+"\t"+str(chain_to_resno_to_phipsi[chain][resno][1])+"\n")
-					RAWPHI.append(chain_to_resno_to_phipsi[chain][resno][0])
-					RAWPSI.append(chain_to_resno_to_phipsi[chain][resno][1])
-				f.write("\n\n")
-			f.close()
-			agrfile = fn[:-len(".dat")]+".agr"
-			psfile  = fn[:-len(".dat")]+".ps"
-			epsfile  = fn[:-len(".dat")]+".eps"
-			os.system("xmgrace "+fn+" -pexec 'title "+'""'+"' -par templates/ramachandran.par -hardcopy -saveall "+agrfile+" -printfile "+psfile)
-			#os.system("xmgrace "+fn+" -par "+current_par_fn+" -hardcopy -saveall "+agrfile+" -printfile "+psfile)
-			os.system("ps2eps -f --rotate=+ "+psfile)
-			#os.system("xmgrace "+agrfile)
-			
-			#
-			if 1: # Draw individual ramachandran plots
-				for chain in structure[model_key].keys():
-					chain_to_resno_to_r[chain] = {}
-					chain_to_resno_to_phipsi[chain] = {}
-					for resno in structure[model_key][chain].keys():
-						if "r" in structure[model_key][chain][resno]:
-							chain_to_resno_to_r[chain][resno] = structure[model_key][chain][resno]["r"]
-							chain_to_resno_to_phipsi[chain][resno] = (structure[model_key][chain][resno]["phi"],structure[model_key][chain][resno]["psi"])
-				
-				
-				stepsize = 10
-				PHI = []
-				PSI = []
-				WEIGHT = []
-				for refphi in range(-180,181,stepsize):
-					refphi_plus_step = refphi + stepsize
-					for refpsi in range(-180,181,stepsize):
-						refpsi_plus_step = refpsi + stepsize
-						totalcounts = 0.0
-						counts = 0.0
-						for rawphi,rawpsi in zip(RAWPHI,RAWPSI):
-							if refphi <= rawphi and rawphi <= refphi_plus_step:
-								if refpsi <= rawpsi and rawpsi <= refpsi_plus_step:
-									counts += 1.0
-							totalcounts += 1.0
-						#
-						PHI.append(refphi)
-						PSI.append(refpsi)
-						WEIGHT.append(counts/totalcounts)
-				
-				
-				
-				
-				maxWEIGHT = max(WEIGHT)
-				for i in range(len(WEIGHT)):
-					WEIGHT[i] = WEIGHT[i]/maxWEIGHT
-				
-				PHI=np.array(PHI)
-				PSI=np.array(PSI)
-				WEIGHT=np.array(WEIGHT)
-				
-				fn = fn[:-len(".dat")]+"_histogram.eps"
-				make2Dfigure(PHI,PSI,WEIGHT,fn=fn,xscaling=1.0,xtitle="phi",ytitle="psi",xlabels=range(-180,181,90),ylabels=range(-180,181,90),showeps=showeps)
-				#raw_input()
-				
-				X=[]
-				Y=[]
-				Z=[]
-				for chain in structure[model_key].keys():
-					chain_to_resno_to_r[chain] = {}
-					chain_to_resno_to_phipsi[chain] = {}
-					for resno in structure[model_key][chain].keys():
-						if "r" in structure[model_key][chain][resno]:
-							X.append(1)
-							Y.append(resno)
-							Z.append(structure[model_key][chain][resno]["r"])
-				
-				color_bar_range = np.arange(0,1.01,0.01)
-				fn = fn[:-len(".dat")]+"_r1_colorbar.eps"
-				print "#WRITING TO:",fn
-				make2Dfigure(np.ones(len(color_bar_range)),color_bar_range,color_bar_range,cmap=rcode_cmap, fn=fn, ytitle="R",showeps=0)#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
-				fn = fn[:-len(".dat")]+"_r1.eps"
-				print "#WRITING TO:",fn
-				
-				for i in range(dofilter):
-					Z = median_filter(Z)
-				make2Dfigure(X,Y,Z,fn, cmap=rcode_cmap, xtitle="Model #",ytitle="Residue #",showeps=showeps)#,ylim = [0.3,0.7])#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
-				
-			#raw_input()
-			
-		exit()
-		f = open("templates/latex_template.tex","r")
-		latexblock = f.read()
-		f.close()
-
-		basename = os.path.basename(pdbfn)[:-len(".pdb")]
-		texoutput = os.path.dirname(pdbfn)+"/"+basename+".tex"
-		pdfoutput = os.path.dirname(pdbfn)+"/"+basename+".pdf"
-
-		f = open("tmp.tex","w")
-		f.write(latexblock.replace("FILEBASE",basename))
-		f.close()
-
-		os.system("pdflatex tmp.tex")
-		os.system("cp tmp.tex "+texoutput)
-		os.system("cp tmp.pdf "+pdfoutput)
-
+	
