@@ -13,7 +13,7 @@ This tool provides easily readable "pictures" of protein conformations,
 ensembles, and trajectories saved as either a combined protein databank 
 (PDB) structure file, or a directory of such files, and produces graphs.
 
-#Usage
+# Usage
 ```
 python plotmap.py -pdb ProteinDatabankStructureFilename.pdb
 python plotmap.py -pdb /directory/containing/pdbs/
