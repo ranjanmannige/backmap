@@ -74,13 +74,13 @@ import numpy as np
 from scipy import ndimage
 #import pylab
 import os
-import Geometry
-import PeptideBuilder
 import Bio.PDB
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 
+sys.path.insert(0, "./local_imports/") # for the local imports
+import Geometry, PeptideBuilder, locallib
 
 forcedmax = False
 forcedmin = False
@@ -1493,7 +1493,7 @@ def check_pdb(fn):
 	f = open(fn,"r")
 	lines = f.readlines()
 	f.close()
-	
+	pdb_is_possibly_problematic = 0
 	segname_to_chainID = {}
 	for i in range(len(lines)):
 		if len(lines[i]) > 67:
@@ -1805,7 +1805,8 @@ if __name__ == "__main__":
 			for i in range(dofilter):
 				Z = median_filter(Z)
 			
-			ylim = [0.29,0.71]
+			#ylim = [0.29,0.71]
+			ylim = [0.0,1.0]
 			if signed:
 				ylim = [-0.71,0.71]
 			
