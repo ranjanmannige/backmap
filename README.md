@@ -23,26 +23,26 @@ python plotmap.py -pdb /directory/containing/pdbs/
 
 The x-axis always represents the models/structures listed in the PDB.
 ```
-filename.rcode.eps      (y-axis: residue #; color: R number based on "-signed" and <rcode_cmap>)<br>
-filename.rcode.his.eps  (y-axis: Ramachandran number (R); color: frequency of R in model)<br>
-filename.rcode.rmsf.eps (y-axis: residue #; color: RMSF in R from the previous model)<br>
+filename.rcode.eps      (y-axis: residue #; color: R number based on "-signed" and <rcode_cmap>)
+filename.rcode.his.eps  (y-axis: Ramachandran number (R); color: frequency of R in model)
+filename.rcode.rmsf.eps (y-axis: residue #; color: RMSF in R from the previous model)
 ```
+Each graph is also accompanied by "_colorbar.eps", which are keys.
 
 # Additional tags
 ```
--h       -     Prints this message<br>
--ss      -     Color the ramachandran number codes (R-codes) by <br>
-               secondary structure (default: color by chirality and sign)<br>
--signed  -     Use the signed version of the ramachandran number<br>
--rmsd    -     Also producee "filename.rcode.rmsd.eps"<br>
-               (y-axis: residue #; color: RMSD in R from first model)<br>
+-h       -     Prints this message
+-ss      -     Color the ramachandran number codes (R-codes) by
+               secondary structure (default: color by chirality and sign)
+-signed  -     Use the signed version of the ramachandran number
+-rmsd    -     Also producee "filename.rcode.rmsd.eps"
+               (y-axis: residue #; color: RMSD in R from first model)
 ```
 
-Each graph is also accompanied by "_colorbar.eps", which are keys.
 
 # The Ramachandran number references
 
 Mannige (2018) "A simpler Ramachandran number can simplify the life of a protein simulator" Submitted. Manuscript available [here](manuscript/plotmap.pdf).
 
 Mannige, Kundu, Whitelam (2016) "The Ramachandran number: an order parameter for protein geometry" 
-PLoS ONE. [11(8):e0160023](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0160023)
+PLoS ONE. [11(8):e0160023](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0160023).
