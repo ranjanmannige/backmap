@@ -64,7 +64,7 @@ Three graphs (in both png/raster and pdf/vector format)
 
 The Ramachandran number concept is discussed in the following manuscripts (this tool is discussed in the first reference):
 
-1. Mannige (2018) "A simpler Ramachandran number can simplify the life of a protein simulator" Manuscript Prepared/Submitted. Preprint available 
+1. Mannige (2018) "The Backmap Python Module: How a Simpler Ramachandran Number Can Simplify the Life of a Protein Simulator" Manuscript Prepared/Submitted. Preprint available 
 the [manuscript/manuscript](manuscript/manuscript/plotmap.pdf) subdirectory of this repo.
-2. Mannige, Kundu, Whitelam (2016) "The Ramachandran number: an order parameter for protein geometry" PLoS ONE 11(8): e0160023. 
+2. Mannige, Kundu, Whitelam (2016) "The Ramachandran Number: An Order Parameter for Protein Geometry" PLoS ONE 11(8): e0160023. 
 Full Text: https://doi.org/10.1371/journal.pone.0160023
