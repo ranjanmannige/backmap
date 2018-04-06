@@ -1,10 +1,10 @@
 from __future__ import division, print_function, absolute_import
 
 
-#import argparse
+import argparse
 import sys
-#import logging
-#import pkg_resources
+import logging
+import pkg_resources
 
 #try:
 #	__version__ = pkg_resources.get_distribution(__name__).version

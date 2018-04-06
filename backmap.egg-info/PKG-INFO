@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: backmap
-Version: 0.0.1+11.g9b41d9e.dirty
+Version: 0.0.1.post0.dev12
 Summary: Shows protein backbone structures in compact graphical form using Ramachandran numbers
 Home-page: http://www.github.com/ranjanmannige/backmap
 Author: ranjanmannige
@@ -78,12 +78,12 @@ Description: ```
         Full Text: https://doi.org/10.1371/journal.pone.0160023
         
 Platform: any
-Classifier: Development Status :: 3 - Alpha,
-Classifier: Programming Language :: Python,
-Classifier: Intended Audience :: Science/Research,
-Classifier: Operating System :: OS Independent,
-Classifier: Topic :: Scientific/Engineering :: Bio-Informatics,
-Classifier: Topic :: Scientific/Engineering :: Chemistry,
-Classifier: Topic :: Scientific/Engineering :: Visualization,
+Classifier: Development Status :: 3 - Alpha
+Classifier: Programming Language :: Python
+Classifier: Intended Audience :: Science/Research
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Scientific/Engineering :: Bio-Informatics
+Classifier: Topic :: Scientific/Engineering :: Chemistry
+Classifier: Topic :: Scientific/Engineering :: Visualization
 Classifier: License :: OSI Approved :: MIT License
 Description-Content-Type: text/markdown
