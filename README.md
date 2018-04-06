@@ -48,7 +48,7 @@ Three graphs (in both png/raster and pdf/vector format)
 ./pdbs/reports/filename.rcode.pdf/png      (y-axis: residue #; color: R number based on "-signed" and <rcode_cmap>)
 ./pdbs/reports/filename.rcode.his.pdf/png  (y-axis: Ramachandran number (R); color: frequency of R in model)
 ./pdbs/reports/filename.rcode.rmsf.pdf/png (y-axis: residue #; color: RMSF in R from the previous model)
-./pdbs/reports/filename.rcode.rmsd.pdf/png (y-axis: residue #; color: RMSF in R from the previous model)
+./pdbs/reports/filename.rcode.rmsd.pdf/png (y-axis: residue #; color: RMSD in R from the previous model)
 ```
 (the last two files may not be created if only one model exists in the PDB file.)
 
@@ -64,7 +64,7 @@ Three graphs (in both png/raster and pdf/vector format)
 
 The Ramachandran number concept is discussed in the following manuscripts (this tool is discussed in the first reference):
 
-1. Mannige (2018) "The Backmap Python Module: How a Simpler Ramachandran Number Can Simplify the Life of a Protein Simulator" Manuscript Prepared/Submitted. Preprint available 
+1. Mannige (2018) "The Backmap Python Module: How a Simpler Ramachandran Number Can Simplify the Life of a Protein Simulator" Manuscript Prepared. Preprint available 
 the [manuscript/manuscript](manuscript/manuscript/plotmap.pdf) subdirectory of this repo.
 2. Mannige, Kundu, Whitelam (2016) "The Ramachandran Number: An Order Parameter for Protein Geometry" PLoS ONE 11(8): e0160023. 
 Full Text: https://doi.org/10.1371/journal.pone.0160023
