@@ -35,30 +35,29 @@ See the manuscript for more information regarding uses.
 ## Stand-alone Usage 
 
 ```
-python -m backmap.__init__ -pdb ProteinDatabankStructureFilename.pdb
+python -m backmap.__init__ -pdb ./pdbs/ProteinDatabankStructureFilename.pdb
 python -m backmap.__init__ -pdb /directory/containing/pdbs/
 ```
 
 The `.__init__` is needed because the main file we are referencing is `backmap/__init__.py`.
 
-## Output 
+### Expected output to the stand alone mode
 
-The x-axis always represents the models/structures listed in the PDB: 
-
+Three graphs (in both png/raster and pdf/vector format)
 ```
-filename.rcode.eps      (y-axis: residue #; color: R number based on "-signed" and <rcode_cmap>)
-filename.rcode.his.eps  (y-axis: Ramachandran number (R); color: frequency of R in model)
-filename.rcode.rmsf.eps (y-axis: residue #; color: RMSF in R from the previous model)
+./pdbs/reports/filename.rcode.pdf/png      (y-axis: residue #; color: R number based on "-signed" and <rcode_cmap>)
+./pdbs/reports/filename.rcode.his.pdf/png  (y-axis: Ramachandran number (R); color: frequency of R in model)
+./pdbs/reports/filename.rcode.rmsf.pdf/png (y-axis: residue #; color: RMSF in R from the previous model)
+./pdbs/reports/filename.rcode.rmsd.pdf/png (y-axis: residue #; color: RMSF in R from the previous model)
 ```
+(the last two files may not be created if only one model exists in the PDB file.)
 
 ## Additional tags
 ```
--h       -     Prints this message
+-h       -     Prints a help file
 -ss      -     Color the ramachandran number codes (R-codes) by 
                secondary structure (default: color by chirality and sign)
 -signed  -     Use the signed version of the ramachandran number
--rmsd    -     Also producee "filename.rcode.rmsd.eps"
-               (y-axis: residue #; color: RMSD in R from first model)
 ```
 
 # Publications
