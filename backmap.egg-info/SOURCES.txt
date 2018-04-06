@@ -221,7 +221,9 @@ versioneer.pyc
 .eggs/setuptools_scm-1.17.0-py2.7.egg/setuptools_scm/git.py
 .eggs/setuptools_scm-1.17.0-py2.7.egg/setuptools_scm/git.pyc
 .eggs/setuptools_scm-1.17.0-py2.7.egg/setuptools_scm/hacks.py
+.eggs/setuptools_scm-1.17.0-py2.7.egg/setuptools_scm/hacks.pyc
 .eggs/setuptools_scm-1.17.0-py2.7.egg/setuptools_scm/hg.py
+.eggs/setuptools_scm-1.17.0-py2.7.egg/setuptools_scm/hg.pyc
 .eggs/setuptools_scm-1.17.0-py2.7.egg/setuptools_scm/integration.py
 .eggs/setuptools_scm-1.17.0-py2.7.egg/setuptools_scm/integration.pyc
 .eggs/setuptools_scm-1.17.0-py2.7.egg/setuptools_scm/utils.py
@@ -266,6 +268,7 @@ backmap.egg-info/not-zip-safe
 backmap.egg-info/requires.txt
 backmap.egg-info/top_level.txt
 backmap/__pycache__/__init__.cpython-36.pyc
+dist/backmap-0.0.1+8.g5e304ad.dirty.tar.gz
 docs/Makefile
 docs/authors.rst
 docs/changes.rst
