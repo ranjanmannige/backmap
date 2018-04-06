@@ -44,14 +44,14 @@ def test_plot_graph():
 	# Getting only those values for the particular chain 
 	grouped_data = bm.group_data_by(data,group_by = 'chain', columns_to_return=['model','resid','R'])
 	for chain in list(grouped_data.keys()):
-		print('\t',chain)
+		print(r'\t',chain)
 		# Getting the X,Y,Z values for each entry
 		models, residues, Rs = grouped_data[chain]
 		
 		# Finally, creating (but not showing) the graph 
 		response = False
 		response = bm.draw_xyz(X = models  ,      Y = residues  ,     Z = Rs
-				   ,xlabel ='Frame #', ylabel ="Residue #",zlabel ='$\mathcal{R}$'
+				   ,xlabel =r'Frame #', ylabel =r"Residue #",zlabel =r'$\mathcal{R}$'
 				   ,  cmap = cmap    ,  title = cmap      , vmin=0, vmax=1)
 		#
 		assert response

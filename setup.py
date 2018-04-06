@@ -29,6 +29,7 @@ git tag -a v0.1 -m "first"
 
 import sys
 from setuptools import setup
+import versioneer
 #from setuptools_scm import version
 
 # Add here console scripts and other entry points in ini-style format
@@ -39,13 +40,14 @@ entry_points = """
 # fibonacci = z.skeleton:run
 """
 
-
 def setup_package():
 	needs_sphinx = {'build_sphinx', 'upload_docs'}.intersection(sys.argv)
+	
 	sphinx = ['sphinx'] if needs_sphinx else []
 	setup(setup_requires=[] + sphinx,
-			entry_points=entry_points,
-			use_pyscaffold=True)
+                 version=versioneer.get_version(),
+                cmdclass=versioneer.get_cmdclass(),
+			entry_points=entry_points)
 
 if __name__ == "__main__":
     setup_package()

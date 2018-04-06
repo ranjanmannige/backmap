@@ -1,0 +1,87 @@
+Metadata-Version: 2.1
+Name: backmap
+Version: 0.0.1+1.ge244298.dirty
+Summary: Shows protein backbone structures in compact graphical form using Ramachandran numbers
+Home-page: http://www.github.com/ranjanmannige/backmap
+Author: ranjanmannige
+Author-email: ranjanmannige@gmail.com
+License: mit
+Description: ```
+          ____             _    __  __          _____  
+         |  _ \           | |  |  \/  |   /\   |  __ \ 
+         | |_) | __ _  ___| | _| \  / |  /  \  | |__) |
+         |  _ < / _` |/ __| |/ / |\/| | / /\ \ |  ___/ 
+         | |_) | (_| | (__|   <| |  | |/ ____ \| |     
+         |____/ \__,_|\___|_|\_\_|  |_/_/    \_\_|     
+                               (Multi-angle Picture)                                             
+        ```
+        
+        This tool provides easily readable "pictures" of protein conformations, 
+        ensembles, and trajectories saved as either a combined protein databank 
+        (PDB) structure file, or a directory of such files, and produces graphs.
+        
+        # Installation
+        ```
+        pip install backmap
+        ```
+        
+        # RE-installation
+        ```
+        pip install -I backmap
+        ```
+        
+        # Usage
+        
+        ## Module Usage 
+        
+        ```python
+        import backmap
+        print backmap.R(phi=0,psi=0)
+        ```
+        See the manuscript for more information regarding uses.
+        
+        ## Stand-alone Usage 
+        
+        ```
+        python plotmap.py -pdb ProteinDatabankStructureFilename.pdb
+        python plotmap.py -pdb /directory/containing/pdbs/
+        ```
+        
+        ## Output 
+        
+        The x-axis always represents the models/structures listed in the PDB: 
+        
+        ```
+        filename.rcode.eps      (y-axis: residue #; color: R number based on "-signed" and <rcode_cmap>)
+        filename.rcode.his.eps  (y-axis: Ramachandran number (R); color: frequency of R in model)
+        filename.rcode.rmsf.eps (y-axis: residue #; color: RMSF in R from the previous model)
+        ```
+        
+        ## Additional tags
+        ```
+        -h       -     Prints this message
+        -ss      -     Color the ramachandran number codes (R-codes) by 
+                       secondary structure (default: color by chirality and sign)
+        -signed  -     Use the signed version of the ramachandran number
+        -rmsd    -     Also producee "filename.rcode.rmsd.eps"
+                       (y-axis: residue #; color: RMSD in R from first model)
+        ```
+        
+        # Publications
+        
+        The Ramachandran number concept is discussed in the following manuscripts (this tool is discussed in the first reference):
+        
+        1. Mannige (2018) "A simpler Ramachandran number can simplify the life of a protein simulator" Manuscript Prepared/Submitted
+        2. Mannige, Kundu, Whitelam (2016) "The Ramachandran number: an order parameter for protein geometry" PLoS ONE 11(8): e0160023. 
+        Full Text: https://doi.org/10.1371/journal.pone.0160023
+        
+Platform: any
+Classifier: Development Status :: 3 - Alpha,
+Classifier: Programming Language :: Python,
+Classifier: Intended Audience :: Science/Research,
+Classifier: Operating System :: OS Independent,
+Classifier: Topic :: Scientific/Engineering :: Bio-Informatics,
+Classifier: Topic :: Scientific/Engineering :: Chemistry,
+Classifier: Topic :: Scientific/Engineering :: Visualization,
+Classifier: License :: OSI Approved :: MIT License
+Description-Content-Type: text/markdown

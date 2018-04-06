@@ -1,0 +1,5 @@
+
+[console_scripts]
+# script_name = z.module:function
+# For example:
+# fibonacci = z.skeleton:run
