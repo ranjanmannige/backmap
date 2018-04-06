@@ -35,9 +35,11 @@ See the manuscript for more information regarding uses.
 ## Stand-alone Usage 
 
 ```
-python plotmap.py -pdb ProteinDatabankStructureFilename.pdb
-python plotmap.py -pdb /directory/containing/pdbs/
+python -m backmap.__init__ -pdb ProteinDatabankStructureFilename.pdb
+python -m backmap.__init__ -pdb /directory/containing/pdbs/
 ```
+
+The `.__init__` is needed because the main file we are referencing is `backmap/__init__.py`.
 
 ## Output 
 
