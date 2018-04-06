@@ -1,0 +1,6 @@
+# numpy
+# copy
+# glob
+# matplotlib
+# string
+
