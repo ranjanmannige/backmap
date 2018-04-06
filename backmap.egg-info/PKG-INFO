@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: backmap
-Version: 0.0.1+10.g22e5019.dirty
+Version: 0.0.1+11.g9b41d9e.dirty
 Summary: Shows protein backbone structures in compact graphical form using Ramachandran numbers
 Home-page: http://www.github.com/ranjanmannige/backmap
 Author: ranjanmannige

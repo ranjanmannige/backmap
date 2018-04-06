@@ -268,8 +268,6 @@ backmap.egg-info/not-zip-safe
 backmap.egg-info/requires.txt
 backmap.egg-info/top_level.txt
 backmap/__pycache__/__init__.cpython-36.pyc
-dist/backmap-0.0.1+8.g5e304ad.dirty.tar.gz
-dist/backmap-0.0.1+9.g68b2b5d.dirty.tar.gz
 docs/Makefile
 docs/authors.rst
 docs/changes.rst

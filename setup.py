@@ -45,7 +45,7 @@ def setup_package():
 	
 	sphinx = ['sphinx'] if needs_sphinx else []
 	setup(setup_requires=[] + sphinx,
-                 version=versioneer.get_version(),
+                version=versioneer.get_version(),
                 cmdclass=versioneer.get_cmdclass(),
 			entry_points=entry_points)
 
