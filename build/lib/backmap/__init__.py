@@ -1,6 +1,5 @@
 from __future__ import division, print_function, absolute_import
 
-
 import argparse
 import sys
 import logging
@@ -691,7 +690,6 @@ def draw_xyz(X,Y,Z, ylim=False, cmap='Greys', xlabel=False,ylabel=False,zlabel=F
 	z_array[Yix, Xix] = Z
 	
 	# Initiating the figure
-	plt.clf()
 	ax = plt.gca()
 	# Drawing the main part of the figure
 	

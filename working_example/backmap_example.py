@@ -1,8 +1,13 @@
+from __future__ import division, print_function, absolute_import
+
 import backmap as bm
 import os
 import matplotlib.pyplot as plt
 
-print("LOADING NANOSHEET")
+print(" ---- \t---------")
+print(" TEST \tTEST NAME")
+print(" ---- \t---------")
+print(" 1.   \tNanosheet Test")
 # Set pdb name 
 pdbfn = '../tests/pdbs/nanosheet_birth_U7.pdb'
 # READ PDB in the form of a matrix with columns
@@ -13,20 +18,18 @@ data = bm.read_pdb(pdbfn)
 
 # setting the name of the colormap
 cmap = "Chirality"
-
 # DRAWING A SINGLE GRAPH
 # Getting only those values for the particular chain 
-print("PLOTTING")
 grouped_data = bm.group_data_by(data,group_by = 'chain', columns_to_return=['model','resid','R'])
 for chain in list(grouped_data.keys()):
-	print('\t',chain)
 	# Getting the X,Y,Z values for each entry
 	models, residues, Rs = grouped_data[chain]
 	
 	# Finally, creating (but not showing) the graph 
 	bm.draw_xyz(X = models  ,      Y = residues  ,     Z = Rs
-	           ,xlabel ='Frame #', ylabel ="Residue #",zlabel ='$\mathcal{R}$'
-		       ,  cmap = cmap    ,  title = cmap      , vmin=0, vmax=1)
+	           , xlabel ='Frame #', ylabel ="Residue #",zlabel ='$\mathcal{R}$'
+	           , title=r'1. Nanosheet Test (time vs residue[$\mathcal{R}$])'
+		       ,  cmap = cmap    ,  vmin=0, vmax=1)
 	#
 	# Now, we display the graph:
 	plt.show() # ... one can also use plt.savefig() to save to file
@@ -34,7 +37,7 @@ for chain in list(grouped_data.keys()):
 # DRAWING A SINGLE GRAPH
 # Getting only those values for the particular chain 
 
-print("PLOTTING HISTOGRAM for 1xqq.pdb")
+print(" 2.  \tHistogram Test (PDB: 1xqq)")
 import numpy as np # for handling 2d arrays and calculating histograms
 pdbfn = '../tests/pdbs/1xqq.pdb'
 # READ PDB in the form of a matrix with columns
@@ -61,32 +64,39 @@ for chain in list(grouped_data.keys()):
 	# Finally, creating (but not showing) the graph 
 	bm.draw_xyz(X = X       ,      Y = Y  ,                Z = Z
 	   ,xlabel ='Frame #', ylabel ="$\mathcal{R}$",zlabel ="$P'(\mathcal{R})$:"
-		 ,cmap = 'Greys', ylim=[0,1])
+		 ,cmap = 'Greys', ylim=[0,1],title=r'2. Histogram Test (time vs $\mathcal{R}$ [$P(\mathcal{R})$])')
 	plt.yticks(np.arange(0,1.00001,0.2))
 	# Now, we display the graph:
 	#plt.savefig('manuscript/automated_figures/example2.pdf',dpi=200,bbox_inches="tight")
 	#print "Saved to:",'manuscript/automated_figures/example.pdf'
 	plt.show() # ... one can also use plt.savefig() to save to file
-	
+
 # TRYING OUT VARIOUS CMAPS
 # Getting only those values for the particular chain 
-print("PLOTTING")
 grouped_data = bm.group_data_by(data,group_by = 'chain', columns_to_return=['model','resid','R'])
 for chain in list(grouped_data.keys()):
-	print('\t',chain)
 	# Getting the X,Y,Z values for each entry
 	models, residues, Rs = grouped_data[chain]
+	subindex = 0
 	for cmap in ['Greys','SecondaryStructure','Chirality']: #, 'Chirality_r', 'SecondaryStructureHard']:
+		subindex+=1
 		# Finally, creating (but not showing) the graph 
+		print(' 3.'+str(subindex)+' \tColor Test (PDB: '+os.path.split(pdbfn)[-1][:-len('.pdb')]+'; CMAP: '+cmap+')')
+
 		bm.draw_xyz(X = models  ,      Y = residues  ,     Z = Rs
 		   ,xlabel ='Frame #', ylabel ="Residue #",zlabel ='$\mathcal{R}$'
-			 ,cmap = cmap    ,  title = os.path.split(pdbfn)[-1][:-len('.pdb')]+' (CMAP: '+cmap+')'
+			 ,cmap = cmap    
+			 ,title = '3.'+str(subindex)+' Color Test (CMAP: '+cmap+')'
 			 ,vmin=0,vmax=1)
 		# Now, we display the graph:
 		#plt.show() # ... one can also use plt.savefig() to save to file
-		#FN = 'manuscript/automated_figures/example_%s.pdf' %(cmap)
-		#plt.savefig(FN,dpi=200,bbox_inches="tight")
-		#print "Saved to:",FN
+		FN = '../manuscript/automated_figures/example_%s.pdf' %(cmap)
+		plt.savefig(FN,dpi=200,bbox_inches="tight")
+		print "Saved to:",FN
 		plt.show()
 	#
 #
+
+
+
+print(" ---- \t---------")
