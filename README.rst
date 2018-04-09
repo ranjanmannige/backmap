@@ -1,4 +1,4 @@
-.. image:: manuscript/manuscript/figures/banner.png
+.. image:: https://raw.githubusercontent.com/ranjanmannige/backmap/master/manuscript/manuscript/figures/banner.png
 
 .. contents::
 
@@ -48,7 +48,7 @@ In-script usage
     import backmap as bm
     print bm.R(phi=0,psi=0)
 
-For more information about module usage, refer to the `manuscript <./manuscript/manuscript/plotmap.pdf>`_ associated with this module
+For more information about module usage, refer to the `manuscript <https://raw.githubusercontent.com/ranjanmannige/backmap/master/manuscript/manuscript/plotmap.pdf>`_ associated with this module
 
 Standalone usage
 ----------------
@@ -76,7 +76,7 @@ The Panels **(b)** through **(f)** were created by running the following command
 
 As evident below, the graphs generated from the protein ensemble `1xqq <https://www.rcsb.org/structure/1XQQ>`_ describes a conformationally stable protein (each graph is detailed below). 
 
-    .. image:: ./manuscript/manuscript/figures/1xqq_spread.png
+    .. image:: https://raw.githubusercontent.com/ranjanmannige/backmap/master/manuscript/manuscript/figures/1xqq_spread.png
 
 Each column in Panel **(b)** describes the histogram in Ramachandran number (R) space for a single model/timeframe. These histograms show the presence of both helices (at R \~ 0.34) and sheets (at R \~ 0.52). Additionally, Panels **(c)** and **(d)** describe the per-residue conformational plots (colored by two different metrics or CMAPs), which show that most of the protein backbone remains relatively stable (e.g., few fluctuations in state or 'color' are evident over the frame \#). Finally, Panel **(e)** describes the extent towards which a single residue's state has deviated from the first frame, and Panel **(f)** describes the extent towards which a single residue's state has deviated from its state in the previous frame. Both these graphs, as expected from the graphs above, show that this protein is relatively conformationally stable.
 
@@ -87,7 +87,7 @@ Example 2: An intrinsically disordered protein (`2fft <https://www.rcsb.org/stru
 As compared to the conformationally stable protein above, an intrinsically disordered protein `2fft <https://www.rcsb.org/structure/2FFT>`_
 is much more flexible
 
-    .. image:: ./manuscript/manuscript/figures/2fft_spread.png
+    .. image:: https://raw.githubusercontent.com/ranjanmannige/backmap/master/manuscript/manuscript/figures/2fft_spread.png
 
 Panel **(b)** shows that the states accessed per model are diverse and dramatically fluctuate over the entire range of R (this is especially true when compared to a stable protein, see above). 
 
@@ -101,7 +101,7 @@ Publications
 The Ramachandran number concept is discussed in the following manuscripts (this tool is discussed in the first reference):
 
 1. Mannige (2018) "The Backmap Python Module: How a Simpler Ramachandran Number Can Simplify the Life of a Protein Simulator" Manuscript Prepared. Preprint available 
-the `manuscript/manuscript <manuscript/manuscript/plotmap.pdf>`_ subdirectory of this repo.
+the `manuscript/manuscript <https://raw.githubusercontent.com/ranjanmannige/backmap/master/manuscript/manuscript/plotmap.pdf>`_ subdirectory of this repo.
 
 2. Mannige, Kundu, Whitelam (2016) "The Ramachandran Number: An Order Parameter for Protein Geometry" PLoS ONE 11(8): e0160023. 
 Full Text: `https://doi.org/10.1371/journal.pone.0160023 <https://doi.org/10.1371/journal.pone.0160023>`_
