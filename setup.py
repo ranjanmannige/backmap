@@ -7,24 +7,17 @@
     puts up a scaffold for your new Python project. Learn more under:
     http://pyscaffold.readthedocs.org/
 
-# python 2.7 test
-virtualenv bmtest
-source bmtest/bin/activate
-(to get out: '> deactivate')
-python setup.py develop
-python setup.py install
-python setup.py test
-git tag -a v0.1 -m "first"
-
 # python 3.0 test
 virtualenv -p python3 bmtest
 source bmtest/bin/activate
-(to get out: '> deactivate')
-python setup.py debug
+(to get out: 'deactivate')
+pip install twine sphinx
 python setup.py install
 python setup.py test
-git tag -a v0.1 -m "first"
-
+python setup.py docs
+git tag -a v0.0.2 -m "second"
+rm dist/*
+python setup.py sdist
 """
 
 import sys
