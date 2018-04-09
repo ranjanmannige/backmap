@@ -270,7 +270,9 @@ backmap.egg-info/not-zip-safe
 backmap.egg-info/requires.txt
 backmap.egg-info/top_level.txt
 backmap/__pycache__/__init__.cpython-36.pyc
+backmap/__pycache__/__main__.cpython-36.pyc
 backmap/__pycache__/_version.cpython-36.pyc
+backmap/__pycache__/backmap.cpython-36.pyc
 docs/Makefile
 docs/authors.rst
 docs/changes.rst
@@ -370,9 +372,11 @@ manuscript/manuscript/automated_figures/pdb_2fft_rmsd.png
 manuscript/manuscript/automated_figures/pdb_2fft_rmsf.eps
 manuscript/manuscript/automated_figures/pdb_2fft_rmsf.png
 manuscript/manuscript/figures/1xqq.png
+manuscript/manuscript/figures/1xqq_spread.pdf
 manuscript/manuscript/figures/1xqq_spread.png
 manuscript/manuscript/figures/1xqq_spread.svg
 manuscript/manuscript/figures/2fft.png
+manuscript/manuscript/figures/2fft_spread.pdf
 manuscript/manuscript/figures/2fft_spread.png
 manuscript/manuscript/figures/2fft_spread.svg
 manuscript/manuscript/figures/banner.png
