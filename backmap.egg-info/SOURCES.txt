@@ -10,6 +10,7 @@ requirements.txt
 setup.cfg
 setup.py
 test-requirements.txt
+test.rst
 versioneer.py
 versioneer.pyc
 .eggs/README.txt
@@ -350,6 +351,7 @@ manuscript/manuscript/automated_figures/pdb_1xqq_r_Chirality.png
 manuscript/manuscript/automated_figures/pdb_1xqq_r_Greys.eps
 manuscript/manuscript/automated_figures/pdb_1xqq_r_Greys.png
 manuscript/manuscript/automated_figures/pdb_1xqq_r_SecondaryStructure.eps
+manuscript/manuscript/automated_figures/pdb_1xqq_r_SecondaryStructure.jpeg
 manuscript/manuscript/automated_figures/pdb_1xqq_r_SecondaryStructure.png
 manuscript/manuscript/automated_figures/pdb_1xqq_rmsd.eps
 manuscript/manuscript/automated_figures/pdb_1xqq_rmsd.png
@@ -368,7 +370,11 @@ manuscript/manuscript/automated_figures/pdb_2fft_rmsd.png
 manuscript/manuscript/automated_figures/pdb_2fft_rmsf.eps
 manuscript/manuscript/automated_figures/pdb_2fft_rmsf.png
 manuscript/manuscript/figures/1xqq.png
+manuscript/manuscript/figures/1xqq_spread.png
+manuscript/manuscript/figures/1xqq_spread.svg
 manuscript/manuscript/figures/2fft.png
+manuscript/manuscript/figures/2fft_spread.png
+manuscript/manuscript/figures/2fft_spread.svg
 manuscript/manuscript/figures/banner.png
 manuscript/manuscript/figures/banner.svg
 manuscript/manuscript/figures/cmaps.pdf
