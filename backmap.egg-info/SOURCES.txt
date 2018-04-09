@@ -260,7 +260,7 @@ versioneer.pyc
 .eggs/setuptools_scm-1.17.0-py3.6.egg/setuptools_scm/__pycache__/version.cpython-36.pyc
 __pycache__/versioneer.cpython-36.pyc
 backmap/__init__.py
-backmap/__init__.pyc
+backmap/__main__.py
 backmap/_version.py
 backmap.egg-info/PKG-INFO
 backmap.egg-info/SOURCES.txt

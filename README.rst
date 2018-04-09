@@ -57,8 +57,8 @@ After installation, the following commands produce a variety of graphs (exampled
 
 .. code-block:: bash
 
-    python -m backmap.__init__ -pdb ./pdbs/ProteinDatabankStructureFilename.pdb
-    python -m backmap.__init__ -pdb /directory/containing/pdbs/
+    python -m backmap -pdb ./pdbs/ProteinDatabankStructureFilename.pdb
+    python -m backmap -pdb /directory/containing/pdbs/
     
 The .__init__ is needed because the main file we are referencing is backmap/__init__.py.
 

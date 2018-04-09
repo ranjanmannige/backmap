@@ -12,12 +12,13 @@ virtualenv -p python3 bmtest
 source bmtest/bin/activate
 (to get out: 'deactivate')
 pip install twine sphinx
-python setup.py install
+python setup.py sdist
 python setup.py test
 python setup.py docs
-git tag -a v0.0.2 -m "second"
+git tag -a v0.0.3 -m "update"
 rm dist/*
 python setup.py sdist
+twine upload dist/*.tgz
 """
 
 import sys

@@ -112,7 +112,7 @@
 
 \usepackage{xspace}
 
-\newcommand{\gname}{BackMap}
+\newcommand{\gname}{BackMAP}
 \newcommand{\pname}{\textsc{\gname}\xspace}
 \newcommand{\code}[1]{\texttt{#1}\xspace}
 
@@ -156,7 +156,7 @@
 %\keywords{Ramachandran number, Multi-angle Picture, MAP, Protein structure}
 
 \begin{abstract}
-Protein backbones display complicated structures that often undergo numerous types of structural transformations. Due to the large number of structural degrees of freedom available to a backbone, it is often difficult to assess exactly where and how regions of a protein structure undergo structural transformation. This large structural phase makes it hard to survey new structural data, such as molecular dynamics trajectories or NMR-derived structural ensembles. This report discusses the Ramachandran number \rr as a residue-level structural metric that could simply the life of anyone contending with large numbers of structural data associated with protein backbones. In particular, this report 1) discusses a much simpler closed form of \rr that makes it more easy to calculate, 2) shows how \rr dramatically reduces the dimensionality of the protein backbone, thereby making it ideal for simultaneously interrogating large number of protein structures. In short, \rr is a simple and succinct descriptor of protein backbones and their dynamics.
+Protein backbones display complicated structures that often undergo numerous types of structural transformations. Due to the large number of structural degrees of freedom available to a backbone, it is often difficult to assess exactly where and how regions of a protein structure undergo structural transformation. This large structural phase makes it hard to survey new structural data, such as molecular dynamics trajectories or NMR-derived structural ensembles. This report discusses the Ramachandran number \rr as a residue-level structural metric that could simply the life of anyone contending with large numbers of structural data associated with protein backbones. In particular, this report 1) presents a new tool -- \pname -- that can be universally installaed using `> pip install backmap', 2) discusses a much simpler closed form of \rr that makes it more easy to calculate, and 3) shows how \rr dramatically reduces the dimensionality of the protein backbone, thereby making it ideal for simultaneously interrogating large number of protein structures. In short, \rr is a simple and succinct descriptor of protein backbones and their dynamics.
 \end{abstract}
 
 \begin{document}
@@ -260,10 +260,6 @@ Peptoid nanosheets \citep{Mannige2015} will be used here as an example of how mu
 
 By utilizing \rr, maps such as those in \Fig{fig:complex_stacks} provide information about every $\phi$ and $\psi$ within the backbone. As such, these maps are dubbed MAPs, for Multi Angle Pictures. A Python package called \pname created \Fig{fig:complex_stacks}a and b, which is provided as a GitHub repository at \url{https://github.com/ranjanmannige/\gname}. \pname takes in a PDB structure file containing a single structure, or multiple structures separated by the code `MODEL'.
 
-\subsection*{Other uses for \rr: picking out subtle differences from high volume of data}
-
-This section expands on the notion that \rr-numbers -- due to their compactness/stackability -- can be used to pick out backbone structural trends that would be hard to decipher using any other metric. For example, it is well known that prolines (P) display unusual backbone behavior: in particular, proline backbones occupy structures that are close to but distinct from $\upalpha$-helical regions. Due to the two-dimensionality of Ramachandran plots (\Fig{fig:peraa}a), such distinctions are hard to visually pick out from Ramachandran plots. However, stacking per-amino-acid \rr-codes side by side make such differences patent (\Fig{fig:peraa}b; see arrow).
-
 \begin{figure*}
 \centering
 \includegraphics[width=0.97\linewidth]{automated_figures/fig_ramachandran_plots_vs_numbers.pdf}
@@ -275,6 +271,11 @@ Panel (a) shows the per-amino acid backbone behavior of an average protein found
 \label{fig:motifs}}
 \end{figure*}
 
+
+\subsection*{Other uses for \rr: picking out subtle differences from high volume of data}
+
+This section expands on the notion that \rr-numbers -- due to their compactness/stackability -- can be used to pick out backbone structural trends that would be hard to decipher using any other metric. For example, it is well known that prolines (P) display unusual backbone behavior: in particular, proline backbones occupy structures that are close to but distinct from $\upalpha$-helical regions. Due to the two-dimensionality of Ramachandran plots (\Fig{fig:peraa}a), such distinctions are hard to visually pick out from Ramachandran plots. However, stacking per-amino-acid \rr-codes side by side make such differences patent (\Fig{fig:peraa}b; see arrow).
+
 It is also known that amino acids preceeding prolines display unusual shift in chirality. For example, \Fig{fig:motifs} shows that amino acids appearing before prolines and glycines behave much more differently than they would otherwise. While these results have been discussed previously \citep{Gunasekaran1998,Ho2005}, they were reported more than 30 years after the first structures were published; they would have been relatively easy to find if \rr-codes were to be used regularly. 
 
 The relationships in \Figs{fig:peraa} and \ref{fig:motifs} show how subtle changes in structure can be easily picked out when structures are stacked side-by-side in the form of $\mathcal{R}$-codes. Such subtle changes are often witnessed when protein backbones transition from one state to another.
@@ -284,7 +285,10 @@ The relationships in \Figs{fig:peraa} and \ref{fig:motifs} show how subtle chang
 \subsection*{Installation}
 \pname may either be downloaded from the github repository, or installed directly by running the following line in the command prompt (assuming that pip exists): \code{> pip install backmap}
 
-\subsection*{First smple test}
+\subsection*{Usage}
+The module can either be imported and used within existing scripts, or used as a standalone package usign the command `python -m backmap'. First the in-script usage will be discussed.
+
+\subsection*{In-script usage: first simple test}
 The simplest test would be to generate Ramachandran numbers from $(\phi,\psi)$ pairs:
 \begin{python}
 # Import module
@@ -295,7 +299,7 @@ print backmap.R( -180, -180) # Expected output: 0.0
 print backmap.R(  180,  180) # Expected output: 1.0 (equivalent in meaning to 0)
 \end{python}
 
-\subsection*{Basic usage for creating Multi-Angle Pictures (MAPs)}
+\subsection*{In-script usage: basic usage for creating Multi-Angle Pictures (MAPs)}
 As seen above, the generation of Ramachandran numbers from $(\phi,\psi)$ pairs is simple. However, greating MAPs -- Multi-Angle Pictures of protein backbones -- requires a few more steps (present as a test in the downloadable module):
 \begin{enumerate}
 \item {\bf Select and read a protein PDB structure}\\
@@ -341,7 +345,7 @@ Running the module as a standalone script would produce all these graphs automat
 \includegraphics[width=0.5\linewidth]{automated_figures/example.pdf}
 \end{enumerate}
 
-\subsection*{Creating custom graphs}
+\subsection*{In-script usage: Creating custom graphs}
 Other types of grpahs can be easily created by modifying part three of the code above. 
 For example, the following code creates histograms of R, one for each model (starting from line 10 above).
 \begin{python}[firstnumber=10]
@@ -374,15 +378,48 @@ For example, the following code creates histograms of R, one for each model (sta
 The code above results in the following graph:\\
 \includegraphics[width=0.5\linewidth]{automated_figures/example2.pdf}
 
-\subsection*{Available color schemes (CMAPs)}
+\subsection*{In-script usage: Available color schemes (CMAPs)}
 Aside from the general color maps (cmaps) that exist in matplotlib (e.g., `Greys', `Reds', or, god forbid, `jet'), 
-\pname provides two new colormaps: `\code{Chirality}', `\code{SecondaryStructure}'. \Fig{fig:cmaps} shows how a single protein ensemble
-may be described using these schematics. As illustrated in \Fig{fig:cmaps}b, cmaps available within the standard matplotlib package do not distinguish between major secondary structures well, to a great extent, while those provided by \pname do.
-\begin{figure*}[h!]
+\pname provides two new colormaps: `\code{Chirality}' (key: $+$-twists -- red; $-$ve twists: blue), `\code{SecondaryStructure}' (key: helices -- red; sheets -- blue; ppII helices -- cyan). right twisting backbones are shown in red; left twisting backbones are shown in blue). \Fig{fig:cmaps} shows how a single protein ensemble
+may be described using these schematics. As illustrated in \Fig{fig:cmaps}b, cmaps available within the standard matplotlib package do not distinguish between major secondary structures well, to a great extent, while those provided by \pname do. Note that colormap `\code{Chirality}' ignores regions that are less accessible to regular protein backbones. In case it is known that the protein backbone accesses non-protein regions of the Ramachandran plot, a four-color schematic will be needed (see \Sec{sec:simplifyR} for more discussions).
+\begin{figure*}[t!]
 \centering
 \includegraphics[width=0.9\linewidth]{figures/cmaps.pdf}
 \caption{A protein ensemble (a) along with some MAPs colored with different themes (b-d). Panels (c) and (d) are provided by the \pname module. In Panel (a), $\upbeta$-sheets are shown in blue and all helices are shown in red.\label{fig:cmaps}} 
 \end{figure*}
+
+\subsection*{Stand Alone Usage}
+
+\pname can be used as a stand along package by running `> python -m backmap -pdb <pdb\_dir\_or\_file>'. The sectons below describes the expected outputs and how they may be interpreted.
+
+\begin{figure*}[b!]
+%\centering
+\includegraphics[width=1.0\linewidth]{figures/1xqq_spread.pdf}
+\caption{Protein \href{https://www.rcsb.org/structure/1XQQ}{1xqq} describes a stable protein.\label{fig:example1}} 
+\end{figure*}
+
+\subsection*{Stand Alone Example I: A Stable Protein}
+
+Panels (b) through (f) of \Fig{fig:example1} below were created by running `> python -m backmap ./tests/pdbs/1xqq.pdb' (Panel (b) was created using \href{http://www.ks.uiuc.edu/Research/vmd/}{VMD}). These graphs indicates that protein \href{https://www.rcsb.org/structure/1XQQ}{1xqq} describes a conformationally stable protein. 
+
+In particular, each column in Panel (b) describes the histogram in Ramachandran number (R) space for a single model/timeframe. These histograms show the presence of both $\upalpha$-helices (at $\mathcal{R} \approx 0.34$) and $\upbeta$-sheets (at $\mathcal{R} \approx 0.52$). Additionally, Panels (c) and (d) describe per-residue conformational plots (colored by two different metrics or CMAPs), which show that most of the protein backbone remains relatively stable over `time' (e.g., few fluctuations in state or 'color' are evident over frame \#). Finally, Panel (e) describes the extent towards which a single residue's state has deviated from the first frame, and Panel (f) describes the extent towards which a single residue's state has deviated from its state in the previous frame. Both these graphs, show that this protein is relatively conformationally stable.
+
+\subsection*{Stand Alone Example II: An Intrinsically Disrodered Protein}
+
+\Fig{fig:example2} is identical to \Fig{fig:example2}, except that the panels pertain to an intrinsically disordered protein \href{https://www.rcsb.org/structure/2FFT}{2fft} whose structural ensemble describes dramatically distinct conformations. 
+
+\begin{figure*}[t!]
+%\centering
+\includegraphics[width=1.0\linewidth]{figures/2fft_spread.pdf}
+\caption{Protein \href{https://www.rcsb.org/structure/2FFT}{2fft} describes an intrinsically disordered protein.\label{fig:example2}} 
+\end{figure*}
+
+As compared to the conformationally stable protein above, protein \href{https://www.rcsb.org/structure/2FFT}{2fft} is much more flexible. Panel (b) shows that the states accessed per model are diverse and dramatically fluctuate over the entire range of $\mathcal{R}$ (this is especially true when compared to a stable protein, see \Fig{fig:example1}b). 
+
+The diverse states occupied by each residue (Panels (c) and (d)) confirm the conformational variation displayed by most of the backbone (Panels (e) and (f) similarly show how most of the residues fluctuate dramatically).
+
+Yet, interestingly, Panels (c) through (f) also show an unsusually stable region -- residues 15 through 25 -- which consistently display the same conformational ($\upalpha$-helical) state at $\mathcal{R}\approx0.34$ (interpreted as the color red in Panel (c)). This trend would be hard to recognize by simply looking at the structure (Panel (a)). 
+
 \section*{Conclusion}
 
 A simpler Ramachandran number is reported -- $\mathcal{R} = (\phi+\psi+2\pi)/(4\pi)$ -- which, while a single number, provides much information. For example, as discussed in \cite{Mannige2016}, \rr values above 0.5 are left-handed, while those below 0.5 are right handed, \rr values close to 0, 0.5 and 1 are extended, $\upbeta$-sheets occuppy \rr values at around 0.52, right-handed $\upalpha$-helices hover around 0.34. Given the Ramachandran number's `stackability', single graphs can hold a detailed information of the progression/evolution of molecular trajectories. Indeed, \Fig{fig:motifs} shows how 400 distinct Ramachandran plots can easily be fit into one graph when using \rr. Finally, a python script/module (\pname) has been pvoided in an online \href{https://github.com/ranjanmannige/\gname}{GitHub repository}.
