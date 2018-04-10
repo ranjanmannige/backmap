@@ -3,7 +3,6 @@
 AUTHORS.rst
 LICENSE.txt
 MANIFEST.in
-README.md
 README.rst
 backmap.pyc
 requirements.txt

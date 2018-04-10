@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: backmap
-Version: 0.0.3.post0.dev4
+Version: 0.1.0
 Summary: Shows protein backbone structures in compact graphical form using Ramachandran numbers
 Home-page: http://www.github.com/ranjanmannige/backmap
 Author: ranjanmannige
@@ -18,6 +18,8 @@ Description: .. image:: https://raw.githubusercontent.com/ranjanmannige/backmap/
         This tool provides easily readable "pictures" of protein conformations, 
         ensembles, and trajectories saved as either a combined protein databank 
         (PDB) structure file, or a directory of such files, and produces graphs.
+        
+        BackMAP helps with the visualization of large amounts of structural (space-time) backbone data in a single graph.
         
         
         Installation
@@ -54,9 +56,9 @@ Description: .. image:: https://raw.githubusercontent.com/ranjanmannige/backmap/
         .. code-block:: python
         
             import backmap as bm
-            print bm.R(phi=0,psi=0)
+            print bm.R(phi=0,psi=0) # Should print '0.5'
         
-        For more information about module usage, refer to the `manuscript <https://raw.githubusercontent.com/ranjanmannige/backmap/master/manuscript/manuscript/plotmap.pdf>`_ associated with this module
+        For more information about in-script module usage, refer to the `manuscript <https://raw.githubusercontent.com/ranjanmannige/backmap/master/manuscript/manuscript/plotmap.pdf>`_ associated with this module.
         
         Standalone usage
         ----------------
@@ -68,7 +70,6 @@ Description: .. image:: https://raw.githubusercontent.com/ranjanmannige/backmap/
             python -m backmap -pdb ./pdbs/ProteinDatabankStructureFilename.pdb
             python -m backmap -pdb /directory/containing/pdbs/
             
-        The .__init__ is needed because the main file we are referencing is backmap/__init__.py.
         
         Examples
         ========
@@ -76,17 +77,17 @@ Description: .. image:: https://raw.githubusercontent.com/ranjanmannige/backmap/
         Example 1: A stable protein (`1xqq <https://www.rcsb.org/structure/1XQQ>`_)
         ------------------------------------------------------------------------------
         
-        The Panels **(b)** through **(f)** were created by running the following command within thin the downloaded directory (Panel **(a)** was created using `VMD <http://www.ks.uiuc.edu/Research/vmd/>`_.
+        The Panels **(b)** through **(f)** were created by running the following command within thin the downloaded directory (Panel **(a)** was created using `VMD <http://www.ks.uiuc.edu/Research/vmd/>`_).
         
         .. code-block:: bash
         
-            python -m backmap.__init__ -pdb ./tests/pdbs/1xqq.pdb
+            python -m backmap -pdb ./tests/pdbs/1xqq.pdb
         
         As evident below, the graphs generated from the protein ensemble `1xqq <https://www.rcsb.org/structure/1XQQ>`_ describes a conformationally stable protein (each graph is detailed below). 
         
-            .. image:: https://raw.githubusercontent.com/ranjanmannige/backmap/master/manuscript/manuscript/figures/1xqq_spread.png
+        .. image:: https://raw.githubusercontent.com/ranjanmannige/backmap/master/manuscript/manuscript/figures/1xqq_spread.png
         
-        Each column in Panel **(b)** describes the histogram in Ramachandran number (R) space for a single model/timeframe. These histograms show the presence of both helices (at R \~ 0.34) and sheets (at R \~ 0.52). Additionally, Panels **(c)** and **(d)** describe the per-residue conformational plots (colored by two different metrics or CMAPs), which show that most of the protein backbone remains relatively stable (e.g., few fluctuations in state or 'color' are evident over the frame \#). Finally, Panel **(e)** describes the extent towards which a single residue's state has deviated from the first frame, and Panel **(f)** describes the extent towards which a single residue's state has deviated from its state in the previous frame. Both these graphs, as expected from the graphs above, show that this protein is relatively conformationally stable.
+        Each column in Panel **(b)** describes the histogram in Ramachandran number (R) space for a single model/timeframe. These histograms show the presence of both helices (at R \~ 0.34) and sheets (at R \~ 0.52). Additionally, Panels **(c)** and **(d)** describe the per-residue conformational plots (colored by two different metrics or CMAPs), which show that most of the protein backbone remains relatively stable (e.g., few fluctuations in state or 'color' are evident over the frame \#). Finally, Panel **(e)** describes the extent towards which a single residue's state has deviated from the first frame, and Panel **(f)** describes the extent towards which a single residue's state has deviated from its state in the previous frame. Both these graphs, as expected from Panels **(c)** and **(d)**, show that this protein is relatively conformationally stable.
         
         
         Example 2: An intrinsically disordered protein (`2fft <https://www.rcsb.org/structure/2FFT>`_)
@@ -95,13 +96,13 @@ Description: .. image:: https://raw.githubusercontent.com/ranjanmannige/backmap/
         As compared to the conformationally stable protein above, an intrinsically disordered protein `2fft <https://www.rcsb.org/structure/2FFT>`_
         is much more flexible
         
-            .. image:: https://raw.githubusercontent.com/ranjanmannige/backmap/master/manuscript/manuscript/figures/2fft_spread.png
+        .. image:: https://raw.githubusercontent.com/ranjanmannige/backmap/master/manuscript/manuscript/figures/2fft_spread.png
         
         Panel **(b)** shows that the states accessed per model are diverse and dramatically fluctuate over the entire range of R (this is especially true when compared to a stable protein, see above). 
         
-        The diverse states occupied by each residue (Panels **(c)** and **(d)**) confirm the conformaational variation displayed by most residues (Panels **(e)** and **(f)** similarly show how most of the residues fluctuate dramatically).
+        The diverse states occupied by each residue (Panels **(c)** and **(d)**) confirm this conformational variation within most residues (Panels **(e)** and **(f)** similarly show how most of the residues fluctuate dramatically).
         
-        Yet, interestingly, Panels **(c)** through **(f)** also show an unsusually stable region -- residues 15 through 25 -- which consistently display the same conformational (alpha-helical) state at R \~ 0.33 (interpreted as the color red in Panel **(c)**). This trend would be hard to recognize by simply looking at the structure (Panel **(a)**). 
+        Yet, interestingly, Panels **(c)** through **(f)** also show an unusually stable region -- residues 15 through 25 -- which consistently display the same conformational (alpha-helical) state at R \~ 0.33 (interpreted as the color red in Panel **(c)**). This trend would be hard to recognize by simply looking at the structure (Panel **(a)**). 
         
         
         Publications
