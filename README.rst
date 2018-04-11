@@ -1,4 +1,27 @@
 .. image:: https://raw.githubusercontent.com/ranjanmannige/backmap/master/manuscript/manuscript/figures/banner.png
+    :alt: BackMAP Banner
+
+|license| |status| |pypi| |pyversions| |format| |downloads|
+
+.. |pypi| image:: https://img.shields.io/pypi/v/backmap.svg?label=pip
+    :target: http://pypi.org/project/backmap
+    :alt: PyPi Release Version 
+
+.. |format| image:: https://img.shields.io/pypi/format/Backmap.svg
+    :alt: Format
+
+.. |license| image:: https://img.shields.io/pypi/l/Backmap.svg
+    :target: https://github.com/ranjanmannige/backmap/blob/master/LICENSE.txt
+    :alt: License
+
+.. |downloads| image:: https://img.shields.io/github/downloads/backmap/backmap/total.svg
+    :alt: Github All Releases
+
+.. |status| image:: https://img.shields.io/pypi/status/Backmap.svg
+    :alt: Status
+
+.. |pyversions| image:: https://img.shields.io/pypi/pyversions/Backmap.svg
+    :alt: Allowed python environments
 
 .. contents::
 

@@ -440,10 +440,9 @@ Assuming the bounds $\phi,\psi \in [-180^\circ,180^\circ)$, and the range $\lamb
 {R_{\mathbb{Z}}(\phi_{\rm{max}},\phi_{\rm{max}})-R_{\mathbb{Z}}(\phi_{\rm{min}},\phi_{\rm{min}})},\label{rama}
 \end{equation}
 where, $\mathcal{R}(\phi,\psi)$ is the Ramachanran number with range $[0,1)$, and $R_\mathbb{Z}(\phi,\psi)$ is the {\it unnormalized} integer-spaced Ramachandran number whose closed form is
-\begin{multline}
-R_\mathbb{Z}(\phi,\psi)  = \round{(\phi - \psi + \lambda)\sigma/\sqrt{2}} \\
- + \round{\sqrt{2} \lambda\sigma} \round{(\phi+\psi + \lambda)\sigma/\sqrt{2}}.\label{ramachandran_raw}
-\end{multline}
+\begin{equation}
+R_\mathbb{Z}(\phi,\psi)  = \round{(\phi - \psi + \lambda)\sigma/\sqrt{2}}  + \round{\sqrt{2} \lambda\sigma} \round{(\phi+\psi + \lambda)\sigma/\sqrt{2}}.\label{ramachandran_raw}
+\end{equation}
 
 Here, $\round{x}$ rounds $x$ to the closest integer value, $\sigma$ is a scaling factor, discussed below, and $\lambda$ is the range of an angle in degrees (i.e., $\lambda=\phi_{\rm max}-\phi_{\rm min}$). Effectively, this equation does the following. \textbf{1)} It divides up the Ramachandran plot into $(360^\circ \sigma^{1/\circ})^2$  squares, where $\sigma$ is a user-selected scaling factor that is measured in reciprocal degrees [see Fig.~8b in \cite{Mannige2016}]. \textbf{2)} It then assigns integer values to each square by setting the lowest integer value to the bottom left of the Ramachandran plot ($\phi=-180^\circ,\psi=-180^\circ$; green arrow in \Fig{fig:intro}b) and proceeding from the bottom left to the top right by iteratively slicing down -1/2 sloped lines and assigning increasing integer values to each square that one encounters. \textbf{3)} Finally, the equation assigns any $(\phi,\psi)$ pair within $\phi,\psi \in [-\phi_{\rm min},\phi_{\rm max})$ to the integer value ($R_\mathbb{Z}$) assigned to the divvied-up square that they it exists in. 
 

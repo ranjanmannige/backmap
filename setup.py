@@ -15,7 +15,7 @@ pip install twine sphinx
 python setup.py sdist
 python setup.py test
 python setup.py docs
-git tag -a v0.0.3 -m "update"
+git tag -a v0.1.0 -m "Update"
 rm dist/*
 python setup.py sdist
 twine upload dist/*.tgz
