@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: backmap
-Version: 0.2.1
+Version: 0.2.2
 Summary: Shows protein backbone structures in compact graphical form using Ramachandran numbers
 Home-page: http://www.github.com/ranjanmannige/backmap
 Author: ranjanmannige
@@ -142,6 +142,8 @@ Description: .. image:: https://raw.githubusercontent.com/ranjanmannige/backmap/
 Platform: any
 Classifier: Development Status :: 3 - Alpha
 Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
 Classifier: Intended Audience :: Science/Research
 Classifier: Operating System :: OS Independent
 Classifier: Topic :: Scientific/Engineering :: Bio-Informatics

@@ -1,9 +1,9 @@
 .. image:: https://raw.githubusercontent.com/ranjanmannige/backmap/master/manuscript/manuscript/figures/banner.png
     :alt: BackMAP Banner
 
-|license| |status| |pypi| |pyversions| |format| |downloads|
+|pypi| |license| |pyversions| |status| |format| 
 
-.. |pypi| image:: https://img.shields.io/pypi/v/backmap.svg?label=pip
+.. |pypi| image:: https://img.shields.io/pypi/v/backmap.svg?label=Version
     :target: http://pypi.org/project/backmap
     :alt: PyPi Release Version 
 
@@ -43,7 +43,7 @@ Installation
 PIP Installation
 -----------------
 
-Running the following at command line would get the job done (the '-I' is not necessary, but ensures the latest sub-version is installed):
+Running the following at a command prompt (terminal) would get the job done (the '-I' is not necessary, but ensures the latest sub-version is installed):
 
 .. code-block:: bash
 
@@ -61,6 +61,16 @@ GIT Installation
     $ python setup.py install
     $ python setup.py test
 
+
+Manual Installation
+-------------------
+
+From the `git repository <https://github.com/ranjanmannige/backmap>`_ download the zip (`https://github.com/ranjanmannige/backmap/archive/master.zip <https://github.com/ranjanmannige/backmap/archive/master.zip>`_). At a command prompt, unzip and change directory into the extracted directory (`cd ./backmap/`) and perform the following commands.
+
+.. code-block:: bash
+
+    $ python setup.py install
+    $ python setup.py test
 
 Usage
 =====
