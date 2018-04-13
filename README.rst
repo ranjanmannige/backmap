@@ -3,7 +3,7 @@
 
 |pypi| |license| |pyversions| |status| |format| 
 
-.. |pypi| image:: https://img.shields.io/pypi/v/backmap.svg?label=Version
+.. |pypi| image:: https://img.shields.io/pypi/v/backmap.svg?label=version
     :target: http://pypi.org/project/backmap
     :alt: PyPi Release Version 
 
