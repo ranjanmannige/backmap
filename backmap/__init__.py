@@ -82,7 +82,7 @@ def normalized_ramachandran_number(phi,psi,signed=False):
 	r = (phi+psi+360)/720.0
 	#
 	if signed:
-		if psi >= phi:
+		if psi < phi:
 			r = r * -1.0
 		#
 	#
@@ -743,14 +743,18 @@ def group_data_by(data,group_by="chain",columns_to_return=['model','resid','R'])
 	return grouped_data
 #
 
-if __name__ == "__main__":
+# This is the stand along program (used by __main__.py)
+def main():
+	colortype = "Chirality" # can be SecondaryStructure
+	global signed, show
+	show = 1
 	if not "-pdb" in sys.argv:
 		if "-h" in sys.argv or "-help" in sys.argv or "--help" in sys.argv:
 			pass
 		else:
 			print("Must provide '-pdb' parameter. Exiting.")
 			exit(0)
-	show = False
+	
 	target_dir = False
 	for i in range(len(sys.argv)):
 		if sys.argv[i] == "-rmsd":
@@ -854,11 +858,13 @@ if __name__ == "__main__":
 		# READ PDB in the form of a matrix with columns ['model','chain','resid','R']
 		latest_structure = read_pdb(pdbfn,signed)
 		
+		
 		# Getting column indices for each column name
 		rx = {} # "rx" for Row indeX
 		for c in latest_structure[0,:]:
 			rx[c] = list(latest_structure[0,:]).index(c)
 		#
+		
 		sorted_models        = sorted(list(set(latest_structure[1:,rx['model']])))
 		current_model_number = 0
 		original_to_new_model_numbers = {}
@@ -906,9 +912,21 @@ if __name__ == "__main__":
 	print(" TEST \tTEST NAME")
 	print(" ---- \t---------")
 	
+	vmin           =  0; 
+	vmax           =  1;
+	ss_cmap        = 'SecondaryStructure'
+	chirality_cmap = 'Chirality'
+	if signed:
+		vmin           = -1; 
+		vmax           =  1;
+		ss_cmap        = ss_cmap        + 'FourColor'
+		chirality_cmap = chirality_cmap + 'FourColor'
+	#
+		
 	print(" 1  \tRamachandran number (PDB: %s)"%(name))
+	
 	# setting the name of the colormap
-	for cmap in ['Greys','SecondaryStructure','Chirality']: #, 'Chirality_r', 'SecondaryStructureHard']:
+	for cmap in ['Greys',ss_cmap,chirality_cmap]: #, 'Chirality_r', 'SecondaryStructureHard']:
 		# DRAWING A SINGLE GRAPH
 		for chain in list(grouped_data.keys()):
 			final_name = name
@@ -923,7 +941,7 @@ if __name__ == "__main__":
 			draw_xyz(X = models  ,      Y = residues  ,     Z = Rs
 					   , xlabel ='Frame #', ylabel ="Residue #",zlabel ='$\mathcal{R}$'
 					   , title='Per-residue $\mathcal{R}$; CMAP: %s\nPDB: %s' %(cmap,final_name)
-					   ,  cmap = cmap    ,  vmin=0, vmax=1)
+					   ,  cmap = cmap    ,  vmin=vmin, vmax=vmax)
 			#
 			# Now, we display the graph:
 			FN = target_base+'pdb_%s_r_%s' %(final_name,cmap)
@@ -947,7 +965,7 @@ if __name__ == "__main__":
 			# Getting all Rs for that model #
 			current_rs = new_data[np.where(new_data[:,0]==m)][:,2] # column 2 contains R
 			# Getting the histogram
-			a,b = np.histogram(current_rs,bins=np.arange(0,1.01,0.01))
+			a,b = np.histogram(current_rs,bins=np.arange(vmin,vmax+0.0001,0.01))
 			max_count = float(np.max(a))
 			for i in range(len(a)):
 				X.append(m); Y.append((b[i]+b[i+1])/2.0); Z.append(a[i]/float(np.max(a)));
@@ -956,8 +974,8 @@ if __name__ == "__main__":
 		plt.clf()
 		draw_xyz(X = X       ,      Y = Y  ,                Z = Z
 		   ,xlabel ='Frame #', ylabel ="$\mathcal{R}$",zlabel ="$P'(\mathcal{R})$:"
-			 ,cmap = 'Greys', ylim=[0,1],title='Per-model $\mathcal{R}$-histogram\nPDB: %s'%(final_name))
-		plt.yticks(np.arange(0,1.00001,0.2))
+			 ,cmap = 'Greys', ylim=[vmin,vmax],title='Per-model $\mathcal{R}$-histogram\nPDB: %s'%(final_name))
+		plt.yticks(np.arange(vmin,vmax+0.00001,0.2))
 		# Now, we display the graph:
 		FN = target_base+'pdb_%s_his'%(final_name)
 		write_image(FN)
@@ -1066,7 +1084,11 @@ if __name__ == "__main__":
 	##########################################################################################################
 	##########################################################################################################
 	##########################################################################################################
+#
+
+if __name__ == "__main__":
+	print('Please use "python -m backmap" for the standalone version of backmap.')
 	
-from ._version import get_versions
-__version__ = get_versions()['version']
-del get_versions
+#from ._version import get_versions
+#__version__ = get_versions()['version']
+#del get_versions

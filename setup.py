@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+# INSTALL BY >pip install backmap OR python setup.py install
+
 """
     Setup file for project.
 
