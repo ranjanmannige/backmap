@@ -51,6 +51,7 @@ backmap/__pycache__/__main__.cpython-36.pyc
 backmap/__pycache__/_version.cpython-36.pyc
 backmap/__pycache__/backmap.cpython-36.pyc
 dist/backmap-0.2.3.post0.dev3.tar.gz
+dist/backmap-0.2.3.post0.dev4-py3.6.egg
 docs/Makefile
 docs/authors.rst
 docs/changes.rst
@@ -323,7 +324,6 @@ tests/__pycache__/conftest.cpython-27-PYTEST.pyc
 tests/__pycache__/conftest.cpython-36.pyc
 tests/__pycache__/test_backmap.cpython-27-PYTEST.pyc
 tests/__pycache__/test_backmap.cpython-36.pyc
-tests/pdbs/.~lock.nanosheet_v5_traj.pdb#
 tests/pdbs/1mba.pdb
 tests/pdbs/1xqq.pdb
 tests/pdbs/2fft.pdb
