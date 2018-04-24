@@ -1086,6 +1086,10 @@ def main():
 	##########################################################################################################
 #
 
+from ._version import get_versions
+__version__ = get_versions()['version']
+del get_versions
+
 if __name__ == "__main__":
 	print('Please use "python -m backmap" for the standalone version of backmap.')
 	

@@ -203,7 +203,7 @@ With protein dynamics undergoing a new rennissance -- especially due to intrinsi
 \caption{The distribution of dominant regular secondary sctuctures are shown in $[\phi,\psi]$-space (a) and in $\mathcal{R}$-space (b). Both Ramachandran plots (a) and Ramachandran `lines' (b) show equivalent resolution of secondary structure , allowing for a more compact representation of Ramachandran plots \cite{Mannige2016}.\label{fig:ramasecondary}} 
 \end{figure}
 
-It has recently been shown that the two Ramachandran backbone parameters ($\phi$,$\psi$) may be conveniently combined into a single number -- the Ramachandran \textit{number} [$\mathcal{R}(\phi,\psi)$ or simply $\mathcal{R}$] -- with little loss of information \citep{Mannige2016}. 
+It has recently been shown that the two Ramachandran backbone parameters ($\phi$,$\psi$) may be conveniently combined into a single number -- the Ramachandran \textit{number} [$\mathcal{R}(\phi,\psi)$ or simply $\mathcal{R}$] -- with little loss of information \citepp{Mannige2016}. 
 In a previous report, detailed discussions were provided regarding the reasons behind and derivation of $\mathcal{R}$ \citep{Mannige2016}. This report provides a simpler version of the equation previously published \citep{Mannige2016}, and further discusses how $\mathcal{R}$ may be used to provide information about protein ensembles and trajectories. 
 %We call these pictograms ``MAPs'' (or simply ``maps''), an acronym for Multi-Angle Pictures. 
 Finally, we introduce a software package -- \pname -- that can be used by to produce MAPs that describe the behavior of a protein backbone within user-inputted conformations, structural ensembles and trajectories. This package is presently available on GitHub (\url{https://github.com/ranjanmannige/\gname}).
@@ -420,6 +420,24 @@ The diverse states occupied by each residue (Panels (c) and (d)) confirm the con
 
 Yet, interestingly, Panels (c) through (f) also show an unsusually stable region -- residues 15 through 25 -- which consistently display the same conformational ($\upalpha$-helical) state at $\mathcal{R}\approx0.34$ (interpreted as the color red in Panel (c)). This trend would be hard to recognize by simply looking at the structure (Panel (a)). 
 
+\subsection*{A signed Ramachandran number for `misbehaving' backbones}
+
+<THIS SECTION IS UNDER CONSTRUCTION>
+
+The Ramachandran number assumes that the backbone is limited by its chiral center, i.e., we assume that protein backbones predominantly appears one the two sides of the Ramachandran number \cite{Mannige2017}. This, however, is not always the case, especially when dealing with glycine-rich proteins that lack chiral centers. In these situations, the Ramachandran number will not distinguish between
+
+
+An additional Ramachandran number -- the \textit{signed} Ramachandran number $\mathcal{R}_\textrm{S}$ -- is introduced here for backbones that are achiral. $\mathcal{R}_\textrm{S}$ is identical to the original number in magnitude, but which changes sign from $+$ to $-$ as you approach $\mathcal{R}$ numbers that are to the right (or below) the positively sloped diagonal. I.e., 
+\begin{equation}
+\mathcal{R}_\textrm{S} = 
+\begin{cases}
+    \mathcal{R}         &\text{, if } \psi \geq \phi  \\
+    \mathcal{R}\times-1 &\text{, if } \psi   <  \phi
+\end{cases}\label{eqn:signed}
+\end{equation}
+This metric is important for those glycine-rich peptides (and peptide-mimics such as peptoids) that both left and right regions of the Ramachandran plot; this is because, for such backbones, each $-1/2$-sloping slide of the Ramachandran plot may intersect more than one relevant region of the Ramachandran plot, which would put two structurally disparate regions within the Ramachandran plot close in $\mathcal{R}$-space. The signed Ramachandran plot $\mathcal{R}_\textrm{S}$ minimizes the probablity of this happening. However, very few residues within structural databases occupy the right side of the Rmachandran plot ($3.5$\% ), which means that signed Ramachandran plots would only be useful in  special cases (and possibly for IDPs). For this reason, we will proceed below with a focus on the more relevant Ramachandran number $\mathcal{R}$.
+
+
 \section*{Conclusion}
 
 A simpler Ramachandran number is reported -- $\mathcal{R} = (\phi+\psi+2\pi)/(4\pi)$ -- which, while a single number, provides much information. For example, as discussed in \cite{Mannige2016}, \rr values above 0.5 are left-handed, while those below 0.5 are right handed, \rr values close to 0, 0.5 and 1 are extended, $\upbeta$-sheets occuppy \rr values at around 0.52, right-handed $\upalpha$-helices hover around 0.34. Given the Ramachandran number's `stackability', single graphs can hold a detailed information of the progression/evolution of molecular trajectories. Indeed, \Fig{fig:motifs} shows how 400 distinct Ramachandran plots can easily be fit into one graph when using \rr. Finally, a python script/module (\pname) has been pvoided in an online \href{https://github.com/ranjanmannige/\gname}{GitHub repository}.
@@ -473,17 +491,6 @@ For example, assuming that $\phi,\psi \in [0,2\pi)$, the Ramachandran number in 
 \label{ramaGeneral}
 \end{equation}
 However, in doing so, the meaning of the Ramachandran number will change. The rest of this manuscript will always assume that all angles range between $-\pi$ ($-180^\circ$) and $\pi$ ($180^\circ$)
-
-\section{A signed Ramachandran number}
-An additional Ramachandran number -- the \textit{signed} Ramachandran number $\mathcal{R}_\textrm{S}$ -- is introduced here for backbones that are achiral. $\mathcal{R}_\textrm{S}$ is identical to the original number in magnitude, but which changes sign from $+$ to $-$ as you approach $\mathcal{R}$ numbers that are to the right (or below) the positively sloped diagonal. I.e., 
-\begin{equation}
-\mathcal{R}_\textrm{S} = 
-\begin{cases}
-    \mathcal{R}         &\text{, if } \psi \geq \phi  \\
-    \mathcal{R}\times-1 &\text{, if } \psi   <  \phi
-\end{cases}\label{eqn:signed}
-\end{equation}
-This metric is important for those glycine-rich peptides (and peptide-mimics such as peptoids) that both left and right regions of the Ramachandran plot; this is because, for such backbones, each $-1/2$-sloping slide of the Ramachandran plot may intersect more than one relevant region of the Ramachandran plot, which would put two structurally disparate regions within the Ramachandran plot close in $\mathcal{R}$-space. The signed Ramachandran plot $\mathcal{R}_\textrm{S}$ minimizes the probablity of this happening. However, very few residues within structural databases occupy the right side of the Rmachandran plot ($3.5$\% ), which means that signed Ramachandran plots would only be useful in  special cases (and possibly for IDPs). For this reason, we will proceed below with a focus on the more relevant Ramachandran number $\mathcal{R}$.
 
 \bibliography{all}
 
