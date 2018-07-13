@@ -164,6 +164,8 @@ manuscript/manuscript/figures/fig2_metrics.pdf
 manuscript/manuscript/figures/nano_r_demo.pdf
 manuscript/manuscript/figures/peptide_small.pdf
 manuscript/manuscript/figures/peptide_small.svg
+manuscript/manuscript/figures/signed4.pdf
+manuscript/manuscript/figures/signed4.svg
 manuscript/python_generators/README.md
 manuscript/python_generators/backmap_example.py
 manuscript/python_generators/old_code.py
