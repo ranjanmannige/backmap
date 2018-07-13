@@ -5,6 +5,8 @@ COMPANION SCRIPT #1, TESTED ONLY ON PYTHON 2.7, FOR:
 Mannige RV (2017) (article title TBD).
 '''
 
+output_fig_dir = '../manuscript/automated_figures/'
+
 length_dependent_csv_file = "local_imports/data_length.csv"
 master_ss_file            = "local_imports/data_ss.csv"
 fake_ss_file              = "local_imports/data_fake_ss.csv"
@@ -29,6 +31,10 @@ import matplotlib as mpl
 from scipy import interpolate
 import scipy.ndimage
 import scipy.stats   # for KDE
+import urllib
+if (sys.version_info > (3, 0)):
+	import urllib.request as urllib
+
 # LOCAL IMPORTS
 sys.path.insert(0, "./local_imports/") # for the local imports
 import Geometry, PeptideBuilder, locallib
@@ -88,7 +94,7 @@ cdict = {
 	'green': ((0.00,  c3[1], c3[1]), (COLORSWITCH,  bc[1], bc[1]), (1.0, c4[1], c4[1])),
 	'blue':  ((0.00,  c3[2], c3[2]), (COLORSWITCH,  bc[2], bc[2]), (1.0, c4[2], c4[2])) 
 }
-ss_name_to_label      = {} #{'H':r'$\alpha$','E':r'$\beta$','G':r'$3_{10}$','P':r'$\mathrm{pp2}$'}
+ss_name_to_label      = {'H':r'$\alpha$','E':r'$\beta$','G':r'$3_{10}$','P':r'$\mathrm{ppII}$'}
 ss_name_to_label_long = {'H':r'$\alpha$ (H)','E':r'E ($\beta$)','G':r'G ($3_{10}$)','P':r'P ($\mathrm{pp2}$)'}
 
 from matplotlib.colors import LinearSegmentedColormap # For making your own colormaps
@@ -147,12 +153,17 @@ def prepare_master_ss_file():
 	# Mansiaux, Joseph, Gelly, de Brevern (2011) Assignment of PolyProline II Conformation and Analysis 
 	# of Sequence-Structure Relationship. PLoS One 6(3): e18401.
 	
+	
 	ss_database_filename = "local_imports/PPII/PPII_cullpdb_pc30_res2.5_R1.0_d090511_chains7172.db"
+	
 	#obtained from: http://www.dsimb.inserm.fr/~debrevern/DOWN/DB/PPII/PPII_cullpdb_pc30_res2.5_R1.0_d090511_chains7172.db
 	#reported in: http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0018401
+	
 	if not os.path.isfile(ss_database_filename):
-		print "Local PPII database '%s' not available. Exiting." %(ss_database_filename)
-		exit()
+		#print "Local PPII database '%s' not available. Exiting." %(ss_database_filename)
+		url = 'http://www.dsimb.inserm.fr/~debrevern/DOWN/DB/PPII/PPII_cullpdb_pc30_res2.5_R1.0_d090511_chains7172.db'
+		urllib.urlretrieve(url, ss_database_filename)
+		
 		#Download from:
 		#http://www.dsimb.inserm.fr/~debrevern/DOWN/DB/PPII/PPII_cullpdb_pc30_res2.5_R1.0_d090511_chains7172.db
 	
@@ -518,7 +529,7 @@ if 0:
 # ====================================================================================	
 if 0: # FIGURE_START, shouldbeone
 	# Show the relationship between (rg or re) with respect to d for various L.
-	figname = "manuscript/automated_figures/fig_many_Ls.pdf"
+	figname = output_fig_dir+"/fig_many_Ls.pdf"
 	
 	sns.axes_style("ticks")
 	set_grays()
@@ -752,7 +763,7 @@ if 0: # FIGURE_START, shouldbeone
 	sp.pprint(sp.limit(R,sigma,sp.oo))
 	print "===================================================================================="
 
-if 1: # FIGURE_START, shouldbeone
+if 0: # FIGURE_START, shouldbeone
 	# Shows the Miyazawa equations for handedness (the hope is to find the extreme limits for d)
 	import sympy as sp
 	
@@ -796,7 +807,7 @@ if 1: # FIGURE_START, shouldbeone
 # ====================================================================================	
 if 0: # FIGURE_START, shouldbeone
 	# Study how the standard deviation between R(phi,psi,sigma) and R2(phi,psi) as we increase sigma:
-	figname = "manuscript/automated_figures/fig_R_vs_R2.pdf"
+	figname = output_fig_dir+"/fig_R_vs_R2.pdf"
 	min_v = -360.0
 	max_v =  360.0
 	
@@ -877,7 +888,7 @@ if 0: # FIGURE_START, shouldbeone
 
 # ====================================================================================	
 if 0: # FIGURE_START, shouldbeone
-	figname = "manuscript/automated_figures/fig_various_rama_plots.pdf"
+	figname = output_fig_dir+"/fig_various_rama_plots.pdf"
 	
 	sns.axes_style("ticks")#
 	# VERY IMPORTANT FOR GETTING THE SHAPE OF EACH PANEL CORRECT
@@ -1192,7 +1203,7 @@ if 0: # FIGURE_START, shouldbeone
 	#plt.show()
 
 if 0: # FIGURE_START, shouldbeone
-	figname = "manuscript/automated_figures/fig_various_relationships.pdf"
+	figname = output_fig_dir+"/fig_various_relationships.pdf"
 	
 	#sns.reset_orig()
 	sns.set_style("ticks")
@@ -1475,7 +1486,7 @@ if 0: # FIGURE_START, shouldbeone
 	
 	np.random.seed(931123231)
 	
-	figname = "manuscript/automated_figures/fig_rama_intro.pdf"
+	figname = output_fig_dir+"/fig_rama_intro.pdf"
 	sns.reset_orig()
 	
 	sns.set_style("ticks")
@@ -1515,6 +1526,7 @@ if 0: # FIGURE_START, shouldbeone
 	df = df[(df['phi'] != 999)]
 	df = df[(df['psi'] != 999)]
 	df = df[(df['omega'] != 999)]
+	ss_to_study = ['all','G','E','P','H']
 	ss_to_study = ['all','G','E','P','H']
 	# -------------------------------------------------
 	
@@ -1748,6 +1760,7 @@ if 0: # FIGURE_START, shouldbeone
 		
 		ss_to_fill_collor =  {'all':'#e5e5e5','H':'#c5c5c5','E':'#c5c5c5','G':'#c5c5c5','P':'#c5c5c5'}
 		ss_to_line_collor =  {'all':'#838383','H':'#838383','E':'#838383','G':'#838383','P':'#838383'}
+		ss_to_label       =  {'all':'all','H':'$\upalpha$','E':'$\upbeta$','G':'$3_{10}$','P':'ppII'}
 		
 		cmap = ss_to_fill_collor[ss]
 		c    = ss_to_fill_collor[ss]
@@ -1783,14 +1796,14 @@ if 0: # FIGURE_START, shouldbeone
 			if ss_label in ss_name_to_label:
 				ss_label = ss_name_to_label[ss_label]
 			
-			axes[0].annotate(ss_label, xy=(xave, yave), xytext=(xave+30, yave-30), weight=weight, 
+			axes[0].annotate(ss_label, xy=(xave, yave), xytext=(xave+35, yave-35), weight=weight, 
 				color=ss_to_line_collor[ss], xycoords='data', fontsize=textsize*1, 
 				arrowprops=dict(arrowstyle="-",color=ss_to_line_collor[ss], lw=linewidth))
 		else:
 			xave = -90
 			yave =  90
 			weight = 'normal'
-			axes[0].annotate('All', xy=(xave, yave), xytext=(xave+30, yave-30), weight=weight, 
+			axes[0].annotate('All', xy=(xave, yave), xytext=(xave+35, yave-35), weight=weight, 
 				color=ss_to_line_collor[ss], xycoords='data', fontsize=textsize*1, ha='left',
 				arrowprops=dict(arrowstyle="-",color=ss_to_line_collor[ss], lw=linewidth))
 	
@@ -1829,14 +1842,14 @@ if 0: # FIGURE_START, shouldbeone
 	#plt.subplots_adjust(wspace=.201)
 	#plt.subplots_adjust(hspace=0.001)
 	plt.savefig(figname, dpi=180, bbox_inches='tight',transparent=True) #facecolor='w', edgecolor='w',
-	if show_graphs:
-        	os.system(pdf_viewer+" "+figname)
-
+	if 1:#show_graphs:
+		os.system(pdf_viewer+" "+figname)	
+	#
 #
 #
 # 
 if 1: # FIGURE_START, shouldbeone
-	figname = "manuscript/automated_figures/fig_ss_2d_1d.pdf"
+	figname = output_fig_dir+"/fig_ss_2d_1d.pdf"
 	sns.reset_orig()
 	
 	#sns.set_context("notebook")#, font_scale=1)
@@ -2016,9 +2029,9 @@ if 1: # FIGURE_START, shouldbeone
 					weight = 'bold'
 				if ss_label in ss_name_to_label:
 					ss_label = ss_name_to_label[ss_label]
-				axes[column]['rama'].annotate(ss_label, xy=(xave, yave), xytext=(xave+30, yave-30), weight=weight, color=c,
-				            xycoords='data', arrowprops=dict(arrowstyle="-",color=c, lw=linewidth), fontsize=textsize*0.9)
-				     
+				axes[column]['rama'].annotate(ss_label, xy=(xave, yave), xytext=(xave+35, yave-35), weight=weight, color=c,
+				      xycoords='data', arrowprops=dict(arrowstyle="-",color=c, lw=linewidth), fontsize=textsize*0.9)
+			#	     
 			def get_ave(vals):
 				X,Y = get_his(vals,norm=0); X=list(X); Y=list(Y)
 				return X[Y.index(np.max(Y))]
@@ -2077,7 +2090,7 @@ if 1: # FIGURE_START, shouldbeone
 				#axes[column]['d'].plot(Y,X,c='k',linewidth=linewidth)
 				'''
 
-		# setting the ramachandran plot aspect ratio
+		# setting the ramachandran plot aspect ratio'
 		if 1:#for name in ['d','theta','R']: #axes.items():	
 			axes[column]['rama'].set_aspect(1)
 		
@@ -2137,14 +2150,12 @@ if 1: # FIGURE_START, shouldbeone
 			ss_to_avex  = {}
 			ss_to_color = {}
 			for ss,avex,color in axis_to_average_x[name]:
-				
-				ss_label = str(ss)
-				if ss_label in ss_name_to_label:
-					ss_label = ss_name_to_label[ss_label]
+				#
 				#avex = round(avex,1)
 				ss_to_avex[ss]         =       avex
 				ss_to_color[ss]        =       color
 			#
+			
 			ss_names = ss_to_avex.keys()
 			ss_avex  = ss_to_avex.values()
 			#
@@ -2153,7 +2164,8 @@ if 1: # FIGURE_START, shouldbeone
 			#
 			min_avex = np.min(ss_avex)
 			max_avex = np.max(ss_avex)
-			
+			#
+			print ss_names_sorted
 			unique_avexes = sorted(set(ss_avex))
 			#
 			paddings = itertools.cycle([0.0,0.0]) # If you want to cycle through some of vertical heights of the labels
@@ -2190,14 +2202,18 @@ if 1: # FIGURE_START, shouldbeone
 					angleB        = 90 + angleB_offset
 				#
 				connection_style = "arc,angleA=-90,angleB=%f,armA=%f,armB=%f,rad=0"%(angleB,armA,armB)
-				
-				
+				#
 				weight = 'normal'
 				if ss in mark_important_secondary_structures:
 					weight = 'bold'
 				
-				ax.annotate(str(ss), xy=(point_x, point_y), xytext=(text_x, text_y),
-					    xycoords='data', weight=weight,
+				# 
+				
+				ss_label = str(ss)
+				if ss in ss_name_to_label:
+					ss_label = ss_name_to_label[ss]
+				#
+				ax.annotate(str(ss_label), xy=(point_x, point_y), xytext=(text_x, text_y), xycoords='data', weight=weight,
 					    arrowprops=dict(arrowstyle="-",color=current_arrow_color, 
 					                    connectionstyle=connection_style, lw=linewidth),
 					    horizontalalignment='center', verticalalignment='bottom',
@@ -2217,7 +2233,7 @@ if 1: # FIGURE_START, shouldbeone
 
 # 
 if 0: # FIGURE_START, shouldbeone
-	figname = "manuscript/automated_figures/fig_ss_compact_form.pdf"
+	figname = output_fig_dir+"/fig_ss_compact_form.pdf"
 	sns.reset_orig()
 	
 	#sns.set_context("notebook")#, font_scale=1)
@@ -2593,7 +2609,7 @@ if 0: # FIGURE_START, shouldbeone
 
 # 
 if 0: # FIGURE_START, shouldbeone
-	figname = "manuscript/automated_figures/fig_various_ss_formats.pdf"
+	figname = output_fig_dir+"/fig_various_ss_formats.pdf"
 	sns.reset_orig()
 	
 	#sns.set_context("notebook")#, font_scale=1)

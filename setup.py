@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 # INSTALL BY >pip install backmap OR python setup.py install
-
 """
     Setup file for project.
 
@@ -11,8 +10,8 @@
     http://pyscaffold.readthedocs.org/
 
 # python 3.0 test
-virtualenv -p python3 bmtest
-source bmtest/bin/activate
+virtualenv -p python3 t
+source t/bin/activate
 (to get out: 'deactivate')
 pip install twine sphinx
 python setup.py sdist

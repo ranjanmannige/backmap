@@ -156,7 +156,7 @@
 %\keywords{Ramachandran number, Multi-angle Picture, MAP, Protein structure}
 
 \begin{abstract}
-Protein backbones display complicated structures that often undergo numerous types of structural transformations. Due to the large number of structural degrees of freedom available to a backbone, it is often difficult to assess exactly where and how regions of a protein structure undergo structural transformation. This large structural phase makes it hard to survey new structural data, such as molecular dynamics trajectories or NMR-derived structural ensembles. This report discusses the Ramachandran number \rr as a residue-level structural metric that could simply the life of anyone contending with large numbers of structural data associated with protein backbones. In particular, this report 1) presents a new tool -- \pname -- that can be universally installaed using `> pip install backmap', 2) discusses a much simpler closed form of \rr that makes it more easy to calculate, and 3) shows how \rr dramatically reduces the dimensionality of the protein backbone, thereby making it ideal for simultaneously interrogating large number of protein structures. In short, \rr is a simple and succinct descriptor of protein backbones and their dynamics.
+Protein backbones display complicated structures that often undergo numerous types of structural transformations. Due to the large number of structural degrees of freedom available to a backbone, it is often difficult to assess exactly where and how regions of a protein structure undergo structural transformation. This large structural phase makes it hard to survey new structural data, such as molecular dynamics trajectories or NMR-derived structural ensembles. This report discusses the Ramachandran number \rr as a residue-level structural metric that could simply the life of anyone contending with large numbers of structural data associated with protein backbones. In particular, this report 1) presents a new tool -- \pname -- that can be universally installaed using `> pip install backmap', 2) discusses a much simpler closed form of \rr that makes it more easy to calculate, 4) introduces a signed Ramachandran number ($\mathcal{R}_\textrm{S}$) for achiral peptide backbones, and 3) shows how \rr dramatically reduces the dimensionality of the protein backbone, thereby making it ideal for simultaneously interrogating large number of protein structures. In short, \rr is a simple and succinct descriptor of protein backbones and their dynamics.
 \end{abstract}
 
 \begin{document}
@@ -189,7 +189,7 @@ While the Ramachandran plot has been useful as a measure of protein backbone con
 \begin{figure*}[t!]
 \centering
 \includegraphics[width=1.0\linewidth]{automated_figures/fig_rama_intro.pdf}
-\caption{While the Ramachandran plot is useful for getting a {\it qualitative} sense of peptide backbone structure (a, c), it is not a convenient representation for exploring peptide backbone dynamics (c).\label{fig:ramaintro}} 
+\caption{While the Ramachandran plot is useful for getting a {\it qualitative} sense of peptide backbone structure (a, c), it is not a convenient representation for exploring peptide backbone dynamics (c). {\footnotesize Secondary structure keys used here and throughout the document:\newline`$\alpha$' -- $\upalpha$-helix, `$3_{10}$' -- $3_{10}$-helix, `$\beta$' -- $\upbeta$-sheet/extension, `$\textrm{ppII}$' -- polyproline II helix.}\label{fig:ramaintro}} 
 \end{figure*}
 
 Consequently, there has been no single compact descriptor of protein structure. This impedes that na{\"i}ve or hypothesis-free exploration of new trajectories/ensembles. %\footnote{Of course, if prior knowledge (or hypothesis) existed that a structural transition occurred along a specific reaction coordinate -- say with the change in a particular atom-atom distance and or a particular dihedral angle -- then na{\"i}ve exploration would not be required. However, even in these situations, \pname would be important to provide structural fingerprints (see \Fig{fig:metrics}).}. 
@@ -203,7 +203,7 @@ With protein dynamics undergoing a new rennissance -- especially due to intrinsi
 \caption{The distribution of dominant regular secondary sctuctures are shown in $[\phi,\psi]$-space (a) and in $\mathcal{R}$-space (b). Both Ramachandran plots (a) and Ramachandran `lines' (b) show equivalent resolution of secondary structure , allowing for a more compact representation of Ramachandran plots \cite{Mannige2016}.\label{fig:ramasecondary}} 
 \end{figure}
 
-It has recently been shown that the two Ramachandran backbone parameters ($\phi$,$\psi$) may be conveniently combined into a single number -- the Ramachandran \textit{number} [$\mathcal{R}(\phi,\psi)$ or simply $\mathcal{R}$] -- with little loss of information \citepp{Mannige2016}. 
+It has recently been shown that the two Ramachandran backbone parameters ($\phi$,$\psi$) may be conveniently combined into a single number -- the Ramachandran \textit{number} [$\mathcal{R}(\phi,\psi)$ or simply $\mathcal{R}$] -- with little loss of information \citep{Mannige2016}. 
 In a previous report, detailed discussions were provided regarding the reasons behind and derivation of $\mathcal{R}$ \citep{Mannige2016}. This report provides a simpler version of the equation previously published \citep{Mannige2016}, and further discusses how $\mathcal{R}$ may be used to provide information about protein ensembles and trajectories. 
 %We call these pictograms ``MAPs'' (or simply ``maps''), an acronym for Multi-Angle Pictures. 
 Finally, we introduce a software package -- \pname -- that can be used by to produce MAPs that describe the behavior of a protein backbone within user-inputted conformations, structural ensembles and trajectories. This package is presently available on GitHub (\url{https://github.com/ranjanmannige/\gname}).
@@ -380,19 +380,20 @@ The code above results in the following graph:\\
 
 \subsection*{In-script usage: Available color schemes (CMAPs)}
 Aside from the general color maps (cmaps) that exist in matplotlib (e.g., `Greys', `Reds', or, god forbid, `jet'), 
-\pname provides two new colormaps: `\code{Chirality}' (key: $+$-twists -- red; $-$ve twists: blue), `\code{SecondaryStructure}' (key: helices -- red; sheets -- blue; ppII helices -- cyan). right twisting backbones are shown in red; left twisting backbones are shown in blue). \Fig{fig:cmaps} shows how a single protein ensemble
+\pname provides two new colormaps: `\code{Chirality}' (key: $+$-twists -- red; $-$ve twists: blue), `\code{SecondaryStructure}' (key: {\it potential} helices -- red; sheets -- blue; ppII helices -- cyan). right twisting backbones are shown in red; left twisting backbones are shown in blue). \Fig{fig:cmaps} shows how a single protein ensemble
 may be described using these schematics. As illustrated in \Fig{fig:cmaps}b, cmaps available within the standard matplotlib package do not distinguish between major secondary structures well, to a great extent, while those provided by \pname do. Note that colormap `\code{Chirality}' ignores regions that are less accessible to regular protein backbones. In case it is known that the protein backbone accesses non-protein regions of the Ramachandran plot, a four-color schematic will be needed (see \Sec{sec:simplifyR} for more discussions).
-\begin{figure*}[t!]
+
+\begin{figure}[h!]
 \centering
 \includegraphics[width=0.9\linewidth]{figures/cmaps.pdf}
 \caption{A protein ensemble (a) along with some MAPs colored with different themes (b-d). Panels (c) and (d) are provided by the \pname module. In Panel (a), $\upbeta$-sheets are shown in blue and all helices are shown in red.\label{fig:cmaps}} 
-\end{figure*}
+\end{figure}
 
 \subsection*{Stand Alone Usage}
 
 \pname can be used as a stand along package by running `> python -m backmap -pdb <pdb\_dir\_or\_file>'. The sectons below describes the expected outputs and how they may be interpreted.
 
-\begin{figure*}[b!]
+\begin{figure*}[t!]
 %\centering
 \includegraphics[width=1.0\linewidth]{figures/1xqq_spread.pdf}
 \caption{Protein \href{https://www.rcsb.org/structure/1XQQ}{1xqq} describes a stable protein.\label{fig:example1}} 
@@ -408,26 +409,32 @@ In particular, each column in Panel (b) describes the histogram in Ramachandran 
 
 \Fig{fig:example2} is identical to \Fig{fig:example2}, except that the panels pertain to an intrinsically disordered protein \href{https://www.rcsb.org/structure/2FFT}{2fft} whose structural ensemble describes dramatically distinct conformations. 
 
-\begin{figure*}[t!]
-%\centering
-\includegraphics[width=1.0\linewidth]{figures/2fft_spread.pdf}
-\caption{Protein \href{https://www.rcsb.org/structure/2FFT}{2fft} describes an intrinsically disordered protein.\label{fig:example2}} 
-\end{figure*}
-
 As compared to the conformationally stable protein above, protein \href{https://www.rcsb.org/structure/2FFT}{2fft} is much more flexible. Panel (b) shows that the states accessed per model are diverse and dramatically fluctuate over the entire range of $\mathcal{R}$ (this is especially true when compared to a stable protein, see \Fig{fig:example1}b). 
 
 The diverse states occupied by each residue (Panels (c) and (d)) confirm the conformational variation displayed by most of the backbone (Panels (e) and (f) similarly show how most of the residues fluctuate dramatically).
 
 Yet, interestingly, Panels (c) through (f) also show an unsusually stable region -- residues 15 through 25 -- which consistently display the same conformational ($\upalpha$-helical) state at $\mathcal{R}\approx0.34$ (interpreted as the color red in Panel (c)). This trend would be hard to recognize by simply looking at the structure (Panel (a)). 
 
+\begin{figure*}[h!]
+%\centering
+\includegraphics[width=1.0\linewidth]{figures/2fft_spread.pdf}
+\caption{Protein \href{https://www.rcsb.org/structure/2FFT}{2fft} describes an intrinsically disordered protein.\label{fig:example2}} 
+\end{figure*}
+
 \subsection*{A signed Ramachandran number for `misbehaving' backbones}
 
-<THIS SECTION IS UNDER CONSTRUCTION>
+%The Ramachandran number maps the two dimensional $(\phi,\psi)$-space into one number by ensuring that points that lie on lines parallel to the negative diagonal are most similar to eachother. I.e., 
+The Ramachandran number increases in value from the bottom left of the Ramachandran plot to the top right in sweeps that are parallel to the negative sloping diagonal. As discussed in \citep{Mannige2016}, this method of mapping a two-dimensional space into one number is still structurally meaningful and descriptive because 1) most structural features (e.g. radius of gyration and end-to-end distance; \cite{Mannige2016}) of the protein backbone vary little along lines parallel to the negatively-sloping diagonal (called $-$ve lines), and 2) most protein backbones display chiral centers and therefore predominantly appear on the top left region of the Ramachandran plot (above the dashed diagonal in \Fig{fig:signed}a-{\it(i)}).
 
-The Ramachandran number assumes that the backbone is limited by its chiral center, i.e., we assume that protein backbones predominantly appears one the two sides of the Ramachandran number \cite{Mannige2017}. This, however, is not always the case, especially when dealing with glycine-rich proteins that lack chiral centers. In these situations, the Ramachandran number will not distinguish between
+\begin{figure*}[t!]
+\includegraphics[width=1.0\linewidth]{figures/signed4.pdf}
+\caption{\textbf{Signed {\rr}s are required for non-chiral backbones.} While the backbones of most amino acids occupy the topc of the positively sloped diagonal (dashed in b), non chiral amino acids such as Glycines (or their N-substituted variants -- peptoids) display no such preference, which causes distinct secondary structures that lie on the same `sweep' to be localized at similar regions in \rr (e.g., in b, polyproline-II and $\upalpha_\textrm{D}$ helices both localize at \rr $\approx 0.6$). However, a signed Ramachandran number ($\mathcal{R}_\textrm{S}$) solves this overlap by multiplying those \rr's derived from backbones with $\phi > \psi$ by $-1$. This extra resolution is evident available by the separation of polyproline-II and $\upalpha_\textrm{D}$ helices (c). The mapping of $(\phi,\psi)$ to $\mathcal{R}$ and $\mathcal{R}_\textrm{S}$ are shown to the right of each respective \rr-plot (b,c).\label{fig:signed}} 
+\end{figure*}
+
+However, not all backbones localize in only one half of the Ramachandran plot. Particularly, among biologically relevant amino acids, glycine occupies both regions of the Ramachandran plot (\Fig{fig:signed}a-{\it(ii)}; of note, the $\upalpha_\textrm{D}$ helix region becomes relatively prominent). On the other hand, prolines are known to form polyproline-II helices ($\textrm{ppII}$ in \Fig{fig:signed}a-{\it(iii)}), which falls on almost the same `sweep' as glycine rich peptides (red dot-dashed line $\upalpha_\textrm{D}$). In situations where both prolines and glycines are abundant, the Ramachandran number (\rr) would fail to distinguish $\upalpha_\textrm{D}$ from $\textrm{ppII}$ (\Fig{fig:signed}b).
 
 
-An additional Ramachandran number -- the \textit{signed} Ramachandran number $\mathcal{R}_\textrm{S}$ -- is introduced here for backbones that are achiral. $\mathcal{R}_\textrm{S}$ is identical to the original number in magnitude, but which changes sign from $+$ to $-$ as you approach $\mathcal{R}$ numbers that are to the right (or below) the positively sloped diagonal. I.e., 
+To accomodate the situation where achiral backbones are expected (eg., if peptoids or polygycines are being studied), an additional Ramachandran number -- the \textit{signed} Ramachandran number $\mathcal{R}_\textrm{S}$ -- is introduced here. $\mathcal{R}_\textrm{S}$ is identical to the original number in magnitude, but which changes sign from $+$ to $-$ as you approach $\mathcal{R}$ numbers that are to the right (or below) the positively sloped diagonal. I.e., 
 \begin{equation}
 \mathcal{R}_\textrm{S} = 
 \begin{cases}
@@ -435,8 +442,9 @@ An additional Ramachandran number -- the \textit{signed} Ramachandran number $\m
     \mathcal{R}\times-1 &\text{, if } \psi   <  \phi
 \end{cases}\label{eqn:signed}
 \end{equation}
-This metric is important for those glycine-rich peptides (and peptide-mimics such as peptoids) that both left and right regions of the Ramachandran plot; this is because, for such backbones, each $-1/2$-sloping slide of the Ramachandran plot may intersect more than one relevant region of the Ramachandran plot, which would put two structurally disparate regions within the Ramachandran plot close in $\mathcal{R}$-space. The signed Ramachandran plot $\mathcal{R}_\textrm{S}$ minimizes the probablity of this happening. However, very few residues within structural databases occupy the right side of the Rmachandran plot ($3.5$\% ), which means that signed Ramachandran plots would only be useful in  special cases (and possibly for IDPs). For this reason, we will proceed below with a focus on the more relevant Ramachandran number $\mathcal{R}$.
+An example of the utility of $\mathcal{R}_\textrm{S}$, \Fig{fig:signed}b shows that $\mathcal{R}_\textrm{S}$ easily distinguishes $\upalpha_\textrm{D}$ from $\textrm{ppII}$.
 
+Note that, while useful, would be important in very limited scenarios, as amino acids in the PDB occupy the lower-right side of the Ramachandran plot fewer than $3.5$\% of the time (mostly gue to glycines and IDPs).
 
 \section*{Conclusion}
 
@@ -444,7 +452,7 @@ A simpler Ramachandran number is reported -- $\mathcal{R} = (\phi+\psi+2\pi)/(4\
 
 \section*{Acknowledgments}
 
-During the development of this paper, RVM was partially supported by the Defense Threat Reduction Agency under contract no. IACRO-B0845281. RVM thanks Alana Canfield Mannige for her critique. This work was partially done at the Molecular Foundry at Lawrence Berkeley National Laboratory (LBNL), supported by the Office of Science, Office of Basic Energy Sciences, of the U.S. Department of Energy under Contract No. DE-AC02-05CH11231.
+During the development of this paper, RVM was partially supported by the Defense Threat Reduction Agency under contract no. IACRO-B0845281. RVM thanks Alana Canfield Mannige for her critique. The notion of the signed Ramachandran number emerged from discussions with Joyjit Kundu and Stephen Whitelam while at the Molecular Foundry at Lawrence Berkeley National Laboratory (LBNL). This work was partially done at the Molecular Foundry at LBNL, supported by the Office of Science, Office of Basic Energy Sciences, of the U.S. Department of Energy under Contract No. DE-AC02-05CH11231.
 
 \section{Appendix}
 
