@@ -23,6 +23,7 @@ pdf_viewer  = "evince" # This is the viewer of choice for the author (based-Linu
 # GLOBAL IMPORTS:
 import os, sys, copy, random, string
 import matplotlib.pyplot as plt        # For utilizing colormap interpolation 
+from matplotlib import lines
 from matplotlib.colors import LogNorm
 import numpy as np
 import Bio.PDB       # Biopython's PDB module
@@ -744,7 +745,7 @@ if 0: # FIGURE_START, shouldbeone
         	os.system(pdf_viewer+" "+figname)
 
 # ====================================================================================	
-if 0: # FIGURE_START, shouldbeone
+if 1: # FIGURE_START, shouldbeone
 	# Well, this is not really a figure... but a nifty display by Symbolic Python (sympy)
 	# which shows that the Ramachandran number, in the limit of infinite precision (sigma)
 	# is actually SO MUCH SIMPLER!!!
@@ -763,6 +764,148 @@ if 0: # FIGURE_START, shouldbeone
 	sp.pprint(sp.limit(R,sigma,sp.oo))
 	print "===================================================================================="
 
+
+# ====================================================================================	
+if 1: # FIGURE_START, shouldbeone
+	# Well, this is not really a figure... but a nifty display by Symbolic Python (sympy)
+	# which shows that the Ramachandran number, in the limit of infinite precision (sigma)
+	# is actually SO MUCH SIMPLER!!!
+	import sympy as sp
+	phi,psi,sigma,L,phi_min,psi_min,phi_max,psi_max = sp.symbols('phi,psi,sigma,lambda,phi_min,psi_min,phi_max,psi_max')
+	
+	
+	numerator = ((phi-psi+L)*sigma/sp.sqrt(2)) + (2*sigma*L/sp.sqrt(2)) * ((phi+psi+L)*sigma/sp.sqrt(2)) \
+	           -((phi_min-psi_min+L)*sigma/sp.sqrt(2)) - (2*sigma*L/sp.sqrt(2)) * ((phi_min+psi_min+L)*sigma/sp.sqrt(2))
+	denominator = ((phi_max-psi_max+L)*sigma/sp.sqrt(2)) + (2*sigma*L/sp.sqrt(2)) * ((phi_max+psi_max+L)*sigma/sp.sqrt(2)) \
+	            -((phi_min-psi_min+L)*sigma/sp.sqrt(2)) - (2*sigma*L/sp.sqrt(2)) * ((phi_min+psi_min+L)*sigma/sp.sqrt(2))
+	R = numerator/denominator
+	
+	print "===================================================================================="
+	print "The Ramachandran number presented by (Mannige, Kundu, Whitela, PLoS ONE, 2017) takes the (unrounded) form:"
+	sp.pprint(R)
+	print "===================================================================================="
+	print "The simplified Ramachandran number presented here takes the form:"
+	sp.pprint(sp.limit(R,sigma,sp.oo))
+	print "===================================================================================="
+
+
+# Draw various relationships w.r.t. R
+if 1:
+	Rs  = []
+	Y_Rg  = []
+	Y_Re  = []
+	Y_chi = []
+	omega = 180.0
+	astep =   5.0
+	for phi in np.arange(-180,180+astep/2,astep):
+		print phi
+		for psi in np.arange(-180,180+astep/2,astep):
+			
+			#R  = locallib.R(phi=phi, psi=psi)
+			r  = (phi + psi + 360.)/(720.) # min = -360, max = 360
+			
+			Rs.append(r)
+			
+			# ------------------
+			# Building a peptide (Tien et al., PeptideBuilder, PeerJ, 2013)
+			angles = []
+			L = 10
+			for n in range(int(L)):
+				angles.append((phi,psi,omega))
+			st1 = []
+			st1 = locallib.build_structure(angles)
+			# Only rg and re require structures to get values out
+			rg = locallib.calculate_rg(st1)
+			re = locallib.calculate_re(st1)
+			
+			Y_Rg.append(rg)
+			Y_Re.append(re)
+			# ------------------
+			chi, theta, d = locallib.calculate_handedness_from_theory(phi,psi,omega)
+			#
+			Y_chi.append(chi)
+	#
+	# averages.append(average)
+	# stds.append(std)
+	
+	
+	plt.clf()
+	sns.set()
+	# Two subplots, unpack the axes array immediately
+	f, axes = plt.subplots(1, 3, sharey=True)
+	
+	counter = 0
+	for Vs in [Y_Rg,Y_Re,Y_chi]:
+		X = []
+		Y = []
+		Y2 = []
+		step_size = (max(Rs)-min(Rs))/100.
+		for r in np.arange(min(Rs)-step_size/2,max(Rs)+step_size/2,step_size):
+			current_r    = r+step_size/2.
+			minr = r
+			maxr = r+step_size
+			current_vals = []
+			for r2,v in zip(Rs,Vs):
+				if minr < r2 and r2 <= maxr:
+					current_vals.append(v)
+			#
+			if len(current_vals):
+				X.append(current_r)
+				Y.append(np.average(current_vals))
+				Y2.append(np.std(current_vals))
+	
+		#
+		yave = np.array(X)
+		xave = np.array(Y)
+		xstd = np.array(Y2)
+		#
+		axes[counter].plot(Y, X,'#57b4c9')
+		axes[counter].errorbar(Y, X, xerr=Y2, ecolor='#4971ab',linestyle='none')
+		#axes[counter].fill_betweenx(yave, xave - xstd, xave + xstd, interpolate=True, facecolor='#4971ab', alpha=0.3)
+		
+		
+		counter += 1
+	#	
+	for axis in range(3):
+		axes[axis].plot([0,0],[0,1],color='k',linestyle='--',linewidth=1)
+		axes[axis].set_ylim([0,1])
+	#
+	labels = axes[0].get_xticks().tolist()
+	#
+	# Renaming Rg x axis
+	plt.axes(axes[0])
+	plt.title(r'(a) $R_g$', loc='left')
+	locs = [0,5,10,15]
+	labels = ['','min','','max']
+	plt.xticks(locs,labels)
+	#
+	# Renaming Rg x axis
+	plt.axes(axes[1])
+	plt.title(r'(b) $R_e$', loc='left')
+	locs = [0, 5,28]
+	labels = ['', 'min','max']
+	plt.xticks(locs,labels)
+	#
+	# Renaming chirality x axis
+	plt.axes(axes[2])
+	plt.title('(c) $\chi$', loc='left')
+	locs = [-1,0,1]
+	labels = ['$-$','','$+$']
+	plt.xticks(locs,labels)
+	#
+	for r, label in [[0.32,r'$\alpha$-helix'],[0.38,r'$3_{10}$-helix'],[0.52,r'$\beta$-sheet'],[0.6 ,r'ppII']]:
+		axes[2].text(1.4,r,label,horizontalalignment='left', verticalalignment='center',fontsize=7)
+	#
+	axes[0].set_ylabel(r'$\mathcal{R}$',fontsize=20)
+	#
+	plt.tight_layout()
+	plt.subplots_adjust(right=.9)
+	plt.savefig(output_fig_dir+'/fig_r_intro.pdf')
+	#
+	plt.show()
+	
+
+exit()
 if 0: # FIGURE_START, shouldbeone
 	# Shows the Miyazawa equations for handedness (the hope is to find the extreme limits for d)
 	import sympy as sp
