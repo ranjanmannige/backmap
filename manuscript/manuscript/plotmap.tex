@@ -108,7 +108,7 @@
 \newcommand{\ang}{$\textrm\AA$}
 \newcommand{\new}[1]{#1}
 \newcommand{\New}[1]{#1}
-\newcommand{\n}[1]{#1}
+\newcommand{\n}[1]{{\color{red}#1}}
 \newcommand{\we}{I~}
 
 \usepackage{xspace}
@@ -151,7 +151,7 @@
 \author[1,*]{Ranjan V. Mannige}
 %\author[1,2,*]{Ranjan V. Mannige}
 %\affil[1]{~KPMG, Atlanta, CA 30309, U.S.A.}
-\affil[1]{~Multiscale Institute, Atlanta, CA 30092, U.S.A.}
+\affil[1]{~Multiscale Institute, Berkeley Lake, GA 30092, U.S.A.}
 \affil[*]{~ranjanmannige@gmail.com}
 
 %\keywords{Ramachandran number, Multi-angle Picture, MAP, Protein structure}
@@ -240,7 +240,7 @@ For consistency, we maintain throughout this paper that $\phi_{\rm min} = \psi_{
 \begin{adjustwidth}{-1in}{0in} % Comment out/remove adjustwidth environment if table fits in text column.
 \centering
 \includegraphics[width=0.6\linewidth]{automated_figures/fig_r_intro.pdf}
-\caption{The Ramachandran number \rr displays a smooth relationships with respect to radius of gyration ($R_g$; a), end-to-end distance ($R_e$; b) and chirality (c), as calculated within \cite{Mannige2017}. Light blue lines are average trends, dark blue horizontal lines are error bars. Average positions of dominant secondary structures are shown to the right. These trends explain why \rr is a useful and compact structural measure.\label{fig:r_smooth}} 
+\caption{The Ramachandran number \rr displays smooth relationships with respect to radius of gyration ($R_g$; a), end-to-end distance ($R_e$; b) and chirality (c), as calculated within \cite{Mannige2017}. Light blue lines are average trends, dark blue horizontal lines are error bars. Average positions of dominant secondary structures are shown to the right. These trends explain why \rr is a useful and compact structural measure. \n{Structural measures $R_g$ and $R_e$ were obtained by computationally generating poly-glycine peptides for all possible $\phi$ and $\psi \in [-180,-175,\ldots,175,180]$. This was done using the Python library \href{https://github.com/mtien/PeptideBuilder}{PeptideBuilder} \citep{Tien2013}. Values for $R_g$ and $R_e$ were obtained for each peptide and binned with respect to its {$\mathcal{R}(\phi,\psi)$} (each bin represents a region in \rr space that is 0.01 \rr in width).}\label{fig:r_smooth}} 
 \end{adjustwidth}
 \end{figure}
 
