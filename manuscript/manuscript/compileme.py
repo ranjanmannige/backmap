@@ -15,4 +15,4 @@ os.system("pdftk "+fn+".pdf cat 1-"+str(manuscriptendingpage)+" output "+fn+"_MS
 os.system("pdftk "+fn+".pdf cat "+str(manuscriptendingpage+1)+"-end output "+fn+"_SI"+".pdf")
 """
 
-os.system("evince "+fn+".pdf")
+os.system("xreader "+fn+".pdf")
