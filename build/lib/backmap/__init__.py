@@ -1022,8 +1022,8 @@ def main():
 			# Finally, creating (but not showing) the graph 
 			plt.clf()
 			draw_xyz(X = X       ,      Y = Y  ,                Z = Z
-			   ,xlabel ='Frame #', ylabel ="$Residue \#$",zlabel ="$RMSF(\mathcal{R})$:"
-				 ,cmap = 'Blues', title='Per-residue RMSF($\mathcal{R}$)\nPDB: %s'%(final_name))
+			   ,xlabel ='Frame #', ylabel ="$Residue \#$",zlabel ="$D_{-1} (|\mathcal{R}|)$:"
+				 ,cmap = 'Blues', title='Per-residue structural deviation $|\mathcal{R}_t - \mathcal{R}_{t-1}|$\nPDB: %s'%(final_name))
 			
 			# Now, we display the graph:
 			FN = target_base+'pdb_%s_rmsf'%(final_name)
@@ -1070,8 +1070,8 @@ def main():
 			# Finally, creating (but not showing) the graph 
 			plt.clf()
 			draw_xyz(X = X       ,      Y = Y  ,                Z = Z
-			   ,xlabel ='Frame #', ylabel ="$Residue \#$",zlabel ="$RMSD(\mathcal{R})$:"
-				 ,cmap = 'Reds', title='Per-residue RMSD($\mathcal{R}$)\nPDB: %s'%(final_name))
+			   ,xlabel ='Frame #', ylabel ="$Residue \#$", zlabel ="$D_{1} (|\mathcal{R}|)$:"
+				 ,cmap = 'Reds', title='Per-residue structural deviation $|\mathcal{R}_t - \mathcal{R}_{1}|$\nPDB: %s'%(final_name))
 			#plt.yticks(np.arange(0,1.00001,0.2))
 			# Now, we display the graph:
 			FN = target_base+'pdb_%s_rmsd'%(final_name)

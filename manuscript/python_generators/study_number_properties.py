@@ -7,6 +7,7 @@ Mannige RV (2017) (article title TBD).
 
 output_fig_dir = '../manuscript/automated_figures/'
 
+# This takes a LONG time to calculate (many 
 length_dependent_csv_file = "local_imports/data_length.csv"
 master_ss_file            = "local_imports/data_ss.csv"
 fake_ss_file              = "local_imports/data_fake_ss.csv"
@@ -528,7 +529,7 @@ if 0:
 	
 
 # ====================================================================================	
-if 0: # FIGURE_START, shouldbeone
+if 0: # not used in latest manuscript
 	# Show the relationship between (rg or re) with respect to d for various L.
 	figname = output_fig_dir+"/fig_many_Ls.pdf"
 	
@@ -745,7 +746,7 @@ if 0: # FIGURE_START, shouldbeone
         	os.system(pdf_viewer+" "+figname)
 
 # ====================================================================================	
-if 1: # FIGURE_START, shouldbeone
+if 0: # FIGURE_START, shouldbeone
 	# Well, this is not really a figure... but a nifty display by Symbolic Python (sympy)
 	# which shows that the Ramachandran number, in the limit of infinite precision (sigma)
 	# is actually SO MUCH SIMPLER!!!
@@ -764,12 +765,6 @@ if 1: # FIGURE_START, shouldbeone
 	sp.pprint(sp.limit(R,sigma,sp.oo))
 	print "===================================================================================="
 
-
-# ====================================================================================	
-if 1: # FIGURE_START, shouldbeone
-	# Well, this is not really a figure... but a nifty display by Symbolic Python (sympy)
-	# which shows that the Ramachandran number, in the limit of infinite precision (sigma)
-	# is actually SO MUCH SIMPLER!!!
 	import sympy as sp
 	phi,psi,sigma,L,phi_min,psi_min,phi_max,psi_max = sp.symbols('phi,psi,sigma,lambda,phi_min,psi_min,phi_max,psi_max')
 	
@@ -790,7 +785,8 @@ if 1: # FIGURE_START, shouldbeone
 
 
 # Draw various relationships w.r.t. R
-if 1:
+if 0: # FIGURE_START
+	figname = output_fig_dir+'/fig_r_intro.pdf'
 	Rs  = []
 	Y_Rg  = []
 	Y_Re  = []
@@ -900,13 +896,11 @@ if 1:
 	#
 	plt.tight_layout()
 	plt.subplots_adjust(right=.9)
-	plt.savefig(output_fig_dir+'/fig_r_intro.pdf')
+	plt.savefig(figname)
 	#
 	plt.show()
 	
-
-exit()
-if 0: # FIGURE_START, shouldbeone
+if 0: 
 	# Shows the Miyazawa equations for handedness (the hope is to find the extreme limits for d)
 	import sympy as sp
 	
@@ -941,11 +935,6 @@ if 0: # FIGURE_START, shouldbeone
 	print '---------------------------'
 	# The 'simplest' version of this value
 	sp.pprint(sp.simplify(d))
-	
-	exit()
-	
-
-
 
 # ====================================================================================	
 if 0: # FIGURE_START, shouldbeone
@@ -995,24 +984,19 @@ if 0: # FIGURE_START, shouldbeone
 	sns.despine(offset=10)#, trim=True);
 	
 	ax.set_aspect(0.5)
-	ax.set_yscale("log", nonposy='clip')
-	ax.set_xscale("log", nonposy='clip')
+	ax.set_yscale("log")#, nonposy='clip')
+	ax.set_xscale("log")#, nonposy='clip')
 	ax.set_xlabel('$\sigma$',fontsize=textsize*2)
 	ax.set_ylabel(r'$|\mathcal{R}_1(\sigma)-\mathcal{R}_2|$',fontsize=textsize*1.5)
 	plt.setp(ax.get_xticklabels(),     size=textsize)
 	plt.setp(ax.get_yticklabels(), fontsize=textsize)#, rotation='vertical')
 	
 	# Dropping alternate tick labels because the text size is too large (but necessarily large)
-	
-	plt.setp(ax.get_xticklabels(), visible=False)
+	#plt.setp(ax.get_xticklabels(), visible=False)
 	plt.setp(ax.get_yticklabels(), visible=False)
 	
-	plt.setp(ax.get_xticklabels()[::2], visible=True)
-	plt.setp(ax.get_yticklabels()[::3], visible=True)
-	
-	
-	
-	
+	#plt.setp(ax.get_xticklabels()[::2], visible=True)
+	plt.setp(ax.get_yticklabels()[::2], visible=True)	
 	#
 	ax.minorticks_off()
 	ax.tick_params(axis=u'both', direction='out', width=linewidth, length=linewidth*4)#,labelsize=for)
@@ -1028,9 +1012,10 @@ if 0: # FIGURE_START, shouldbeone
 	plt.savefig(figname, dpi=180, bbox_inches='tight',transparent=True) #facecolor='w', edgecolor='w',
 	if show_graphs:
         	os.system(pdf_viewer+" "+figname)
+#
 
 # ====================================================================================	
-if 0: # FIGURE_START, shouldbeone
+if 0: # not used in main manuscript
 	figname = output_fig_dir+"/fig_various_rama_plots.pdf"
 	
 	sns.axes_style("ticks")#
@@ -1345,7 +1330,7 @@ if 0: # FIGURE_START, shouldbeone
         	os.system(pdf_viewer+" "+figname)
 	#plt.show()
 
-if 0: # FIGURE_START, shouldbeone
+if 0: # not used in main manuscript
 	figname = output_fig_dir+"/fig_various_relationships.pdf"
 	
 	#sns.reset_orig()
@@ -2004,7 +1989,8 @@ if 1: # FIGURE_START, shouldbeone
 	alpha     = 0.5
 	annotation_color = 'teal'
 	# VERY IMPORTANT FOR GETTING THE SHAPE OF EACH PANEL CORRECT
-	plt.figure(figsize=(6.5,9))
+	multiplier = 0.6
+	plt.figure(figsize=(24.5*multiplier,9*multiplier))
 	
 	# Plot distributions of secondary structures in various formats
 	sstype = 'segno' # check <ss_codes>
@@ -2012,17 +1998,19 @@ if 1: # FIGURE_START, shouldbeone
 	# ----------------
 	#                      nrows  ncols
 	#                          |  |
-	gs = mpl.gridspec.GridSpec(2, 1, 
-	                         height_ratios = [5,0.5],#,1,1],
-	                         width_ratios  = [1])
+	gs = mpl.gridspec.GridSpec(1, 3, 
+	                         height_ratios = [1],#,1,1],
+	                         width_ratios  = [1,1,0.2])
 	axes = {}
 	#    Column
 	#    |
-	axes[0] = {'rama': plt.subplot(gs[0,0]),
-	              'R': plt.subplot(gs[1,0])
+	axes[0] = {'rama' : plt.subplot(gs[0,0]),
+			   'rama2': plt.subplot(gs[0,1]),
+	               'R': plt.subplot(gs[0,2])
 	          #'theta': plt.subplot(gs[2,0]),
 	          #    'd': plt.subplot(gs[3,0])
 	          }
+	
 	'''
 	axes[1] = {'rama': plt.subplot(gs[0,1]),
 	              'R': plt.subplot(gs[1,1])
@@ -2039,8 +2027,7 @@ if 1: # FIGURE_START, shouldbeone
 	mark_important_secondary_structures = [4,8,6,11]		
 	
 	panel_letters = itertools.cycle(list(string.ascii_lowercase))
-	for column in [0]: #,1]:
-		
+	for column in [0]:#,1,2]: #,1]:
 		# -----------------
 		# Loading up the SS database
 		if column == 0:
@@ -2054,7 +2041,27 @@ if 1: # FIGURE_START, shouldbeone
 			# Cleaning:
 			df = df[(df['d'] != 999)]
 			ss_to_study = ['all','G','E','P','H']
-			
+		
+		# The mapping 
+		denominator = ((180+180)- (-180-180))
+		x = []; y = []; z = [];
+		for phi in range(-180,181,5):
+			for psi in range(-180,181,5):
+				R = float((phi+psi) - (-180-180))/denominator
+				
+				x.append(phi)
+				y.append(psi)
+				z.append(R)
+		#
+		locallib.make2Dfigure(x,y,z,fn=[],ax=axes[column]['rama2'],
+							  colorbar=1,cmap=plt.get_cmap('Greys'))
+						      #,ytitle=ytitle,xtitle=None,show=0)#,zlim=[0.0,0.3])# ylim = [0.3,0.7])
+		axes[column]['rama2'].set_xlabel(r'$\phi$')
+		axes[column]['rama2'].set_ylabel(r'$\psi$')
+		axes[column]['rama2'].set_xticks(np.arange(-180,181,180))
+		axes[column]['rama2'].set_yticks(np.arange(-180,181,180))
+		axes[column]['R'].set_yticks(np.arange(0,1,0.1))
+		#
 		
 		if column == 1:
 			normal_levels = [0.6666,0.9] # For ramachandran plots, given most ss keys
@@ -2179,7 +2186,6 @@ if 1: # FIGURE_START, shouldbeone
 				X,Y = get_his(vals,norm=0); X=list(X); Y=list(Y)
 				return X[Y.index(np.max(Y))]
 			
-			
 			# We study the ss distributions as a function of R, theta, d
 			if ss != "all":
 				bins = 150
@@ -2189,8 +2195,8 @@ if 1: # FIGURE_START, shouldbeone
 				# r
 				vals = cdf['R']
 				X,Y = get_his(vals,bins=bins)
-				axes[column]['R'].fill_between(X,Y,0,facecolor=c,alpha=alpha)
-				axes[column]['R'].plot(X,Y,c='k',linewidth=linewidth)
+				axes[column]['R'].fill_betweenx(X,0,Y,facecolor=c,alpha=alpha)
+				axes[column]['R'].plot(Y,X,c='k',linewidth=linewidth)
 				axis_to_average_x['R'].append([ss,get_ave(vals),c])
 				
 
@@ -2232,10 +2238,11 @@ if 1: # FIGURE_START, shouldbeone
 				#axes[column]['d'].fill_betweenx(X,Y,0,facecolor=c,alpha=alpha) 
 				#axes[column]['d'].plot(Y,X,c='k',linewidth=linewidth)
 				'''
-
+		
 		# setting the ramachandran plot aspect ratio'
 		if 1:#for name in ['d','theta','R']: #axes.items():	
 			axes[column]['rama'].set_aspect(1)
+			axes[column]['rama2'].set_aspect(1)
 		
 		# Making some tweaks to all but the 
 		for name in ['R']: #['d','theta','R']: #axes.items():	
@@ -2243,32 +2250,39 @@ if 1: # FIGURE_START, shouldbeone
 		
 			xmin,xmax = ax.get_xlim(); ymin,ymax = ax.get_ylim()  # getting axes min max values
 			
-			ax.set_yticks([0,1.5])
+			ax.set_xticks([0,1.5])
 			
-			ax.set_xlabel(type_to_label[name])
+			ax.set_ylabel(type_to_label[name])
 		
 			# Only show ticks on the left and bottom spines
-			ax.xaxis.set_ticks_position('bottom')
-			ax.yaxis.set_ticks_position('none')
+			ax.xaxis.set_ticks_position('none')
+			ax.yaxis.set_ticks_position('left')
 			# Hide the right and top spines
 			ax.spines['right'].set_visible(False)
 			ax.spines['top'].set_visible(False)
-			ax.spines['left'].set_visible(False)
+			ax.spines['bottom'].set_visible(False)
+			
 			
 			xpad =  (xmax-xmin)*0.0; ypad =  (ymax-ymin)*0.0;    # setting padding
 			
 			ymin = 0.0
-			extent = [xmin, xmax+xpad, ymin, ymax+ypad+0.6] # storing (padded) axis min max values
+			xmin,xmax = [0.28,0.72]
+			
+			#extent = [xmin, xmax+xpad, ymin, ymax+ypad+0.6] # storing (padded) axis min max values
+			extent = [ymin, ymax+ypad+0.6,xmin, xmax+xpad] # storing (padded) axis min max values
+			
+			
+			
 			xscaling = .094                                          # setting how much larger must the x axis be compared to the y axis
 			ax.axis(extent)                                       # setting (padded) axis min max values
 			#ax.set_aspect(abs((extent[1]-extent[0])/(extent[3]-extent[2]))/xscaling)
 			
 			# Dissapearing the axis
-			plt.setp(ax.get_yticklabels(), visible=False)
+			plt.setp(ax.get_xticklabels(), visible=False)
 		
 		# (Re)setting labels and titles
 		
-		for name in ['rama','R']:#['rama','R','theta','d']:
+		for name in ['rama','rama2','R']:#['rama','R','theta','d']:
 			ax = axes[column][name]
 			
 			for spine in ax.spines.keys():
@@ -2287,6 +2301,7 @@ if 1: # FIGURE_START, shouldbeone
 			ax.set_ylabel(ax.get_ylabel(), fontsize=textsize*2, rotation="horizontal", ha='center', va='center',labelpad=20)
 		
 		# Annotating distributions
+		"""
 		for name in ['R']:#axis_to_average_x.keys():
 			ax = axes[column][name]
 			#
@@ -2361,6 +2376,7 @@ if 1: # FIGURE_START, shouldbeone
 					                    connectionstyle=connection_style, lw=linewidth),
 					    horizontalalignment='center', verticalalignment='bottom',
 					    fontsize=textsize*0.9, color=ss_to_color[ss])
+		"""
 		# Add some artificial limits:
 		#axes[column]['theta'].set_xticks(range(-360,361,90))
 		#axes[column]['theta'].set_xlim(50,275)

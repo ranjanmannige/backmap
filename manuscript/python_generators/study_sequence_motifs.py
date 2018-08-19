@@ -14,8 +14,8 @@ sys.path.insert(0, "./local_imports/") # for the local imports
 import locallib
 
 # The figures that we will be creating in using script
-figname1 = "manuscript/automated_figures/fig_ramachandran_plots_vs_numbers.pdf"
-figname2 = "manuscript/automated_figures/fig_ramachandran_numbers_are_useful1.pdf"	
+figname1 = "../manuscript/automated_figures/fig_ramachandran_plots_vs_numbers.pdf"
+figname2 = "../manuscript/automated_figures/fig_ramachandran_numbers_are_useful1.pdf"	
 
 dryrun   = 0 # For testing. If 1, dont draw the Ramachandran plots (plt.contour() or plt.contourf() plots are computer intensive!)
 prunerun = 0 # For testing. Work on a smaller dataset (a fraction of the original size; normally 1%).
@@ -51,7 +51,6 @@ pgf_with_latex = {
     ]
 }
 mpl.rcParams.update(pgf_with_latex)
-
 
 motif_database_filename = 'local_imports/data_sequence_motifs.csv'
 structure_csv_file = "local_imports/data_pdb.csv"
@@ -129,6 +128,9 @@ two_tone_colors = [sns.color_palette('pastel')[2],sns.color_palette('dark')[2]]#
 # Uncomment to see the two colors side-by-side
 #sns.palplot(two_tone_colors); plt.show();exit();
 
+plt.rcParams['lines.color']     = 'Grey'
+plt.rcParams['lines.linewidth'] = 1
+	
 chain_index = -1
 if 1:
 	if not os.path.isfile(motif_database_filename):
@@ -142,10 +144,10 @@ if 1:
 			print "Populating the file '%s' with the values %s"%(structure_csv_file,str(columns))
 			outputf = locallib.open_file(structure_csv_file,'w')
 			outputf.write(",".join(columns)+"\n")
-		
-			pdb_database_dir = "/home/ranjan/Desktop/old/ensembles/pdbstyle-2.06"
+			
+			pdb_database_dir = os.path.expanduser("~/Desktop/Desktop/old/ensembles/pdbstyle-2.06")
 			files = glob.glob(pdb_database_dir+"/*/*.ent")
-		
+			
 			# Going through each PDB file
 			for fn in files:#[:100]:
 				chain_index += 1
@@ -725,8 +727,7 @@ if 1:
 							arrowprops=dict(arrowstyle="-|>", fc=text_color, color=text_color, linewidth = plt.rcParams['axes.linewidth']*1.5)
 							)
 					# ---------------------------------------------------------------
-					
-					
+				
 				#figure2_L_sub_plot, figure2_P_sub_plot, figure2_all_sub_plot0, figure2_all_sub_plot1
 				if pattern == '_L' or pattern == '_P':
 					plt.figure(1)
@@ -863,6 +864,29 @@ if 1:
 				if show_graphs:
 					os.system(pdf_viewer+" "+figname1)
 			
+			
+			if window == 2 and index_of_interest==1: #len(patterns[0]) == 2 and  patterns[0][0] == '_':
+					# ---------------------------------------------------------------
+					# Putting a little vertical arrow where the proline column exists
+					arrowymin,arrowymax = ax.get_ylim();
+					
+					print
+					print
+					print
+					print (arrowymin,arrowymax)
+					print
+					print
+					print
+					print
+					
+					arrowx = masterxticks[masterxlabels.index('G')]
+					ax.annotate('', xy    =[arrowx,0.45],   xycoords='data', # TO   THE TOP
+							xytext=[arrowx,0.41], textcoords='data', # FROM THE BOTTOM
+							ha="center", va="center",
+							arrowprops=dict(arrowstyle="-|>", fc=text_color, color=text_color, linewidth = plt.rcParams['axes.linewidth']*1.5)
+							)
+					# ---------------------------------------------------------------
+			
 			# Drawing connectors and lines
 			if window == 2 and index_of_interest == 0:
 				plt.figure(1)
@@ -871,13 +895,12 @@ if 1:
 				# Putting a little vertical arrow where the proline column exists
 				arrowymin,arrowymax = ax.get_ylim();
 				arrowx = masterxticks[masterxlabels.index('P')]
-				ax.annotate('', xy    =[arrowx,arrowymin+0.10*(arrowymax-arrowymin)],   xycoords='data', # TO   THE TOP
-						xytext=[arrowx,arrowymin+0.01*(arrowymax-arrowymin)], textcoords='data', # FROM THE BOTTOM
+				ax.annotate('', xy    =[arrowx,0.45],   xycoords='data', # TO   THE TOP
+						xytext=[arrowx,0.41], textcoords='data', # FROM THE BOTTOM
 						ha="center", va="center",
 						arrowprops=dict(arrowstyle="-|>", fc=text_color, color=text_color, linewidth = plt.rcParams['axes.linewidth']*1.5)
 						)
 				# ---------------------------------------------------------------
-				
 				
 				# Drwaing the various lines
 				for ax1,ax2,letter,armlengths in [[figure2_L_sub_plot,figure2_all_sub_plot0,'L',[14,14]]

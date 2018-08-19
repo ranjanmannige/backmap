@@ -15,7 +15,7 @@
    viewBox="0 0 326.47653 177.96342"
    version="1.1"
    id="svg8"
-   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
    sodipodi:docname="cmaps.svg">
   <defs
      id="defs2">
@@ -269,10 +269,10 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1853"
+     inkscape:window-width="1920"
      inkscape:window-height="1025"
-     inkscape:window-x="67"
-     inkscape:window-y="27"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata5">
@@ -282,7 +282,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -1615,7 +1615,7 @@
          x="-149.26196"
          y="-73.80172"
          style="font-size:6.70277786px;stroke-width:0.26458332"
-         id="tspan1668-6">a.</tspan></text>
+         id="tspan1668-6">(a)</tspan></text>
     <text
        id="text1692"
        y="-73.80172"
@@ -1626,7 +1626,7 @@
          style="font-size:6.70277786px;stroke-width:0.26458332"
          y="-73.80172"
          x="8.9588585"
-         sodipodi:role="line">b.</tspan></text>
+         sodipodi:role="line">(b)</tspan></text>
     <text
        id="text1696"
        y="17.744116"
@@ -1637,7 +1637,7 @@
          style="font-size:6.70277786px;stroke-width:0.26458332"
          y="17.744116"
          x="-149.26196"
-         sodipodi:role="line">c.</tspan></text>
+         sodipodi:role="line">(c)</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:6.70277786px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
@@ -1648,7 +1648,7 @@
          x="8.9588585"
          y="17.744116"
          style="font-size:6.70277786px;stroke-width:0.26458332"
-         id="tspan1698">d.</tspan></text>
+         id="tspan1698">(d)</tspan></text>
     <image
        y="-188.50632"
        x="-126.76796"

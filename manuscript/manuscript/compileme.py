@@ -1,5 +1,5 @@
 import os
-fn = "plotmap"
+fn = "backmap"
 os.system("pdflatex "+fn)
 os.system("bibtex "+fn)
 os.system("pdflatex "+fn)
