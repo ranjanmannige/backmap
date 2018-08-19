@@ -14,6 +14,7 @@ Fig 7	../manuscript/automated_figures/automated_figures/fig_ramachandran_plots_v
 Fig 8	../manuscript/automated_figures/automated_figures/fig_ramachandran_numbers_are_useful1.pdf
 ```
 
+
 ### THE FOLLOWING FIGURES WERE GREATED BY "BACKMAP_EXAMPLE.PY"
 
 ```
@@ -23,8 +24,11 @@ In-script example 2 (uncaptioned)	../manuscript/automated_figures/automated_figu
 
 ### OTHER PANELS:
 
-All panels within Figs 5, 6, 9, 10, 11 were created using the following command line code:
+All panels within Figs 5, 6, 9, 10, 11 (excepting Panel (a), which are three-dimensional representations) were created using the following command line code:
 
 ```
 > python -m backmap -pdb <PDB_NAME>
 ```
+
+All three dimensional representations were created using [VMD](http://www.ks.uiuc.edu/Research/vmd/) (Humphrey, W., Dalke, A. and Schulten, K., "VMD - Visual Molecular Dynamics", J. Molec. Graphics, 1996, vol. 14, pp. 33-38).
+)
