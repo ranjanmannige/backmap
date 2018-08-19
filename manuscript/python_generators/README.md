@@ -1,4 +1,4 @@
-### THE FOLLOWING FIGURES WERE GREATED BY "STUDY_NUMBER_PROPERTIES.PY":
+### THE FOLLOWING FIGURES WERE CREATED BY "STUDY_NUMBER_PROPERTIES.PY":
 
 ```
 Fig 2	../manuscript/automated_figures/fig_rama_intro.pdf
@@ -7,7 +7,7 @@ Fig 4	../manuscript/automated_figures/fig_r_intro.pdf
 Fig 13	../manuscript/automated_figures/fig_R_vs_R2.pdf
 ```
 
-### THE FOLLOWING FIGURES WERE GREATED BY "STUDY_NUMBER_PROPERTIES.PY":
+### THE FOLLOWING FIGURES WERE CREATED BY "STUDY_NUMBER_PROPERTIES.PY":
 
 ```
 Fig 7	../manuscript/automated_figures/automated_figures/fig_ramachandran_plots_vs_numbers.pdf
@@ -15,7 +15,7 @@ Fig 8	../manuscript/automated_figures/automated_figures/fig_ramachandran_numbers
 ```
 
 
-### THE FOLLOWING FIGURES WERE GREATED BY "BACKMAP_EXAMPLE.PY"
+### THE FOLLOWING FIGURES WERE CREATED BY "BACKMAP_EXAMPLE.PY"
 
 ```
 In-script example 1 (uncaptioned)	../manuscript/automated_figures/automated_figures/example.pdf
