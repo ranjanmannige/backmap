@@ -380,7 +380,7 @@ Running the module as a standalone script would produce all these graphs automat
 
 Additionally, by changing how one assigns values to `X' and `Y', 
 one can easily construct and draw other types of graphs such as time-resolved histograms, 
-root mean squared fluctuations, root mean squared deviation, etc. 
+\n{per-residue fluctuations when compared to the first ($D_{1}$) and previous structure ($D_{-1}$) within the trajectory}, etc. 
 \end{enumerate}
 
 \subsection*{In-script usage III: Creating custom graphs}
@@ -442,7 +442,7 @@ may be described using these schematics. As illustrated in \Fig{fig:cmaps}b, cma
 
 \subsection*{Stand Alone Example I: A Stable Protein}
 
-Panels (b) through (f) of \Fig{fig:example1} below were created by running `> python -m backmap ./tests/pdbs/1xqq.pdb' (Panel (a) was created using \href{http://www.ks.uiuc.edu/Research/vmd/}{VMD}). These graphs indicate that protein \href{https://www.rcsb.org/structure/1XQQ}{1xqq} describes a conformationally stable protein, since each residue fluctuates little in color (structure) over `time' (c,d; here and below, it is assumed that discrete models represent distinct states of the protein over `time'), show little change in the \rr histogram over time (b) and show few enduring fluctuations in RMSD (e) and RMSF (f). 
+Panels (b) through (f) of \Fig{fig:example1} below were created by running `> python -m backmap ./tests/pdbs/1xqq.pdb' (Panel (a) was created using \href{http://www.ks.uiuc.edu/Research/vmd/}{VMD}). These graphs indicate that protein \href{https://www.rcsb.org/structure/1XQQ}{1xqq} describes a conformationally stable protein, since each residue fluctuates little in color (structure) over `time' (c,d; here and below, it is assumed that discrete models represent distinct states of the protein over `time'), show little change in the \rr histogram over time (b) and show few enduring fluctuations \n{(e,f; see Methods)}. 
 
 In particular, each column in Panel (b) describes the histogram in Ramachandran number (R) space for a single model/timeframe. These histograms show the presence of both $\upalpha$-helices (at $\mathcal{R} \approx 0.34$) and $\upbeta$-sheets (at $\mathcal{R} \approx 0.52$). Additionally, Panels (c) and (d) describe per-residue conformational plots (colored by two different metrics or CMAPs), which show that most of the protein backbone remains relatively stable over time (e.g., few fluctuations in state or `color' are evident over frame \#). Finally, Panel (e) describes the extent towards which a single residue's state has deviated from the first frame, and Panel (f) describes the extent towards which a single residue's state has deviated from its state in the previous frame. All these graphs, show that this protein is relatively conformationally stable.
 
