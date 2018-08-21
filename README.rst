@@ -83,7 +83,7 @@ In-script usage
     import backmap as bm
     print bm.R(phi=0,psi=0) # Should print '0.5'
 
-For more information about in-script module usage, refer to the `manuscript <https://raw.githubusercontent.com/ranjanmannige/backmap/master/manuscript/manuscript/plotmap.pdf>`_ associated with this module.
+For more information about in-script module usage, refer to the `manuscript <https://raw.githubusercontent.com/ranjanmannige/backmap/master/manuscript/manuscript/backmap.pdf>`_ associated with this module.
 
 Standalone usage
 ----------------
@@ -134,8 +134,7 @@ Publications
 ============
 The Ramachandran number concept is discussed in the following manuscripts (this tool is discussed in the first reference):
 
-1. Mannige (2018) "The Backmap Python Module: How a Simpler Ramachandran Number Can Simplify the Life of a Protein Simulator" Manuscript Prepared. Preprint available 
-the `manuscript/manuscript <https://raw.githubusercontent.com/ranjanmannige/backmap/master/manuscript/manuscript/plotmap.pdf>`_ subdirectory of this repo.
+1. Mannige (2018) "The Backmap Python Module: How a Simpler Ramachandran Number Can Simplify the Life of a Protein Simulator" PeerJ. Accepted. [`manuscript/manuscript <https://raw.githubusercontent.com/ranjanmannige/backmap/master/manuscript/manuscript/plotmap.pdf>`_].
 
 2. Mannige, Kundu, Whitelam (2016) "The Ramachandran Number: An Order Parameter for Protein Geometry" PLoS ONE 11(8): e0160023. 
 Full Text: `https://doi.org/10.1371/journal.pone.0160023 <https://doi.org/10.1371/journal.pone.0160023>`_

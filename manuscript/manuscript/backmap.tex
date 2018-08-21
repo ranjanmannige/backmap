@@ -29,6 +29,7 @@
 %\usepackage[hidelinks]{hyperref}
 \usepackage{changepage}
 \usepackage[colorlinks=true, allcolors=blue, pdfborder={0 0 0}]{hyperref}
+\usepackage{soul}
 
 
 % ==============
@@ -110,7 +111,8 @@
 \newcommand{\New}[1]{#1}
 \newcommand{\old}[1]{}
 %\newcommand{\o}[1]{\old{#1}}
-\newcommand{\n}[1]{{\color{red}#1}}
+\newcommand{\n}[1]{{\textbf{\color{red}#1}}}
+%\newcommand{\n}[1]{{\hl{#1}}}
 \newcommand{\we}{I~}
 
 \usepackage{xspace}
@@ -509,7 +511,7 @@ The output of this command line implementation were used in panels (b) onwards o
 \textrm{D}_{-1} = \textcolor{red}{\mid} \mathcal{R}_{t}-\mathcal{R}_{t-1} \textcolor{red}{\mid}.
 \end{equation}
 
-\n{All three-dimensional representation of proteins (Panel (a) in \Figs{fig:simple_stacks}, \ref{fig:complex_stacks}, \ref{fig:cmaps}, \ref{fig:example1} and~\ref{fig:example2}) were created using \href{http://www.ks.uiuc.edu/Research/vmd/}{VMD} \citep{Humphrey1996}. Finally, all other figures -- excepting \Fig{fig:intro} that is derived from \cite{Mannige2016} -- were created using helper Python scripts available in \href{https://github.com/ranjanmannige/backmap/blob/master/manuscript/python_generators/}{manuscript/python\_generators/} within the companion \href{https://github.com/ranjanmannige/backmap/}{GitHub repository}.}
+\n{All three-dimensional representations of proteins (Panel (a) in \Figs{fig:simple_stacks}, \ref{fig:complex_stacks}, \ref{fig:cmaps}, \ref{fig:example1} and~\ref{fig:example2}) were created using \href{http://www.ks.uiuc.edu/Research/vmd/}{VMD} \citep{Humphrey1996}. Finally, all other figures -- excepting \Fig{fig:intro} that is derived from \cite{Mannige2016} -- were created using helper Python scripts available in \href{https://github.com/ranjanmannige/backmap/blob/master/manuscript/python_generators/}{manuscript/python\_generators/} within the companion \href{https://github.com/ranjanmannige/backmap/}{GitHub repository}.}
 
 \section*{Acknowledgments}
 
