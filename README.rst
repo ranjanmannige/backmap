@@ -134,7 +134,7 @@ Publications
 ============
 The Ramachandran number concept is discussed in the following manuscripts (this tool is discussed in the first reference):
 
-1. Mannige (2018) "The Backmap Python Module: How a Simpler Ramachandran Number Can Simplify the Life of a Protein Simulator" PeerJ. Accepted. [`manuscript/manuscript <https://raw.githubusercontent.com/ranjanmannige/backmap/master/manuscript/manuscript/plotmap.pdf>`_].
+1. Mannige (2018) "The Backmap Python Module: How a Simpler Ramachandran Number Can Simplify the Life of a Protein Simulator" PeerJ. Accepted. [`manuscript <https://raw.githubusercontent.com/ranjanmannige/backmap/master/manuscript/manuscript/backmap.pdf>`_].
 
 2. Mannige, Kundu, Whitelam (2016) "The Ramachandran Number: An Order Parameter for Protein Geometry" PLoS ONE 11(8): e0160023. 
 Full Text: `https://doi.org/10.1371/journal.pone.0160023 <https://doi.org/10.1371/journal.pone.0160023>`_
