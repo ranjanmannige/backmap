@@ -30,11 +30,7 @@
 Introduction
 ============
 
-This tool provides easily readable "pictures" of protein conformations, 
-ensembles, and trajectories saved as either a combined protein databank 
-(PDB) structure file, or a directory of such files, and produces graphs.
-
-BackMAP helps with the visualization of large amounts of structural (space-time) backbone data in a single graph.
+BackMAP is a Python module (and stand-alone tool) that helps with the visualization of large amounts of structural (space-time) backbone data in a single graph. It utilizes a new per-residue backbone metric -- the Ramachandran number -- to provide easily readable "pictures" (multi-angle pictures or MAPS) of protein conformations, ensembles, and trajectories. Input structures can be either a combined protein databank (PDB) structure file, or a directory of such files, and produces graphs.
 
 
 Installation
@@ -92,8 +88,8 @@ After installation, the following commands produce a variety of graphs (exampled
 
 .. code-block:: bash
 
-    python -m backmap -pdb ./pdbs/ProteinDatabankStructureFilename.pdb
-    python -m backmap -pdb /directory/containing/pdbs/
+    $ python -m backmap -pdb ./pdbs/ProteinDatabankStructureFilename.pdb
+    $ python -m backmap -pdb /directory/containing/pdbs/
     
 
 Examples
@@ -106,7 +102,7 @@ The Panels **(b)** through **(f)** were created by running the following command
 
 .. code-block:: bash
 
-    python -m backmap -pdb ./tests/pdbs/1xqq.pdb
+    $ python -m backmap -pdb ./tests/pdbs/1xqq.pdb
 
 As evident below, the graphs generated from the protein ensemble `1xqq <https://www.rcsb.org/structure/1XQQ>`_ describes a conformationally stable protein (each graph is detailed below). 
 

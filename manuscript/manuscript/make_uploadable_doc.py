@@ -1,20 +1,25 @@
 import os
 
-current_filename = "ramachandran_v7.tex"
-target_filename_base = "ramachandran_number_"
+current_filename = "backmap.tex"
+target_filename_base = "backmap_"
 target_dir = "for_upload"
 
-
 old_to_new_fig_names = {
-"figures/fig1":  "fig1",
-"figures/fig2":  "fig2",
-"figures/pathogenicity2":  "fig3",
-"figures/fig_ss_line":  "fig4",
-"figures/collage2":  "fig5",
-"figures/fig_classes4":  "fig6",
-"figures/binary_birth":  "fig7",
-"figures/fig_coords2":  "fig8",
-"figures/sigma_vs_rmsa_and_rmsd":  "fig9"
+'figures/peptide_small':'fig1',
+'automated_figures/fig_rama_intro':'fig2',
+'automated_figures/fig_ss_2d_1d':'fig3',
+'automated_figures/fig_r_intro':'fig4',
+'figures/fig2_metrics':'fig5',
+'figures/nano_r_demo':'fig6',
+'automated_figures/fig_ramachandran_plots_vs_numbers':'fig7',
+'automated_figures/fig_ramachandran_numbers_are_useful1':'fig8',
+'automated_figures/example1':'figA',
+'automated_figures/example2':'figB',
+'figures/cmaps':'fig9',
+'figures/1xqq_spread':'fig10',
+'figures/2fft_spread':'fig11',
+'figures/signed4':'fig12',
+'automated_figures/fig_R_vs_R2':'fig13'
 }
 
 f = open(current_filename,"r")
@@ -28,8 +33,11 @@ for oldfn,newfn in old_to_new_fig_names.items():
 	command = "cp "+oldfn+".pdf "+target_dir+"/"+target_filename_base+newfn+".pdf"
 	print command
 	os.system(command)
-	
 	block = block.replace(oldfn,target_filename_base+newfn)
+	
+os.system('cp wlpeerj.* '+target_dir+'/')
+os.system('cp all.bib   '+target_dir+'/')
+
 fn = target_dir+"/"+target_filename_base.rstrip("_")+".tex"
 f=open(fn,"w")
 f.write(block)
