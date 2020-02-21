@@ -1,3 +1,21 @@
+*.py[co]
+.DS_Store
+_build
+build
+dist
+*.egg-info
+*.eggs/
+*~
+*.bak
+*.swp
+.ipynb_checkpoints/
+.cache
+
+.coverage
+*.dist-info/
+.vscode
+.idea
+
 *.bbl
 
 /manuscript/python_generators/local_imports/PPII/PPII_cullpdb_pc30_res2.5_R1.0_d090511_chains7172.db
