@@ -1,5 +1,6 @@
 .. image:: docs/images/banner.jpg
     :alt: BackMAP Banner
+    :width: 75%
 
 |pypi| |license| |pyversions| |status| |format| 
 
