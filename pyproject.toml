@@ -1,0 +1,72 @@
+[project]
+name = "backmap"
+version = "1.0.0"
+description = "Shows protein backbone structures in compact graphical form using Ramachandran numbers"
+readme = "README.md"
+authors = [
+  {name = "Ranjan Mannige", email = "ranjanmannige@gmail.com"}
+]
+maintainers = [
+  {name = "Ranjan Mannige", email = "ranjanmannige@gmail.com"}
+]
+classifiers = [
+    # TODO
+]
+license = {text = "MIT"}
+dependencies = [
+  "matplotlib",
+  "pandas",
+  "typer",
+  "setuptools_scm"
+]
+requires-python = ">= 3.8" # was 3.10
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project.optional-dependencies]
+test = [
+    "coverage",  # testing
+    "pytest",  # testing
+    "ruff",  # linting
+    "ty", # checking types
+    "ipdb", # debugging
+]
+biopython = [
+    "biopython", # If not used, we used a less tested version of a PDB reader
+]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+
+[project.urls]
+bugs = "https://github.com/ranjanmannige/backmap/issues"
+changelog = "https://github.com/ranjanmannige/backmap/blob/master/changelog.md"
+homepage = "https://github.com/ranjanmannige/backmap"
+
+[project.scripts]
+backmap = "backmap.cli:app"
+
+[tool.ty]
+# All rules are enabled as "error" by default; no need to specify unless overriding.
+# Example override: relax a rule for the entire project (uncomment if needed).
+# rules.TY015 = "warn"  # For invalid-argument-type, warn instead of error.
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # Pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+]
+
+[tool.uv]
+package = true
