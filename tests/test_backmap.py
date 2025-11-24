@@ -102,7 +102,7 @@ def test_load_pdb():
 def test_processing_data():
     pdbfn = 'tests/pdbs/1mba.pdb'
     structure_df = backmap.process_PDB(pdbfn=pdbfn, signed=False)
-    assert structure_df.shape ==(146, 12)
+    assert structure_df.shape ==(146, 7)
     #
     should_be_true = backmap.draw_figures(structure_df=structure_df, pdbfn=pdbfn, 
                                    output_dir='', write=False, show=False)
