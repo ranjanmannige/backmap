@@ -1,0 +1,106 @@
+# Compiled python modules.
+*.pyc
+
+# Setuptools distribution folder.
+/dist/
+
+# Python egg metadata, regenerated from source files by setuptools.
+/*.egg-info
+/*.egg
+
+/tests/
+
+*.bbl
+/tests/pdbs/reports/
+/manuscript/python_generators/local_imports/PPII/PPII_cullpdb_pc30_res2.5_R1.0_d090511_chains7172.db
+/manuscript/python_generators/local_imports/data_ss.csv
+/manuscript/python_generators/local_imports/data_sequence_motifs.csv
+/manuscript/python_generators/local_imports/data_pdb.csv
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.py[codz]
+*$py.class
+
+# C extensions
+*.so
+    
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.nox
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Editors
+.vscode/        # VSCode
+.idea/          # IntelliJ IDEA
+
+# OS specific
+.DS_Store       # macOS
+Thumbs.db       # Windows
+
+# Virtual environment
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# Logs
+*.log
+
+# Sensitive information (e.g., local settings, database files)
+local_settings.py
+db.sqlite3
