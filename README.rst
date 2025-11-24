@@ -109,7 +109,7 @@ The Panels **(b)** through **(f)** were created by running the following command
 
 As evident below, the graphs generated from the protein ensemble `1xqq <https://www.rcsb.org/structure/1XQQ>`_ describes a conformationally stable protein (each graph is detailed below). 
 
-.. image:: https://dfzljdn9uc3pi.cloudfront.net/2018/5745/1/fig-11-2x.jpg
+.. image:: docs/images/fig-11-2x.jpg
 
 Each column in Panel **(b)** describes the histogram in Ramachandran number (R) space for a single model/timeframe. These histograms show the presence of both helices (at R \~ 0.34) and sheets (at R \~ 0.52). Additionally, Panels **(c)** and **(d)** describe the per-residue conformational plots (colored by two different metrics or CMAPs), which show that most of the protein backbone remains relatively stable (e.g., few fluctuations in state or 'color' are evident over the frame \#). Finally, Panel **(e)** describes the extent towards which a single residue's state has deviated from the first frame, and Panel **(f)** describes the extent towards which a single residue's state has deviated from its state in the previous frame. Both these graphs, as expected from Panels **(c)** and **(d)**, show that this protein is relatively conformationally stable.
 
@@ -120,7 +120,7 @@ Example 2: An intrinsically disordered protein (`2fft <https://www.rcsb.org/stru
 As compared to the conformationally stable protein above, an intrinsically disordered protein `2fft <https://www.rcsb.org/structure/2FFT>`_
 is much more flexible
 
-.. image:: https://dfzljdn9uc3pi.cloudfront.net/2018/5745/1/fig-12-2x.jpg
+.. image:: docs/images/fig-12-2x.jpg
 
 Panel **(b)** shows that the states accessed per model are diverse and dramatically fluctuate over the entire range of R (this is especially true when compared to a stable protein, see above). 
 
