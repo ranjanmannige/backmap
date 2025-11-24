@@ -1,4 +1,4 @@
-.. image:: https://raw.githubusercontent.com/ranjanmannige/backmap/master/manuscript/manuscript/figures/banner.png
+.. image:: docs/images/banner.jpg
     :alt: BackMAP Banner
 
 |pypi| |license| |pyversions| |status| |format| 
