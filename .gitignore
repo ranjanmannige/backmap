@@ -8,8 +8,6 @@
 /*.egg-info
 /*.egg
 
-/tests/
-
 *.bbl
 /tests/pdbs/reports/
 /manuscript/python_generators/local_imports/PPII/PPII_cullpdb_pc30_res2.5_R1.0_d090511_chains7172.db
