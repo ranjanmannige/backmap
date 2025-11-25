@@ -1,6 +1,4 @@
-from __future__ import division, print_function, absolute_import
-import sys
-from backmap import *
-	
+from .cli import app
+
 if __name__ == "__main__":
-	main()
+    app()
