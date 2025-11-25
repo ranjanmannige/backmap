@@ -1,9 +1,20 @@
-import io
+"""Utility functions important for loading and processing PDB files. 
+Functions following ``calculate_dihedral_angle()`` are probably not very 
+interesting to most."""
+
+import io, os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-
+from zipfile import ZipFile
+from gzip import open as gzopen
+import tarfile, io # to open tar.gz or tgz files
 import string,re
+from typing import Union
+fn_or_filehandle:Union[str,os.PathLike,io.IOBase]
+
+from typing import List, Tuple, Literal
+
 try:
     ascii_uppercase = string.ascii_uppercase
 except:
@@ -20,42 +31,6 @@ try:
 except:
     biopython_is_installed = False
 
-def median_filter(vals,nearest_neighbors=1):
-    '''
-    Simple smoothing function that returns the median value of 
-    each element and its nearest neighbors (+/-).
-    Inputs:
-        vals [List of floats]
-        nearest_neighbors [int]    The number of neighbors to use before and 
-                                after the existing element.
-                                Edge elements are not treated.
-    Outouts:
-        new_vals [List of floats]    Modified list with the median filter applied.
-    '''
-    new_vals = []
-    len_vals = len(vals)
-    for i in range(len_vals):
-        val = vals[i]
-        if i-nearest_neighbors >= 0 and i+nearest_neighbors < len_vals:
-            val = np.median(vals[i-nearest_neighbors:i+nearest_neighbors+1])
-        new_vals.append(val)
-    return new_vals
-#
-
-# From: https://stackoverflow.com/questions/7965743/how-can-i-set-the-aspect-ratio-in-matplotlib
-def forceAspect(aspect,ax=False):
-    '''
-    Setting the specific plot axis ratio. Works on the current plot/axis.
-    Input:
-        aspect [float] Desired aspect ratio  
-                (E.g., if aspect == 2, then the x axis will have twicce the length of the y)
-        ax [matplotlib ax object]    The existing plot to modify
-    Output:
-        None    The 
-    '''
-    if not ax: ax=plt.gca()
-    extent = plt.axis()
-    ax.set_aspect(abs((extent[1]-extent[0])/(extent[3]-extent[2]))/aspect)
 #
 # Three-to-one amino acid conversion lookup
 aa_three_to_one = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
@@ -64,97 +39,39 @@ aa_three_to_one = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
      'ALA': 'A', 'VAL':'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M','XXX':'X'}
 #
 # ===================================================================================
-def calculate_dihedral_angle(p):
-    '''
-    Inputs:
-        p [4-list of coordinates]    A set of four three dimensional coordinates 
-                                    [[x1,y1,z1],[x2,y2,z2],[x3,y3,z3],[x4,y4,z4]]
-    Returns:
-        d     Dihedral angle (range [-180,180])
-    '''
-    b = p[:-1] - p[1:]
-    b[0] *= -1
-    v = np.array( [ v - (v.dot(b[1])/b[1].dot(b[1])) * b[1] for v in [b[0], b[2]] ] )
-    # Normalize vectors
-    v /= np.sqrt(np.einsum('...i,...i', v, v)).reshape(-1,1)
-    b1 = b[1] / np.linalg.norm(b[1])
-    x = np.dot(v[0], v[1])
-    m = np.cross(v[0], b1)
-    y = np.dot(m, v[1])
-    d = np.degrees(np.arctan2( y, x ))
-    return d 
+def read_pdb(fn:Union[str,os.PathLike]):
+    """Reads a PDB and outputs graphs representing Ramachandran number plots.
     
-def is_filehandle(x):
-    return isinstance(x, io.IOBase)
+    Load a PDB file, preferring BioPython parsing with an in-house fallback.
 
-
-from zipfile import ZipFile
-from gzip import open as gzopen
-import glob
-
-def return_zip_file_handle(pdbfn, mode='r'):
-    with ZipFile(pdbfn, 'r') as zip_archive:
-        all_files_in_archive  = zip_archive.namelist()
-        first_file_in_archive = all_files_in_archive[0]
-        return zip_archive.open(first_file_in_archive, mode=mode)
-#
-def return_gz_filehandle(pdb_fn,mode='rt'):
-    """Open a gzipped PDB file and return a file-like handle.
-    
-    Args:
-        pdb_fn (str | os.PathLike): Path to the `.pdb.gz` file to open.
-        mode (str, optional): Mode passed to ``gzip.open`` (e.g., ``'rt'`` for
-            text or ``'rb'`` for binary). Defaults to ``'rt'``.
-
-    Returns:
-        io.BufferedReader | io.TextIOWrapper: Handle to the gzipped file opened
-        with the requested mode.
-    """
-    return gzopen(pdb_fn,mode)
-#
-def return_filehandle_from_gz_zip_or_normal_file(pdbfn):
-    """Return a readable handle for `.pdb`, `.pdb.gz`, or `.pdb.zip` inputs.
+    The function first tries the BioPython-based parser when the library is
+    installed and the file passes ``check_pdb``. Files that look problematic or
+    environments without BioPython fall back to the in-house parser to extract
+    backbone atoms.
 
     Args:
-        pdbfn (str): Path to a PDB file, optionally gzipped or zipped. For zip
-            archives, the first file in the archive is opened.
+        fn (str): Path to a PDB file to read. Can be multiple structures separated 
+        by the MODEL term;
 
     Returns:
-        IOBase: File-like object opened with the appropriate handler for the
-            given extension, or ``None`` if the extension is unsupported.
+        pandas.DataFrame: Backbone atoms (N, CA, C) with model, chain, residue
+        identifiers and float32 coordinates.
     """
-    dict_extention_to_open_object = {
-        '.pdb.zip':return_zip_file_handle,
-        '.pdb.gz':return_gz_filehandle,
-        '.pdb':open,
-    }
-    for file_extension in dict_extention_to_open_object.keys():
-        if pdbfn[-len(file_extension):].lower() == file_extension:
-            return dict_extention_to_open_object[file_extension](pdbfn)
-
-def get_filename_and_filehandle(filename_or_filehandle):
-    """Return a `(filename, filehandle)` tuple from a path or existing file object.
-
-    Accepts either a file-like object (uses its `name` attribute) or a filepath
-    string pointing to a PDB file, automatically opening `.pdb`, `.pdb.gz`, or
-    `.pdb.zip` inputs with the appropriate handler. Raises `TypeError` for other
-    input types.
-    """
-    fn = False
-    f = False
-    if is_filehandle(filename_or_filehandle):
-        fn = f.name
-        f = filename_or_filehandle
-    elif isinstance(filename_or_filehandle, str) and not isinstance(filename_or_filehandle, list):
-        fn = filename_or_filehandle
-        f = return_filehandle_from_gz_zip_or_normal_file(fn)
+    raw_pdb_data = False
+    if biopython_is_installed:
+        if check_pdb(fn):
+            raw_pdb_data = read_pdb_biopython(fn)
+        else:
+            raw_pdb_data = read_pdb_inhouse(fn)
     else:
-        raise TypeError("fn_or_filehandle must be a filepath string or file-like object")
-    return fn, f
+        raw_pdb_data = read_pdb_inhouse(fn)
+    #
+    return raw_pdb_data
+
 
 # A PDB reader that uses Biopython
 # in case the BipPython module was not installed, an in-house reader exists below
-def read_pdb_biopython(fn_or_filehandle):
+def read_pdb_biopython(fn_or_filehandle:Union[str,os.PathLike,io.IOBase]):
     """Parse a PDB file with BioPython and extract backbone atoms.
 
     Args:
@@ -225,7 +142,7 @@ def read_pdb_biopython(fn_or_filehandle):
 
 # OLD VERSION (IN HOUSE). IT IS FASTER THAN THE CURRENT "read_pdb", WHICH IS BIOPDB RUN, BUT IT IS NOT 
 # AS WELL TESTED.
-def read_pdb_inhouse(fn_or_filehandle):
+def read_pdb_inhouse(fn_or_filehandle:Union[str,os.PathLike]):
     """Parse a PDB file without BioPython and extract backbone atoms.
 
     Args:
@@ -328,22 +245,18 @@ def read_pdb_inhouse(fn_or_filehandle):
 #
 
 # Does a sniff test for whether this is a legitimate pdb file
-def check_pdb(fn):
-    """
-    ATOM     10 1H   LYS A   1       0.763   3.548  -0.564
-    ATOM     11 2H   LYS A   1       1.654   2.664   0.488
-    ATOM    482  N   PRO A  61      27.194  -5.761  14.684  1.00  9.09           N  
-    ATOM      2  CA  BLYSX   1     -77.937 -26.325   6.934  1.00  0.00      U1    
-    ATOM      3  CB  BLYSX   1     -79.612 -24.499   7.194  1.00  0.00      U1    
-    ATOM      4  CE  BLYSX   1     -80.894 -24.467   8.039  1.00  0.00      U1    
-    ATOM      5  NZ  BLYSX   1     -80.687 -24.160   9.434  1.00  0.00      U1    
-    ATOM      2  HT1 MET U   1       0.208   0.762 -12.141  0.00  0.00      UBIQ  
-    ATOM      3  HT2 MET U   1      -1.052  -0.551 -12.281  0.00  0.00      UBIQ  
-              |   |   |  |   |        |       |       |                     |
-         atomno   |   |  |   |        x       y       z                 segname
-           atom type  |  |   |                                          (CHAIN)
-                restype  |   resno
-                     chainID
+def check_pdb(fn:Union[str,os.PathLike]):
+    """Heuristically validate that a PDB file is safe to parse with Biopython.
+
+    The check catches common CHARMM/PDB quirks (four-letter residue names shifting
+    into the chain column or missing/placeholder chain identifiers). Any
+    potential issue marks the file as problematic.
+
+    Args:
+        fn (str): Path to the PDB file to examine.
+
+    Returns:
+        int: ``1`` when the file appears well-formed, otherwise ``0``.
     """
     
     chainIDindex = 21
@@ -382,29 +295,234 @@ def check_pdb(fn):
     else:
         return 1
 #
-def read_pdb(fn:str):
-    '''
-    Reads a PDB and outputs graphs representing Ramachandran number plots
-    See: https://doi.org/10.7717/peerj.5745
-    Inputs:
-        fn:            PDB filename. 
-                    Can be multiple structures separated by the MODEL term;
-                    see "https://en.wikipedia.org/wiki/Protein_Data_Bank_(file_format)")
-        signed:        Whether the Ramachandran number plots should be signed or not.
-    Outputs:
-        pdb_df        A pandas dataframe with the following columns: 
-                        ['model','chain','resid','R']
-        pdb_matrix    Identical to pdb_df, but returned as a numpy matrix of dtype 'O'
-    '''
-    raw_pdb_data = False
-    if biopython_is_installed:
-        if check_pdb(fn):
-            raw_pdb_data = read_pdb_biopython(fn)
-        else:
-            raw_pdb_data = read_pdb_inhouse(fn)
-    else:
-        raw_pdb_data = read_pdb_inhouse(fn)
-    #
-    return raw_pdb_data
+
+def calculate_dihedral_angle(p:np.ndarray):
+    """Compute the dihedral angle defined by four 3D points. 
     
+    E.g., providing positions for four contiguous backbone `(C-)(N)(CA)(C)` 
+    would give you the ``phi`` backbone dihedral angle.
+    Similarly, providing positions for `(N)(CA)(C)(N+)` would give you the 
+    ``psi`` dihedral angle.
+
+    Args:
+        p (np.ndarray): Array of four 3D coordinates with shape ``(4, 3)`` representing 
+        four contigusous backbone atoms.
+
+    Returns:
+        float: Signed dihedral angle in degrees in the range ``[-180, 180]``.
+    """
+    b = p[:-1] - p[1:]
+    b[0] *= -1
+    v = np.array( [ v - (v.dot(b[1])/b[1].dot(b[1])) * b[1] for v in [b[0], b[2]] ] )
+    # Normalize vectors
+    v /= np.sqrt(np.einsum('...i,...i', v, v)).reshape(-1,1)
+    b1 = b[1] / np.linalg.norm(b[1])
+    x = np.dot(v[0], v[1])
+    m = np.cross(v[0], b1)
+    y = np.dot(m, v[1])
+    d = np.degrees(np.arctan2( y, x ))
+    return d     
+    
+def is_filehandle(x):
+    """Determine whether an object behaves like a file handle.
+
+    Args:
+        x (Any): Object to inspect.
+
+    Returns:
+        bool: True if ``x`` is an instance of ``io.IOBase``, otherwise False.
+    """
+    return isinstance(x, io.IOBase)
+
+def get_pdb_filenames(pdbfn_or_dir:str):
+    """Collect `.pdb` filenames from a file or directory and sort them numerically.
+    
+    Args:
+        pdbfn_or_dir (str): Path to a single PDB file or a directory containing
+            PDB files.
+
+    Returns:
+        tuple[list[str], str]: Sorted list of absolute `.pdb` file paths and the
+            directory path they reside in. If the path is neither a file nor a
+            directory, an empty list and the derived directory path are
+            returned.
+    """
+    
+    pdbfn = os.path.abspath(pdbfn_or_dir)
+    pdbdir = os.path.dirname(pdbfn)
+    list_pdbfilenames = []
+    
+    if os.path.isfile(pdbfn):
+        # then this pathname leads to a FILE
+        # ... so keep as is
+        list_pdbfilenames = [pdbfn]
+        name = re.split(r'[\/\.]',pdbfn)[-2]
+    elif os.path.isdir(pdbfn):
+        pdbdir = pdbfn
+        list_pdbfilenames = sorted(glob.glob(pdbdir+"/*.pdb"))
+        name = re.split(r'[\/\.]',pdbfn)[-1]
+    else:
+        #print(helpme)
+        print("Either filename or directory expected. Exiting.")
+        return list_pdbfilenames, pdbdir
+    
+    #
+    # JUST "CLEVERLY" ARRANGING THE FILENAMES, IF WE HAVE A SET OF FILENAMES RATHER THAN ONE
+    # (e.g., list_pdbfilenames = [something2part1,something1part2,something1part1,something10part1]
+    # list_pdbfilenames.sort() this list to: [something1part1,something1part2,something2part1,something10part1]
+    REXP = re.compile( r'\d+' )
+    def key_function( s ): return list(map(int, re.findall(REXP, s )))
+    list_pdbfilenames.sort(key=key_function)
+    #
+    return list_pdbfilenames, pdbdir
+
+
+def return_tgz_filehandle(pdbfn):
+    """Return file-like handles for every regular file in a tar.gz archive.
+
+    Args:
+        pdbfn (str | os.PathLike): Path to a ``.tar.gz``/``.tgz`` archive.
+
+    Returns:
+        io.BufferedReader: Handle to the first file found in the archive.
+    """
+    file_objects = []
+    # Open the tar archive in read mode
+    with tarfile.open(pdbfn, "r") as tar:
+        # Iterate through the members of the archive
+        for member in tar.getmembers():
+            if member.isfile():  # Check if it's a regular file
+                # Get a file-like object for the member
+                fileobj = tar.extractfile(member)
+                if fileobj:  # Ensure the file object is not None
+                    file_objects.append(fileobj)
+                    # # Read the content from the file-like object
+                    #content = fileobj.read()
+    first_filehandle_in_list = file_objects[0]
+    return first_filehandle_in_list
+
+def return_zip_file_handle(pdbfn, mode='r'):
+    """Open the first file inside a zip archive and return a readable handle.
+    
+    Args:
+        pdbfn (str | os.PathLike): Path to the `.zip` archive containing a PDB file.
+        mode (str, optional): Mode passed to ``ZipFile.open`` (e.g., ``'r'`` or ``'rb'``).
+            Defaults to ``'r'``.
+
+    Returns:
+        ZipExtFile: Handle to the first file found in the archive.
+    """
+    with ZipFile(pdbfn, 'r') as zip_archive:
+        all_files_in_archive  = zip_archive.namelist()
+        all_handles_in_archive = [ zip_archive.open(file, mode=mode) 
+                                    for file in all_files_in_archive]
+        first_file_in_archive = all_handles_in_archive[0]
+        #
+        return first_file_in_archive
 #
+def return_gz_filehandle(pdb_fn,mode='rt'):
+    """Open a gzipped PDB file and return a file-like handle.
+    
+    Args:
+        pdb_fn (str | os.PathLike): Path to the `.pdb.gz` file to open.
+        mode (str, optional): Mode passed to ``gzip.open`` (e.g., ``'rt'`` for
+            text or ``'rb'`` for binary). Defaults to ``'rt'``.
+
+    Returns:
+        io.BufferedReader | io.TextIOWrapper: Handle to the gzipped file opened
+        with the requested mode.
+    """
+    return gzopen(pdb_fn,mode)
+#
+def return_filehandle_from_gz_zip_or_normal_file(pdbfn):
+    """Return a readable handle for `.pdb`, `.pdb.gz`, or `.pdb.zip` inputs.
+
+    Args:
+        pdbfn (str): Path to a PDB file, optionally gzipped or zipped. For zip
+            archives, the first file in the archive is opened.
+
+    Returns:
+        IOBase: File-like object opened with the appropriate handler for the
+            given extension, or ``None`` if the extension is unsupported.
+    """
+    dict_extention_to_open_object = {
+        '.pdb.tar.gz':return_tgz_filehandle,
+        '.pdb.tgz':return_tgz_filehandle,
+        '.pdb.zip':return_zip_file_handle,
+        '.pdb.gz':return_gz_filehandle,
+        '.pdb':open,
+    }
+    #
+    for file_extension in dict_extention_to_open_object.keys():
+        if pdbfn[-len(file_extension):].lower() == file_extension:
+            return dict_extention_to_open_object[file_extension](pdbfn)
+
+def get_filename_and_filehandle(filename_or_filehandle):
+    """Return lists of filenames and corresponding file handles.
+    
+    Accepts either a path to a PDB file (plain or compressed) or an existing
+    file-like object. Compressed archives (.gz, .zip, .tgz/.tar.gz) are expanded
+    into multiple handles, so filenames and handles are always returned as
+    parallel lists.
+    
+    Args:
+        filename_or_filehandle (str | io.IOBase): Path to a PDB-like file or an
+            already opened file-like object.
+
+    Returns:
+        tuple[str, io.IOBase]: Filenames and readable handles.
+
+    Raises:
+        TypeError: If input is neither a filepath string nor a file-like object.
+    """
+    #
+    # In order to accomodate .zip and .tgz files, we must report lists of files and filehandles
+    fn = None
+    f  = None
+    if is_filehandle(filename_or_filehandle):
+        fn = f.name
+        f  = filename_or_filehandle
+    elif isinstance(filename_or_filehandle, str) and not isinstance(filename_or_filehandle, list):
+        f = return_filehandle_from_gz_zip_or_normal_file(filename_or_filehandle)
+        # deriving the filenames directly from the filehandle
+        fn = f.name
+    else:
+        raise TypeError("fn_or_filehandle must be a filepath string or file-like object")
+    #
+    return fn, f
+
+def median_filter(vals,nearest_neighbors=1):
+    '''
+    Simple smoothing function that returns the median value of 
+    each element and its nearest neighbors (+/-).
+    Inputs:
+        vals [List of floats]
+        nearest_neighbors [int]    The number of neighbors to use before and 
+                                after the existing element.
+                                Edge elements are not treated.
+    Outouts:
+        new_vals [List of floats]    Modified list with the median filter applied.
+    '''
+    new_vals = []
+    len_vals = len(vals)
+    for i in range(len_vals):
+        val = vals[i]
+        if i-nearest_neighbors >= 0 and i+nearest_neighbors < len_vals:
+            val = np.median(vals[i-nearest_neighbors:i+nearest_neighbors+1])
+        new_vals.append(val)
+    return new_vals
+#
+
+# From: https://stackoverflow.com/questions/7965743/how-can-i-set-the-aspect-ratio-in-matplotlib
+def forceAspect(aspect,ax=False):
+    """Set the axis data aspect ratio using current plot limits.
+
+    Args:
+        aspect (float): Desired width-to-height ratio for the data units.
+                        (E.g., if ``aspect == 2``, then the x axis will have twice the length of the y)
+        ax (matplotlib.axes.Axes, optional): Axis to update. Defaults to the
+            current axes.
+    """
+    if not ax: ax=plt.gca()
+    extent = plt.axis()
+    ax.set_aspect(abs((extent[1]-extent[0])/(extent[3]-extent[2]))/aspect)

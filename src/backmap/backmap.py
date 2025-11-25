@@ -1,9 +1,9 @@
-"""Main module."""
+"""Main module. Example usage: ``>backmap.R()``, which is equal to ``>backmap.backmap.R()``"""
 import argparse
 import sys
 import logging
 import pandas as pd
-
+from typing import Union
 from . import utils
 from . import local_colormaps
 
@@ -94,17 +94,17 @@ SCALE = 10.0 # For the postscript output
 rcode_cmap = local_colormaps.cmaps['ChiralityFourColor']
 
 
-def normalized_ramachandran_number(phi,psi,signed=False):
-    '''
-    Inputs:
-        phi [float, 0 to 360]         Protein backbone phi value
-        psi [float, 0 to 360]      Protein backbone psi value
-        signed [Bool]    Whether to return the signed version of the R plot
-    Output:
-        r [float] The normalized ramachandran number 
-                        ranging from 0 to 1 if signed==False
-                        ranging from -1 to 1 if signed==True
-    '''
+def normalized_ramachandran_number(phi:float,psi:float,signed=False):
+    """Return the normalized Ramachandran number for given backbone angles (``phi`` and ``psi``).
+
+    Args:
+        phi (float): Backbone phi angle in degrees of range [-180,180].
+        psi (float): Backbone psi angle in degrees of range [-180,180].
+        signed (bool): If ``True``, return a signed value where ``psi < phi`` yields a negative number.
+
+    Returns:
+        float: Normalized Ramachandran number randing ``[0, 1]``, or ``[-1, 1]`` when ``signed`` is ``True``.
+    """
     # Calculating the normalized R number
     r = (phi+psi+360)/720.0
     #
@@ -118,23 +118,16 @@ def normalized_ramachandran_number(phi,psi,signed=False):
 #
 
 def ramachandran_number(phi,psi,signed=False):
-    '''
-    Inputs:
-        phi [float, 0 to 360]         Protein backbone phi value
-        psi [float, 0 to 360]      Protein backbone psi value
-        signed [Bool]    Whether to return the signed version of the R plot
-    Output:
-        r [float] The normalized ramachandran number 
-                        ranging from 0 to 1 if signed==False
-                        ranging from -1 to 1 if signed==True
-    '''
+    """Different abbreviated ways to request the ramachandran number
+    Refer to :py:func:`backmap.backmap.normalized_ramachandran_number` for usage details.
+    """
     return normalized_ramachandran_number(phi,psi,signed)
 #
 
 def r(phi,psi,signed=False):
     '''
     Different abbreviated ways to request the ramachandran number
-    Refer to ramachandran_number() for usage details.
+    Refer to :py:func:`backmap.backmap.normalized_ramachandran_number` for usage details.
     '''
     return normalized_ramachandran_number(phi,psi,signed)
 #
@@ -142,7 +135,7 @@ def r(phi,psi,signed=False):
 def R(phi,psi,signed=False):
     '''
     Different abbreviated ways to request the ramachandran number
-    Refer to ramachandran_number() for usage details.
+    Refer to :py:func:`backmap.backmap.normalized_ramachandran_number` for usage details.
     '''
     return normalized_ramachandran_number(phi,psi,signed)
 #
@@ -284,7 +277,7 @@ def draw_xyz(X,Y,Z, ylim=False, cmap='Greys', xlabel=False,ylabel=False,zlabel=F
     return True, ax
 #
 
-# Grouping each data by 
+# Grouping each data by : TO BE DELETED
 def group_data_by(data,group_by="chain",columns_to_return=['model','resid','R']):
     '''
     Groups a tabular numpy array by the values in a specified column and collects the requested columns for each group.
@@ -320,45 +313,6 @@ def group_data_by(data,group_by="chain",columns_to_return=['model','resid','R'])
     #    
     return grouped_data
 #
-
-def get_pdb_filenames(pdbfn_or_dir:str):
-    '''
-    Returns a list of PDB filenames, given a single string that can be either a pdb filename OR a directory 
-    that contains pdbs
-    Inputs:
-        pdbfn_or_dir:str         String (filename) pointing to a pdb file or a directory that contains pdbs
-    Outputs:
-        list_pdbfilenames:list[str]    List of PDB filepaths (if input was a legitimate filename, then the 
-                                    list will have one element)
-        pdbdir:str                    The directory path from which contain the returned PDB filenames in list_pdbfilenames
-    '''
-    pdbfn = os.path.abspath(pdbfn_or_dir)
-    pdbdir = os.path.dirname(pdbfn)
-    list_pdbfilenames = []
-    
-    if os.path.isfile(pdbfn):
-        # then this pathname leads to a FILE
-        # ... so keep as is
-        list_pdbfilenames = [pdbfn]
-        name = re.split(r'[\/\.]',pdbfn)[-2]
-    elif os.path.isdir(pdbfn):
-        pdbdir = pdbfn
-        list_pdbfilenames = sorted(glob.glob(pdbdir+"/*.pdb"))
-        name = re.split(r'[\/\.]',pdbfn)[-1]
-    else:
-        #print(helpme)
-        print("Either filename or directory expected. Exiting.")
-        return list_pdbfilenames, pdbdir
-    
-    #
-    # JUST "CLEVERLY" ARRANGING THE FILENAMES, IF WE HAVE A SET OF FILENAMES RATHER THAN ONE
-    # (e.g., list_pdbfilenames = [something2part1,something1part2,something1part1,something10part1]
-    # list_pdbfilenames.sort() this list to: [something1part1,something1part2,something2part1,something10part1]
-    REXP = re.compile( r'\d+' )
-    def key_function( s ): return list(map(int, re.findall(REXP, s )))
-    list_pdbfilenames.sort(key=key_function)
-    #
-    return list_pdbfilenames, pdbdir
 
 def compare_value_to_list_of_dict(key,value,list_of_dict):
     """Check whether any dictionary in the sequence maps ``key`` to ``value``.
@@ -494,19 +448,15 @@ def process_PDB(pdbfn:str, signed:bool=False):
         pd.DataFrame: Per-residue records with model, chain, residue identity, phi,
         psi, and Ramachandran number columns. Returns an empty dataframe when no
         input PDBs are found.
-        The pandas dataframe describing each backbone atom, containing the following keys:
-                          'model': PDB chain MODEL number
-                          'chain': PDB CHAIN
-                          'resname': three letter residue name
-                          'phi': the backbone dihedral angle phi 
-                          'psi': the backbone dihedral angle psi
-                          'R': the Ramachandran number
     """
     
     # Since the user can either provide one PDB file *or* one 
     # PDB file-containing directory, we need to resolve these PDBs
-    list_pdbfilenames,pdbdir = get_pdb_filenames(pdbfn)
+    list_pdbfilenames,pdbdir = utils.get_pdb_filenames(pdbfn)
     #
+    
+    # for list_pdb_filenames:
+    #     utils.get_filename_and_filehandle(
     if len(list_pdbfilenames) == 0:
         return pd.DataFrame()
     

@@ -1,4 +1,24 @@
-"""Console script for backmap."""
+"""Console script for backmap. 
+
+This section provides a more detailed description of what the module does,
+its main functionalities, and any important context or background information.
+It can span multiple paragraphs.
+
+
+Usage: python -m backmap --pdbfn <filename/dirname> <other options>
+
+Args:
+    pdbfn: Location of a PDB file or a directory containing PDB file(s). 
+        Single file can contain multiple structures separated by the MODEL term.
+    output-dir: Where the generated figures will be stored. If absent, a 
+        report dir will be placed in the PDBs parent directory.                                                     
+    no-write: Don't write figures to the report directory. [default: True]                      
+    no-show: Don't show figures while the app is running. [default: True]                      
+    signed: Use the signed Ramachandran plot. [default: False]                                                 
+    colortype: Graph coloring options (options: ['Chirality ', 'SecondaryStructure']).
+        [default: Chirality]                                                
+    help: Print the available options.
+"""
 
 import typer
 import sys
@@ -38,6 +58,8 @@ console = Console()
 # First option will be the default option
 ColortypeOptions = ["Chirality", "SecondaryStructure"]
 
+
+
 @app.command(epilog="Made with :heart: by [blue]Ranjan Mannige[/blue]")
 def main(pdbfn:Annotated[str,
                          typer.Option("--pdbfn", 
@@ -63,12 +85,30 @@ def main(pdbfn:Annotated[str,
                              help=f"Graph coloring options (options: {[s if ix > 0 else s+' [default]' for ix,s in enumerate(ColortypeOptions)]}).")]
                              =ColortypeOptions[0]
     ):
-    #
+    """Entry point for the CLI; processes PDB input(s) and renders plots.
+
+    Parameters
+    ----------
+    pdbfn : str
+        Path to a PDB file or directory containing PDBs to visualize.
+    output_dir : str
+        Destination directory for generated figures; defaults to a `report`
+        folder beside the input PDB(s) when omitted.
+    write : bool
+        When True, writes figures to disk; disable with ``--no-write``.
+    show : bool
+        When True, displays figures interactively; disable with ``--no-show``.
+    signed : bool
+        Use the signed Ramachandran plot when enabled.
+    colortype : str
+        Coloring scheme for graphs; must match one of ``ColortypeOptions``.
+    """
     if colortype not in ColortypeOptions:
         exit('Must have a valid colortype. The --help lists them.')
     #
     # TODO: identify how to parse multiple files in a single ZIP/TAR archive 
     # (and if it is even useful)
+    
     structure_df = process_PDB(pdbfn=pdbfn,
                                signed=signed)
     #

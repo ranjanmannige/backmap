@@ -1,7 +1,16 @@
+"""A helper file that describes colormaps that are needed to create graphs
+
+These colormaps are used either by either by :py:func:`backmap.backmap.draw_figures` 
+or the stand along app run by :py:mod:`backmap.cli`
+"""
+
 # matplotlib imports
 import matplotlib.pyplot as plt
 # A function to create custom color maps for matplotb plots
 from matplotlib.colors import LinearSegmentedColormap
+# For displaying the cmaps using display_cmaps()
+import matplotlib.cm as cm
+import matplotlib.colors as colors
 
 import warnings
 #warnings.filterwarnings("ignore", category=matplotlib.MatplotlibDeprecationWarning)
@@ -44,6 +53,21 @@ polyproline = (0.,1.,1.)
 
 
 cmaps = {}
+"""Mapping of custom colormap names to LinearSegmentedColormap instances.
+
+Keys:
+	:Chirality: a red-blue coloring method 
+	:Chirality_r:
+	:ChiralityFourColor:
+	:Chirality_rFourColor:
+	:SecondaryStructureHard:
+	:SecondaryStructure:
+	:SecondaryStructureFourColor:
+"""
+
+cmap_ranges = {}
+"""Listing of custom colormap names to their expected ranges. Not using these ranges will result in inaccurate coloring."""
+
 # ----------------
 # NEW COLOR SCHEME: color by backbone twist (expected range: R=[0,1])
 # ----------------
@@ -59,28 +83,7 @@ cdict = {
 #cmap = LinearSegmentedColormap('Chirality', cdict)
 #register_cmap(cmap=cmap)
 cmaps['Chirality'] = LinearSegmentedColormap('Chirality', cdict)
-# ----------------
-# NEW COLOR SCHEME: color by backbone twist, variant (expected range: R=[0,1])
-# ----------------
-cdict = {
-#                         white  white          blue   blue
-	'red':   ((0.00,  bc[0], bc[0]), (1.0,  c4[0], c4[0])), 
-	'green': ((0.00,  bc[1], bc[1]), (1.0,  c4[1], c4[1])),
-	'blue':  ((0.00,  bc[2], bc[2]), (1.0,  c4[2], c4[2]))
-}
-#cmap = LinearSegmentedColormap('deleteme', cdict)
-#register_cmap(cmap=cmap)
-cmaps['deleteme'] = LinearSegmentedColormap('deleteme', cdict)
-cdict = {
-#                                       white  white         blue   blue
-	'red':   ((0.00,  1, 1), (0.5,  bc[0], bc[0]), (1.0, c4[0], c4[0])), 
-	'green': ((0.00,  0, 0	), (0.5,  bc[1], bc[1]), (1.0, c4[1], c4[1])),
-	'blue':  ((0.00,  1, 1), (0.5,  bc[2], bc[2]), (1.0, c4[2], c4[2])) 
-}
-#cmap = LinearSegmentedColormap('deletemeSigned', cdict)
-#register_cmap(cmap=cmap)
-cmaps['deletemeSigned'] = LinearSegmentedColormap('deletemeSigned', cdict)
-
+cmap_ranges['Chirality'] = [0,1]
 # ----------------
 # NEW COLOR SCHEME: color by backbone twist, variant (expected range: R=[0,1])
 # ----------------
@@ -96,7 +99,7 @@ cdict = {
 #cmap = LinearSegmentedColormap('Chirality_r', cdict)
 #register_cmap(cmap=cmap)
 cmaps['Chirality_r'] = LinearSegmentedColormap('Chirality_r', cdict)
-
+cmap_ranges['Chirality_r'] = [0,1]
 # ----------------
 # NEW COLOR SCHEME: color by backbone twist (expected range: R=[-1,1])
 # ----------------
@@ -112,7 +115,7 @@ cdict = {
 #cmap = LinearSegmentedColormap('ChiralityFourColor', cdict)
 #register_cmap(cmap=cmap)
 cmaps['ChiralityFourColor'] = LinearSegmentedColormap('ChiralityFourColor', cdict)
-
+cmap_ranges['ChiralityFourColor'] = [-1,1]
 # ----------------
 # NEW COLOR SCHEME: color by backbone twist, variant (expected range: R=[-1,1])
 # ----------------
@@ -128,6 +131,7 @@ cdict = {
 #cmap = LinearSegmentedColormap('Chirality_rFourColor', cdict)
 #register_cmap(cmap=cmap)
 cmaps['Chirality_rFourColor'] = LinearSegmentedColormap('Chirality_rFourColor', cdict)
+cmap_ranges['Chirality_rFourColor'] = [-1,1]
 # -------------------------
 # NEW COLOR SCHEME: secondary structure (expected range: R=[0,1])
 # ----------------
@@ -142,6 +146,7 @@ cdict = {  #                  |      |                      |          |        
 #cmap = LinearSegmentedColormap('SecondaryStructureHard', cdict)
 #register_cmap(cmap=cmap)
 cmaps['SecondaryStructureHard'] = LinearSegmentedColormap('SecondaryStructureHard', cdict)
+cmap_ranges['SecondaryStructureHard'] = [0,1]
 # -------------------------
 # NEW COLOR SCHEME: secondary structure (expected range: R=[0,1])
 def border_mod(v):
@@ -165,6 +170,7 @@ cdict = {  #                  |      |                      |                   
 #cmap = LinearSegmentedColormap('SecondaryStructure', cdict)
 #register_cmap(cmap=cmap)
 cmaps['SecondaryStructure'] = LinearSegmentedColormap('SecondaryStructure', cdict)
+cmap_ranges['SecondaryStructureHard'] = [0,1]
 # ----------------
 # NEW COLOR SCHEME: color by secondary structure (expected range: R=[-1,1])
 # ----------------
@@ -194,3 +200,47 @@ for color in  list(cdict.keys()):
 #cmap = LinearSegmentedColormap('SecondaryStructureFourColor', cdict)
 #register_cmap(cmap=cmap)
 cmaps['SecondaryStructureFourColor'] = LinearSegmentedColormap('SecondaryStructureFourColor', cdict)
+cmap_ranges['SecondaryStructureFourColor'] = [-1,1]
+
+
+
+def display_cmaps():
+    """Display all custom colormaps defined in ``cmaps`` as horizontal colorbars.
+
+    The colormaps are shown in insertion order with their names as titles. The figure
+    and axes are returned so callers can further customize or save the visualization.
+
+    Returns
+    -------
+    tuple: Matplotlib figure and axes from ``plt.subplots`` used to render the colorbars.
+    """
+    cmapkeys = list(cmaps.keys())
+    fig, axs = plt.subplots(len(cmapkeys),figsize=(6,len(cmapkeys)*1))
+
+    fig.suptitle(r'Custom CMAPs available in $\it{backmap.local\_colormaps.cmaps}$')
+    for keyindex in range(len(cmapkeys)):
+        cmap_key  = cmapkeys[keyindex]
+        cmap_axes = axs[keyindex]
+        cmap = cmaps[cmap_key]
+        #
+        cmap_axes.set_title(cmap_key)
+
+        # 2. Create a Normalize object (optional, but good for controlling the color range)
+        # This maps data values (e.g., 0 to 1) to the 0-1 range of the colormap
+        norm = colors.Normalize(vmin=-1, vmax=1)
+
+        # 3. Create a ScalarMappable object
+        # This object connects the colormap and the normalization to a "mappable" entity
+        sm = cm.ScalarMappable(cmap=cmap, norm=norm)
+        sm.set_array([]) # An empty array is sufficient as we are not mapping actual data
+
+        # Draw the colorbar
+        cbar = plt.colorbar(sm, cax=cmap_axes, orientation="horizontal")
+
+        # Optional: Set a title for the colorbar
+        #cbar.set_label(None)
+    plt.tight_layout()
+    plt.show()
+    return fig, axs
+
+
