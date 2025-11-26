@@ -56,7 +56,7 @@ GIT Installation
     $ git clone https://github.com/ranjanmannige/backmap.git
     $ cd backmap
     $ pip install .
-    # For testing:
+    # For testing
     $ pip install pytest
     $ pytest
 
