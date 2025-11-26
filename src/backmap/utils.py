@@ -491,8 +491,7 @@ def get_filename_and_filehandle(filename_or_filehandle):
     #
     return fn, f
 
-def median_filter(vals,nearest_neighbors=1):
-    '''
+'''
     Simple smoothing function that returns the median value of 
     each element and its nearest neighbors (+/-).
     Inputs:
@@ -503,6 +502,19 @@ def median_filter(vals,nearest_neighbors=1):
     Outouts:
         new_vals [List of floats]    Modified list with the median filter applied.
     '''
+
+def median_filter(vals,nearest_neighbors=1):
+    """Apply a 1D median filter, leaving edge elements unchanged. 
+
+    Args:
+        vals (Sequence[float]): Input values to smooth.
+        nearest_neighbors (int, optional): Number of neighbors to include on
+            each side when computing the median. Defaults to 1.
+
+    Returns:
+        list[float]: Filtered values where interior points are replaced by the
+            median of their neighborhood and edge points are left as-is.
+    """
     new_vals = []
     len_vals = len(vals)
     for i in range(len_vals):
