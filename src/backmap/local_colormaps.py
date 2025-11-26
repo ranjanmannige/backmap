@@ -53,16 +53,29 @@ polyproline = (0.,1.,1.)
 
 
 cmaps = {}
-"""Mapping of custom colormap names to LinearSegmentedColormap instances.
+"""Mapping of custom colormap names to LinearSegmentedColormap instances. 
+Reference the :ref:`Publications <publications>` section of the manual to 
+see how the colors are used to understand/represent the properties a protein 
+backbone (often, over an ensemble or time). Also, to visualize these cmaps,
+refer to the :py:func:`backmap.local_colormaps.display_cmaps` function.
 
 Keys:
-	:Chirality: a red-blue coloring method 
-	:Chirality_r:
-	:ChiralityFourColor:
-	:Chirality_rFourColor:
-	:SecondaryStructureHard:
-	:SecondaryStructure:
-	:SecondaryStructureFourColor:
+	:Chirality: A red-blue coloring method, where red is predominantly 
+				right handed and blue is predominantly left handed. 
+				Both colors fade to white as they leave the diagonal.
+	:Chirality_r: Similar to ``Chirality``, but with the color-to-white 
+				gradient reversed (i.e., the diagonal is white, while 
+				the bottom left and top right portions are red and blue 
+				respectively).
+	:ChiralityFourColor: Similar to the properties above, but with two 
+				more colors that are needed to represent the negative values.
+	:ChiralityFourColor_r: Same as the other above and, but with inverted 
+				color-to-white gradients.
+	:[SS]Hard: [SS=SecondaryStructure] The helix, sheet, and ppII helices shown as 
+				red, blue and cyan. Boundaries are hard (i.e., without gradients)
+	:SecondaryStructure: Same as above, but with color-to-white gradients (so, a backbone with a darker 
+						 red color is closer to the average helice's position than a lighter red) 
+	:[SS]FourColor: [SS=SecondaryStructure] Same as ``SecondaryStructureHard``, but accomodating negative R numbers.
 """
 
 cmap_ranges = {}

@@ -1,4 +1,4 @@
-"""Main module. Example usage: ``>backmap.R()``, which is equal to ``>backmap.backmap.R()``"""
+"""Main module. Example usage: ``backmap.R()``, which is equal to ``backmap.backmap.R()``"""
 import argparse
 import sys
 import logging
