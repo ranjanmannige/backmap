@@ -26,7 +26,6 @@
 
 .. contents::
 
-.. section-numbering::
 
 Introduction
 ============
