@@ -3,6 +3,7 @@ import pytest, sys, glob
 #from matplotlib.figure import Figure # to assert the returning of a proper figure
 import matplotlib.pyplot as plt
 import matplotlib as mpl # currently imported to compare returned axes object to mpl.axes.Axes
+import matplotlib.figure
 
 import backmap
 
@@ -104,6 +105,14 @@ def test_processing_data():
     structure_df = backmap.process_PDB(pdbfn=pdbfn, signed=False)
     assert structure_df.shape ==(146, 7)
     #
-    should_be_true = backmap.draw_figures(structure_df=structure_df, pdbfn=pdbfn, 
+    should_be_true, figure_dict = backmap.draw_figures(structure_df=structure_df, 
                                    output_dir='', write=False, show=False)
+    # Basic test
     assert should_be_true
+    # Check if the first and last keys of figure_dict are of 
+    # type matplotlib.figure.Figure
+    fig_keys = list(figure_dict.keys())
+    possible_fig = figure_dict[fig_keys[0]]
+    assert isinstance(possible_fig, matplotlib.figure.Figure)
+    possible_fig = figure_dict[fig_keys[-1]]
+    assert isinstance(possible_fig, matplotlib.figure.Figure)

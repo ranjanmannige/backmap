@@ -112,7 +112,7 @@ def main(pdbfn:Annotated[str,
     structure_df = process_PDB(pdbfn=pdbfn,
                                signed=signed)
     #
-    draw_figures(structure_df=structure_df, pdbfn=pdbfn, 
+    draw_figures(structure_df=structure_df, 
                  output_dir=output_dir, write=write, show=show)
 
 if __name__ == "__main__":

@@ -155,10 +155,12 @@ def write_image(fn_base, figure_object=None, write=True, show=True):
     if figure_object is None:
         figure_object = plt.gcf()
     if write:
+        print("\tSaving to:"+fn_base+'.[eps|png]')
         figure_object.savefig(fn_base+'.eps',dpi=200,bbox_inches='tight')
         figure_object.savefig(fn_base+'.png',dpi=200,bbox_inches='tight')
     if show: 
         plt.show()
+    return figure_object
 #
 
 def draw_xyz(X,Y,Z, ylim=False, cmap='Greys', xlabel=False,ylabel=False,zlabel=False,title=False,vmin=None,vmax=None):
@@ -449,7 +451,6 @@ def process_PDB(pdbfn:str, signed:bool=False):
         psi, and Ramachandran number columns. Returns an empty dataframe when no
         input PDBs are found.
     """
-    
     # Since the user can either provide one PDB file *or* one 
     # PDB file-containing directory, we need to resolve these PDBs
     list_pdbfilenames,pdbdir = utils.get_pdb_filenames(pdbfn)
@@ -481,8 +482,6 @@ def process_PDB(pdbfn:str, signed:bool=False):
         #
         # Sorting by model number
         latest_structure_df = latest_structure_df.sort_values(by=['chain','model','resid'],ascending=True)
-        
-        print(f"{set(latest_structure_df['model'])=}")
         #
         # Assigning continuous model numbers 
         old_model_numbers = list(sorted(set(latest_structure_df['model'])))
@@ -496,37 +495,40 @@ def process_PDB(pdbfn:str, signed:bool=False):
             latest_structure_df['model'] = latest_structure_df['model']+structure_df_max_model
         #
         structure_df = pd.concat([structure_df,latest_structure_df.copy()])
-        
+    
+    structure_df.attrs['pdbfn'] = pdbfn
+    structure_df.attrs['pdb_name'] = os.path.split(pdbfn)[-1]
+    structure_df.attrs['signed'] = signed
     #
     # models, residues, Rs = list(structure_df['model']),list(structure_df['resid']),list(structure_df['R'])
     # print(f'{len(set(models))=} {models=},')
     # print(f'{len(set(residues))=} {residues=}')
     # print(f'{len(set(Rs))=} {Rs=}')
-    print(f"{set(structure_df['model'])=}")
     return structure_df
-    
-def draw_figures(structure_df, pdbfn, output_dir='', write=True, show=True):
-    """Create and optionally save visual reports of Ramachandran numbers.
 
-    Plots per-chain Ramachandran values, per-model histograms, frame-to-frame
-    deviations, and deviations relative to the first model using the contents of
-    `structure_df`.
+def draw_figures(structure_df, output_dir='', write=True, show=True):
+    """Generate per-chain Ramachandran visualizations and optionally save/show them.
 
     Args:
-        structure_df (pd.DataFrame): Table with `model`, `chain`, `resid`, and
-            `R` columns for each residue.
-        pdbfn (str): Path to the source PDB file, used for labeling outputs.
-        output_dir (str): Directory for generated images; defaults to
-            `<pdbdir>/reports`.
-        write (bool): When True, write generated figures to disk.
-        show (bool): When True, display generated figures interactively.
+        structure_df (pd.DataFrame): Per-residue Ramachandran data containing at
+            least ``model``, ``chain``, ``resid``, and ``R`` columns.
+        pdbfn (str): Path to the source PDB file; used to derive default output names.
+        output_dir (str, optional): Directory to write figures; defaults to
+            ``<pdbdir>/reports`` when empty and ``write`` is ``True``.
+        write (bool): If ``True``, save ``.eps`` and ``.png`` files for each plot.
+        show (bool): If ``True``, display figures after creation.
 
     Returns:
-        bool: True after all figures have been generated.
+        tuple[bool, dict]: ``(True, figures)`` where ``figures`` maps plot labels
+        to matplotlib figure objects for the value maps, histograms, RMSF, and
+        RMSD heatmaps computed per chain.
     """
-    #
+    # All figure elements (of plt.gcf() type) are returned with the figures dict 
+    figures = {}
+    
     unique_chains = list(sorted(set(structure_df['chain'])))
     #
+    pdbfn = structure_df.attrs['pdbfn']
     pdbdir = os.path.dirname(pdbfn)
     if write:
         if len(output_dir) == 0:
@@ -536,8 +538,7 @@ def draw_figures(structure_df, pdbfn, output_dir='', write=True, show=True):
         if not os.path.isdir(output_dir):
             os.makedirs(output_dir)
     #
-    pdbfn = os.path.split(pdbfn)[-1][:-len('.pdb')]
-    name = pdbfn
+    name = os.path.split(pdbfn)[-1][:-len('.pdb')]
     print(" ---- \t---------")
     #
     vmin           =  0; 
@@ -574,9 +575,12 @@ def draw_figures(structure_df, pdbfn, output_dir='', write=True, show=True):
                 #
                 #plt.show()
                 # Now, we display the graph:
-                FN = output_dir+'/pdb_%s_r_%s' %(final_name,cmap)
-                write_image(FN, write=write, show=show)#,new_fig)
-                print("\tSaved to:",FN+'.')
+                FN = None
+                if write:
+                    FN = output_dir+'/pdb_%s_r_%s' %(final_name,cmap)
+                figure_object = write_image(FN, write=write, show=show)#,new_fig)
+                figures[f'chain_{chain}_val_cmap{cmap}'] = figure_object
+                #print("\tSaved to:",FN+'.')
     #
     #
     # Getting only those values for the particular chain 
@@ -614,12 +618,15 @@ def draw_figures(structure_df, pdbfn, output_dir='', write=True, show=True):
                 ,cmap = 'Greys', ylim=[vmin,vmax],title=r'Per-model $\mathcal{R}$-histogram'+'\nPDB: '+final_name)
             plt.yticks(np.arange(vmin,vmax+0.00001,0.2))
             # Now, we display the graph:
-            FN = output_dir+'/pdb_%s_his'%(final_name)
-            write_image(FN, write=write, show=show)
-            print("\tSaved to:",FN)
+            FN = None
+            if write:
+                FN = output_dir+'/pdb_%s_his'%(final_name)
+            figure_object = write_image(FN, write=write, show=show)
+            figures[f'chain_{chain}_his_cmap{cmap}'] = figure_object
+            #print("\tSaved to:",FN)
     #
     #
-    print(" 3.  \tRMSF Test (PDB: {})".format(pdbfn))
+    print(" 3.  \tRMSF (PDB: {})".format(name))
     for chain in unique_chains:
         final_name = name
         if len(chain.rstrip()):
@@ -665,14 +672,16 @@ def draw_figures(structure_df, pdbfn, output_dir='', write=True, show=True):
                     ,cmap = 'Blues', title='Per-residue deviation $D_{-1} = |\\mathcal{R}_t - \\mathcal{R}_{t-1}|$\nPDB: '+ final_name)
                 
                 # Now, we display the graph:
-                FN = output_dir+'/pdb_%s_rmsf'%(final_name)
-                write_image(FN, write=write, show=show)
-                print("\tSaved to:",FN)
+                FN = None
+                if write:
+                    FN = output_dir+'/pdb_%s_rmsf'%(final_name)
+                figure_object = write_image(FN, write=write, show=show)
+                figures[f'chain_{chain}_rmsf_cmap{cmap}'] = figure_object
         else:
             print('\tChain "%s" has only one model. Not drawing this graph.' %(chain))
     #
     #
-    print(' 4.  \tRMSD Test (PDB: {})'.format(pdbfn))
+    print(f' 4.  \tRMSD (PDB: {name})')
     for chain in unique_chains:
         final_name = name
         if len(chain.rstrip()):
@@ -715,13 +724,15 @@ def draw_figures(structure_df, pdbfn, output_dir='', write=True, show=True):
                                 cmap = 'Reds', title= r'Per-residue deviation $D_{1} = |\mathcal{R}_t - \mathcal{R}_{1}|$'+'\nPDB: '+final_name)
                 #plt.yticks(np.arange(0,1.00001,0.2))
                 # Now, we display the graph:
-                FN = output_dir+'/pdb_%s_rmsd'%(final_name)
-                write_image(FN, write=write, show=show)
-                print("\tSaved to:",FN)
+                FN = None
+                if write:
+                    FN = output_dir+'/pdb_%s_rmsd'%(final_name)
+                figure_object = write_image(FN, write=write, show=show)
+                figures[f'chain_{chain}_rmsd_cmap{cmap}'] = figure_object
         else:
             print('\tChain "%s" has only one model. Not drawing this graph.' %(chain))
     #
-    return True #structure_df
+    return True, figures
 #
 
 # from ._version import get_versions
