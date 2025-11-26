@@ -48,5 +48,9 @@ autodoc_member_order = 'bysource'
 
 html_theme = "sphinx_rtd_theme"
 #html_theme = 'alabaster'
+#html_theme = "dotted"
 
 html_static_path = ['_static']
+
+html_favicon = 'images/favicon_thick.ico'  # change to the name of your image
+html_logo = 'images/favicon_thin.ico'  # change to the name of your image

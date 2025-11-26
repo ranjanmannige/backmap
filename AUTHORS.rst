@@ -2,4 +2,4 @@
 Developers
 ==========
 
-* ranjanmannige <ranjanmannige@gmail.com>
+* ranjanmannige <https://www.ranjanlab.com>
