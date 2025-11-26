@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v6
       - name: Build HTML
         with:
-          pre-build-command: "sudo apt-get update && sudo apt install -y pandoc"
+          pre-build-command: "apt update && apt install -y pandoc"
         uses: ammaraskar/sphinx-action@7.0.0
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
