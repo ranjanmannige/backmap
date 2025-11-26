@@ -7,10 +7,11 @@
 Welcome to BackMAP's documentation!
 ###################################
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
    readme_link
+   notebooks
    reference
    authors_link
    
