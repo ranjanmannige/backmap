@@ -73,7 +73,7 @@ Manually download the source code (`main.zip <https://github.com/ranjanmannige/b
     # The rest is the same as with installing using `git clone`
     $ cd backmap-main
     $ pip install .
-    # For testing:
+    # For testing
     $ pip install pytest
     $ pytest
 
