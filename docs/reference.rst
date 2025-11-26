@@ -12,7 +12,7 @@ backmap
 
 
 utils 
-=======
+=====
 
 .. automodule:: backmap.utils
     :members:
@@ -20,12 +20,12 @@ utils
 
 
 cli 
-=======
+===
 .. automodule:: backmap.cli
     :members:
 
 local_colormaps
-=======
+===============
 .. automodule:: backmap.local_colormaps
     :members:
 
