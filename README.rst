@@ -67,13 +67,14 @@ Manual Installation
 Manually download the source code (`main.zip <https://github.com/ranjanmannige/backmap/archive/refs/heads/main.zip>`_) from the `git repository <https://github.com/ranjanmannige/backmap>`_. Then, same as above:
 
 .. code-block:: bash
+    
     # In stead of downloading, you can follow the next two commands (tested only on linux)
     $ wget https://github.com/ranjanmannige/backmap/archive/refs/heads/main.zip
     $ unzip main.zip # Should giv you a directory called "backmap-main"
     # The rest is the same as with installing using `git clone`
     $ cd backmap-main
     $ pip install .
-    # For testing
+    # For testin
     $ pip install pytest
     $ pytest
 
