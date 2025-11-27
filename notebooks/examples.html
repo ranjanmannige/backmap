@@ -96,7 +96,6 @@
              
   <section id="BackMAP-EXAMPLES">
 <h1>BackMAP EXAMPLES<a class="headerlink" href="#BackMAP-EXAMPLES" title="Permalink to this heading"></a></h1>
-<p>TODO: allow Sphinx documentation to index this notebook. See: <a class="reference external" href="https://cybergis.github.io/github-pages-demo/tutorial/nbsphinx.html">https://cybergis.github.io/github-pages-demo/tutorial/nbsphinx.html</a></p>
 <section id="Calculating-Ramachandran-numbers-from-phi,-psi-angles">
 <h2>Calculating Ramachandran numbers from phi, psi angles<a class="headerlink" href="#Calculating-Ramachandran-numbers-from-phi,-psi-angles" title="Permalink to this heading"></a></h2>
 <p>Firstly, the Ramachandran number is easy to calculate if you already have each residue’s <span class="math notranslate nohighlight">\(Φ\)</span> (phi) and <span class="math notranslate nohighlight">\(Ψ\)</span> (psi) values.</p>
@@ -269,6 +268,7 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># A single PDB file with only one structure in it; note the model column that only contains the number 1</span>
+<span class="kn">import</span> <span class="nn">backmap</span>
 <span class="n">pdbfn</span> <span class="o">=</span> <span class="s1">&#39;../tests/pdbs/2fft.pdb.gz&#39;</span>
 <span class="n">structure_df2</span> <span class="o">=</span> <span class="n">backmap</span><span class="o">.</span><span class="n">process_PDB</span><span class="p">(</span><span class="n">pdbfn</span><span class="o">=</span><span class="n">pdbfn</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pdbfn</span><span class="si">}</span><span class="s2"> starts with:&quot;</span><span class="p">)</span>
@@ -419,9 +419,13 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">success</span><span class="p">,</span> <span class="n">figure_dict</span> <span class="o">=</span> <span class="n">backmap</span><span class="o">.</span><span class="n">draw_figures</span><span class="p">(</span><span class="n">structure_df</span><span class="o">=</span><span class="n">structure_df1</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;----         ---------&#39;</span><span class="p">)</span>
+
 <span class="n">printme</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;Each of the figures shown correspond to an element in the returned</span>
-<span class="s2">&#39;figure_dict&#39; dictionary, with the keys as follows: </span><span class="si">{</span><span class="n">figure_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="nb">print</span><span class="p">()</span>
+<span class="s2">&#39;figure_dict&#39; dictionary, with the keys as follows:&quot;&quot;&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">printme</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">figure_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
 </pre></div>
 </div>
 </div>
@@ -470,7 +474,7 @@
 <img alt="../_images/notebooks_examples_8_5.png" src="../_images/notebooks_examples_8_5.png" />
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -479,7 +483,21 @@
         Chain &#34;A&#34; has only one model. Not drawing this graph.
  4.     RMSD (PDB: 1mba)
         Chain &#34;A&#34; has only one model. Not drawing this graph.
-
+----    ---------
+Each of the figures shown correspond to an element in the returned
+&#39;figure_dict&#39; dictionary, with the keys as follows:
+        chain_A_val_cmapGreys
+        chain_A_val_cmapSecondaryStructure
+        chain_A_val_cmapChirality
+        chain_A_his_cmapChirality
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;Figure size 640x480 with 0 Axes&gt;
 </pre></div></div>
 </div>
 </section>
@@ -566,12 +584,20 @@
  4.     RMSD (PDB: 2fft.pd)
 </pre></div></div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <img alt="../_images/notebooks_examples_10_9.png" src="../_images/notebooks_examples_10_9.png" />
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;Figure size 640x480 with 0 Axes&gt;
+</pre></div></div>
 </div>
 </section>
 </section>
@@ -596,6 +622,7 @@
 <img alt="../_images/notebooks_examples_12_0.png" src="../_images/notebooks_examples_12_0.png" />
 </div>
 </div>
+<p>Credit: the following walkthrough helped to integrate this notebook into the documentation <a class="reference external" href="https://cybergis.github.io/github-pages-demo/tutorial/nbsphinx.html">https://cybergis.github.io/github-pages-demo/tutorial/nbsphinx.html</a></p>
 </section>
 </section>
 

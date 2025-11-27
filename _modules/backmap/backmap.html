@@ -589,7 +589,6 @@
 <span class="sd">    Args:</span>
 <span class="sd">        structure_df (pd.DataFrame): Per-residue Ramachandran data containing at</span>
 <span class="sd">            least ``model``, ``chain``, ``resid``, and ``R`` columns.</span>
-<span class="sd">        pdbfn (str): Path to the source PDB file; used to derive default output names.</span>
 <span class="sd">        output_dir (str, optional): Directory to write figures; defaults to</span>
 <span class="sd">            ``&lt;pdbdir&gt;/reports`` when empty and ``write`` is ``True``.</span>
 <span class="sd">        write (bool): If ``True``, save ``.eps`` and ``.png`` files for each plot.</span>
@@ -602,7 +601,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># All figure elements (of plt.gcf() type) are returned with the figures dict </span>
     <span class="n">figures</span> <span class="o">=</span> <span class="p">{}</span>
-    
+    <span class="c1">#</span>
     <span class="n">unique_chains</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">structure_df</span><span class="p">[</span><span class="s1">&#39;chain&#39;</span><span class="p">])))</span>
     <span class="c1">#</span>
     <span class="n">pdbfn</span> <span class="o">=</span> <span class="n">structure_df</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;pdbfn&#39;</span><span class="p">]</span>
@@ -618,13 +617,13 @@
     <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;.pdb&#39;</span><span class="p">)]</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; ---- </span><span class="se">\t</span><span class="s2">---------&quot;</span><span class="p">)</span>
     <span class="c1">#</span>
-    <span class="n">vmin</span>           <span class="o">=</span>  <span class="mi">0</span><span class="p">;</span> 
-    <span class="n">vmax</span>           <span class="o">=</span>  <span class="mi">1</span><span class="p">;</span>
+    <span class="n">vmin</span>           <span class="o">=</span>  <span class="mi">0</span> 
+    <span class="n">vmax</span>           <span class="o">=</span>  <span class="mi">1</span>
     <span class="n">ss_cmap</span>        <span class="o">=</span> <span class="s1">&#39;SecondaryStructure&#39;</span>
     <span class="n">chirality_cmap</span> <span class="o">=</span> <span class="s1">&#39;Chirality&#39;</span>
     <span class="k">if</span> <span class="n">signed</span><span class="p">:</span>
-        <span class="n">vmin</span>           <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span> 
-        <span class="n">vmax</span>           <span class="o">=</span>  <span class="mi">1</span><span class="p">;</span>
+        <span class="n">vmin</span>           <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> 
+        <span class="n">vmax</span>           <span class="o">=</span>  <span class="mi">1</span>
         <span class="n">ss_cmap</span>        <span class="o">=</span> <span class="n">ss_cmap</span>        <span class="o">+</span> <span class="s1">&#39;FourColor&#39;</span>
         <span class="n">chirality_cmap</span> <span class="o">=</span> <span class="n">chirality_cmap</span> <span class="o">+</span> <span class="s1">&#39;FourColor&#39;</span>
     <span class="c1">#</span>
@@ -808,6 +807,8 @@
                 <span class="n">figures</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;chain_</span><span class="si">{</span><span class="n">chain</span><span class="si">}</span><span class="s1">_rmsd_cmap</span><span class="si">{</span><span class="n">cmap</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">figure_object</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">Chain &quot;</span><span class="si">%s</span><span class="s1">&quot; has only one model. Not drawing this graph.&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">chain</span><span class="p">))</span>
+    <span class="c1">#</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
     <span class="c1">#</span>
     <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">figures</span></div>
 <span class="c1">#</span>
