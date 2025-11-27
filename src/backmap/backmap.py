@@ -512,7 +512,6 @@ def draw_figures(structure_df, output_dir='', write=True, show=True):
     Args:
         structure_df (pd.DataFrame): Per-residue Ramachandran data containing at
             least ``model``, ``chain``, ``resid``, and ``R`` columns.
-        pdbfn (str): Path to the source PDB file; used to derive default output names.
         output_dir (str, optional): Directory to write figures; defaults to
             ``<pdbdir>/reports`` when empty and ``write`` is ``True``.
         write (bool): If ``True``, save ``.eps`` and ``.png`` files for each plot.
@@ -525,7 +524,7 @@ def draw_figures(structure_df, output_dir='', write=True, show=True):
     """
     # All figure elements (of plt.gcf() type) are returned with the figures dict 
     figures = {}
-    
+    #
     unique_chains = list(sorted(set(structure_df['chain'])))
     #
     pdbfn = structure_df.attrs['pdbfn']
@@ -541,13 +540,13 @@ def draw_figures(structure_df, output_dir='', write=True, show=True):
     name = os.path.split(pdbfn)[-1][:-len('.pdb')]
     print(" ---- \t---------")
     #
-    vmin           =  0; 
-    vmax           =  1;
+    vmin           =  0 
+    vmax           =  1
     ss_cmap        = 'SecondaryStructure'
     chirality_cmap = 'Chirality'
     if signed:
-        vmin           = -1; 
-        vmax           =  1;
+        vmin           = -1 
+        vmax           =  1
         ss_cmap        = ss_cmap        + 'FourColor'
         chirality_cmap = chirality_cmap + 'FourColor'
     #
