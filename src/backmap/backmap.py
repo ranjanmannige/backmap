@@ -731,6 +731,8 @@ def draw_figures(structure_df, output_dir='', write=True, show=True):
         else:
             print('\tChain "%s" has only one model. Not drawing this graph.' %(chain))
     #
+    plt.clf()
+    #
     return True, figures
 #
 
