@@ -24,12 +24,13 @@ except:
 # Using the following flag to either use the Biopython PDB parser if True, vs
 # the in house PDB parser if False
 biopython_is_installed = False
-try:
-    # Possibly use: if 'Bio' in sys.modules:
-    from Bio import PDB
-    biopython_is_installed = True
-except:
-    biopython_is_installed = False
+# Moving away from 
+# try:
+#     # Possibly use: if 'Bio' in sys.modules:
+#     from Bio import PDB
+#     biopython_is_installed = True
+# except:
+#     biopython_is_installed = False
 
 #
 # Three-to-one amino acid conversion lookup
@@ -59,10 +60,7 @@ def read_pdb(fn:Union[str,os.PathLike]):
     """
     raw_pdb_data = False
     if biopython_is_installed:
-        if check_pdb(fn):
-            raw_pdb_data = read_pdb_biopython(fn)
-        else:
-            raw_pdb_data = read_pdb_inhouse(fn)
+        raw_pdb_data = read_pdb_biopython(fn)
     else:
         raw_pdb_data = read_pdb_inhouse(fn)
     #
@@ -112,7 +110,7 @@ def read_pdb_biopython(fn_or_filehandle:Union[str,os.PathLike,io.IOBase]):
                 #continue
                 resname = residue.resname
                 resno   = residue.id[1]
-                
+                #
                 # Checking if this is an actual residue 
                 # (e.g., ACE has a "C"-named atom, but no 'N' and 'CA')
                 if(     'N' in residue.child_dict 
