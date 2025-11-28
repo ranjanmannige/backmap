@@ -240,7 +240,11 @@
     <span class="k">return</span> <span class="n">figure_object</span></div>
 <span class="c1">#</span>
 
-<div class="viewcode-block" id="draw_xyz"><a class="viewcode-back" href="../../reference.html#backmap.backmap.draw_xyz">[docs]</a><span class="k">def</span> <span class="nf">draw_xyz</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">Y</span><span class="p">,</span><span class="n">Z</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Greys&#39;</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">ylabel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">zlabel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">set_nan_color</span><span class="p">(</span><span class="n">cmap</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">):</span>
+    <span class="n">cmap</span><span class="o">.</span><span class="n">set_bad</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cmap</span>
+
+<div class="viewcode-block" id="draw_xyz"><a class="viewcode-back" href="../../reference.html#backmap.backmap.draw_xyz">[docs]</a><span class="k">def</span> <span class="nf">draw_xyz</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">Y</span><span class="p">,</span><span class="n">Z</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Greys&#39;</span><span class="p">,</span> <span class="n">missing_color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">ylabel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">zlabel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render a heatmap-style plot for spatially indexed values.</span>
 
 <span class="sd">    Args:</span>
@@ -249,6 +253,7 @@
 <span class="sd">        Z (Sequence[float]): Values to plot at each (X, Y) location.</span>
 <span class="sd">        ylim (tuple[float, float] | bool, optional): Y-axis limits; falsy to leave unchanged.</span>
 <span class="sd">        cmap (str or matplotlib.colors.Colormap, optional): Colormap name or object to use.</span>
+<span class="sd">        missing_color (str): A color that will be used when a residue is missing (default: &#39;green&#39;)</span>
 <span class="sd">        xlabel (str or bool, optional): X-axis label; falsy to skip.</span>
 <span class="sd">        ylabel (str or bool, optional): Y-axis label; falsy to skip.</span>
 <span class="sd">        zlabel (str or bool, optional): Colorbar label; falsy to skip.</span>
@@ -262,7 +267,11 @@
     <span class="c1">#</span>
     <span class="k">if</span> <span class="n">cmap</span> <span class="ow">in</span> <span class="n">local_colormaps</span><span class="o">.</span><span class="n">cmaps</span><span class="p">:</span>
         <span class="n">cmap</span> <span class="o">=</span> <span class="n">local_colormaps</span><span class="o">.</span><span class="n">cmaps</span><span class="p">[</span><span class="n">cmap</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="n">cmap</span><span class="p">)</span>
     <span class="c1">#</span>
+    <span class="n">cmap</span> <span class="o">=</span> <span class="n">set_nan_color</span><span class="p">(</span><span class="n">cmap</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">missing_color</span><span class="p">)</span>
+    
     <span class="n">aspect</span> <span class="o">=</span> <span class="mf">2.</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">X</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="c1"># Some structures have only one model, which is too thin, </span>
@@ -470,7 +479,7 @@
             <span class="n">c</span> <span class="o">=</span> <span class="n">get_coord_by_key_value_match</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;atom&#39;</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;CA&#39;</span><span class="p">,</span><span class="n">list_of_dict</span><span class="o">=</span><span class="n">resid_to_records</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
             <span class="n">d</span> <span class="o">=</span> <span class="n">get_coord_by_key_value_match</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;atom&#39;</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span><span class="n">list_of_dict</span><span class="o">=</span><span class="n">resid_to_records</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
             
-            <span class="n">phi</span><span class="p">,</span><span class="n">psi</span><span class="p">,</span><span class="n">rho</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span>
+            <span class="n">phi</span><span class="p">,</span><span class="n">psi</span><span class="p">,</span><span class="n">rho</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
             <span class="c1">#print(len(b)+len(c)+len(d))</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">==</span> <span class="mi">9</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">im</span> <span class="ow">in</span> <span class="n">resid_to_records</span><span class="p">:</span>
@@ -485,7 +494,7 @@
                 <span class="c1"># a = model_to_chain_to_resid_atom_to_vals[model][chain][im][&quot;c&quot;] # resid_to_coordC[before]</span>
                 <span class="c1"># e = model_to_chain_to_resid_atom_to_vals[model][chain][ip][&quot;n&quot;]  # resid_to_coordN[after]</span>
                 
-                <span class="k">if</span> <span class="n">phi</span> <span class="o">!=</span> <span class="kc">False</span> <span class="ow">and</span> <span class="n">psi</span> <span class="o">!=</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">psi</span><span class="p">)):</span>
                     <span class="n">rho</span><span class="o">=</span> <span class="n">normalized_ramachandran_number</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span><span class="n">psi</span><span class="p">,</span><span class="n">signed</span><span class="p">)</span>
             
             <span class="n">ignore_cols</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;atom&#39;</span><span class="p">,</span><span class="s1">&#39;X&#39;</span><span class="p">,</span><span class="s1">&#39;Y&#39;</span><span class="p">,</span><span class="s1">&#39;Z&#39;</span><span class="p">,</span><span class="s1">&#39;unique_model_and_chain&#39;</span><span class="p">}</span>
@@ -514,6 +523,45 @@
 
     <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">final_records</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="read_pdb_from_pdbfn_or_filehandle"><a class="viewcode-back" href="../../reference.html#backmap.backmap.read_pdb_from_pdbfn_or_filehandle">[docs]</a><span class="k">def</span> <span class="nf">read_pdb_from_pdbfn_or_filehandle</span><span class="p">(</span><span class="n">pdbfn_or_filehandle</span><span class="p">,</span> <span class="n">structure_df</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse PDB content, compute Ramachandran metrics, and merge with an existing dataframe.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pdbfn_or_filehandle: Path to a PDB file or an open file-like object accepted by ``utils.read_pdb``.</span>
+<span class="sd">        structure_df (pd.DataFrame): Existing dataframe of processed structures to append to; empty by default.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: Combined residue-level dataframe with continuous model numbering and Ramachandran values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1">#</span>
+    <span class="c1"># READ PDB in the form of a matrix with columns [&#39;model&#39;,&#39;chain&#39;,&#39;resid&#39;,&#39;R&#39;]</span>
+    <span class="n">raw_pdb_data</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">read_pdb</span><span class="p">(</span><span class="n">filename_or_filehandle</span><span class="o">=</span><span class="n">pdbfn_or_filehandle</span><span class="p">)</span>
+    <span class="n">raw_pdb_data</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">bytecheck</span><span class="p">(</span><span class="n">raw_pdb_data</span><span class="p">)</span>
+    <span class="c1">#</span>
+    <span class="n">latest_structure_df</span> <span class="o">=</span> <span class="n">obtain_ramachandran_dataframe</span><span class="p">(</span><span class="n">raw_pdb_data</span><span class="p">,</span><span class="n">signed</span><span class="p">)</span>
+    <span class="c1">#latest_structure_df, latest_structure = calculate_R_from_raw_pdb_data(raw_pdb_data, signed=signed)</span>
+    <span class="c1">#</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">latest_structure_df</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: PDB FILE &#39;</span><span class="si">{}</span><span class="s2">&#39; NOT FOUND&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+    <span class="c1">#</span>
+    <span class="c1"># Sorting by model number</span>
+    <span class="n">latest_structure_df</span> <span class="o">=</span> <span class="n">latest_structure_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;chain&#39;</span><span class="p">,</span><span class="s1">&#39;model&#39;</span><span class="p">,</span><span class="s1">&#39;resid&#39;</span><span class="p">],</span><span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1">#</span>
+    <span class="c1"># Assigning continuous model numbers </span>
+    <span class="n">old_model_numbers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">])))</span>
+    <span class="n">new_model_numbers</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">old_model_numbers</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">model_number_conversion</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">old_model_numbers</span><span class="p">,</span><span class="n">new_model_numbers</span><span class="p">))</span>
+    <span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">model_number_conversion</span><span class="p">[</span><span class="n">mn</span><span class="p">]</span> <span class="k">for</span> <span class="n">mn</span> <span class="ow">in</span> <span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]]</span>
+    <span class="c1">#</span>
+    <span class="c1"># If this is not the first structure file that is being processed...</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">structure_df</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">structure_df_max_model</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]))</span>
+        <span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">structure_df_max_model</span>
+    <span class="c1">#</span>
+    <span class="n">structure_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">structure_df</span><span class="p">,</span><span class="n">latest_structure_df</span><span class="o">.</span><span class="n">copy</span><span class="p">()])</span>
+    <span class="k">return</span> <span class="n">structure_df</span></div>
 
 <div class="viewcode-block" id="process_PDB"><a class="viewcode-back" href="../../reference.html#backmap.backmap.process_PDB">[docs]</a><span class="k">def</span> <span class="nf">process_PDB</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">signed</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -528,6 +576,7 @@
 <span class="sd">        psi, and Ramachandran number columns. Returns an empty dataframe when no</span>
 <span class="sd">        input PDBs are found.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># Since the user can either provide one PDB file *or* one </span>
     <span class="c1"># PDB file-containing directory, we need to resolve these PDBs</span>
     <span class="n">list_pdbfilenames</span><span class="p">,</span><span class="n">pdbdir</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_pdb_filenames</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">)</span>
@@ -537,53 +586,29 @@
     <span class="c1">#     utils.get_filename_and_filehandle(</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_pdbfilenames</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-    
+
     <span class="c1">#NAME = os.path.basename(list_pdbfilenames[0])[:-len(&quot;.pdb&quot;)]</span>
     <span class="c1">#target_base = target_dir.rstrip(&quot;/&quot;)</span>
     <span class="c1">#</span>
     <span class="n">structure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span> <span class="c1"># depricated</span>
     <span class="n">structure_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">pdbfn</span> <span class="ow">in</span> <span class="n">list_pdbfilenames</span><span class="p">:</span><span class="c1">#[:10]:</span>
+    <span class="k">for</span> <span class="n">_pdbfn</span> <span class="ow">in</span> <span class="n">list_pdbfilenames</span><span class="p">:</span><span class="c1">#[:10]:</span>
         <span class="c1"># Each PDB filename itself can be an archive of PDB files, </span>
         <span class="c1">#</span>
         <span class="c1"># Opening the file, assuming that it could be a list of files (can be, if </span>
         <span class="c1"># the file ends with .tgz .tar.gz or .zip)</span>
-        <span class="n">filehandles</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">return_filehandle_from_gz_zip_or_normal_file</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">)</span>
+        <span class="n">filehandles</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">return_filehandle_from_gz_zip_or_normal_file</span><span class="p">(</span><span class="n">_pdbfn</span><span class="p">)</span>
         <span class="c1">#</span>
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">filehandles</span><span class="p">:</span>
             <span class="c1"># Check if the PDB has no subunit IDs, and then check if segnames exist (right most column)</span>
             <span class="c1"># and renaming the subunit IDs alphabetically and then numerically</span>
+            <span class="c1">#</span>
+            <span class="n">final_pdbfn</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">final_pdbfh</span> <span class="o">=</span> <span class="n">f</span>
+            <span class="c1">#</span>
+            <span class="n">structure_df</span> <span class="o">=</span> <span class="n">read_pdb_from_pdbfn_or_filehandle</span><span class="p">(</span><span class="n">final_pdbfn</span><span class="p">,</span> <span class="n">structure_df</span><span class="o">=</span><span class="n">structure_df</span><span class="p">)</span>
             
-            <span class="n">pdbfn</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span>
-            <span class="n">pdbfh</span> <span class="o">=</span> <span class="n">f</span>
-
-            <span class="c1"># READ PDB in the form of a matrix with columns [&#39;model&#39;,&#39;chain&#39;,&#39;resid&#39;,&#39;R&#39;]</span>
-            <span class="n">raw_pdb_data</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">read_pdb</span><span class="p">(</span><span class="n">filename_or_filehandle</span><span class="o">=</span><span class="n">pdbfh</span><span class="p">)</span>
-            <span class="n">raw_pdb_data</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">bytecheck</span><span class="p">(</span><span class="n">raw_pdb_data</span><span class="p">)</span>
-
-            <span class="n">latest_structure_df</span> <span class="o">=</span> <span class="n">obtain_ramachandran_dataframe</span><span class="p">(</span><span class="n">raw_pdb_data</span><span class="p">,</span><span class="n">signed</span><span class="p">)</span>
-            <span class="c1">#latest_structure_df, latest_structure = calculate_R_from_raw_pdb_data(raw_pdb_data, signed=signed)</span>
-            <span class="c1">#</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">latest_structure_df</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: PDB FILE &#39;</span><span class="si">{}</span><span class="s2">&#39; NOT FOUND&quot;</span><span class="p">)</span>
-                <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-            <span class="c1">#</span>
-            <span class="c1"># Sorting by model number</span>
-            <span class="n">latest_structure_df</span> <span class="o">=</span> <span class="n">latest_structure_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;chain&#39;</span><span class="p">,</span><span class="s1">&#39;model&#39;</span><span class="p">,</span><span class="s1">&#39;resid&#39;</span><span class="p">],</span><span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="c1">#</span>
-            <span class="c1"># Assigning continuous model numbers </span>
-            <span class="n">old_model_numbers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">])))</span>
-            <span class="n">new_model_numbers</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">old_model_numbers</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">model_number_conversion</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">old_model_numbers</span><span class="p">,</span><span class="n">new_model_numbers</span><span class="p">))</span>
-            <span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">model_number_conversion</span><span class="p">[</span><span class="n">mn</span><span class="p">]</span> <span class="k">for</span> <span class="n">mn</span> <span class="ow">in</span> <span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]]</span>
-            <span class="c1">#</span>
-            <span class="c1"># If this is not the first structure file that is being processed...</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">structure_df</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">structure_df_max_model</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]))</span>
-                <span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">structure_df_max_model</span>
-            <span class="c1">#</span>
-            <span class="n">structure_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">structure_df</span><span class="p">,</span><span class="n">latest_structure_df</span><span class="o">.</span><span class="n">copy</span><span class="p">()])</span>
-    
+        <span class="c1">#</span>
     <span class="n">structure_df</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;pdbfn&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pdbfn</span>
     <span class="n">structure_df</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;pdb_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">structure_df</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;signed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">signed</span>
@@ -593,6 +618,40 @@
     <span class="c1"># print(f&#39;{len(set(residues))=} {residues=}&#39;)</span>
     <span class="c1"># print(f&#39;{len(set(Rs))=} {Rs=}&#39;)</span>
     <span class="k">return</span> <span class="n">structure_df</span></div>
+
+
+<div class="viewcode-block" id="fill_in_missing_resids"><a class="viewcode-back" href="../../reference.html#backmap.backmap.fill_in_missing_resids">[docs]</a><span class="k">def</span> <span class="nf">fill_in_missing_resids</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">fill_with</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Insert placeholder rows for missing residue IDs per chain and model.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        structure_df (pd.DataFrame): Backbone geometry table containing</span>
+<span class="sd">            ``chain``, ``model``, and ``resid`` columns.</span>
+<span class="sd">        fill_with (Any): Value used to populate missing residue rows; defaults</span>
+<span class="sd">            to ``False``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pd.DataFrame: Reindexed dataframe spanning continuous residue ranges for</span>
+<span class="sd">        each chain and model, filled with ``fill_with`` where data was absent.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">final_structure_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">chain</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">structure_df</span><span class="p">[</span><span class="s1">&#39;chain&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()):</span>
+        <span class="n">_cdf</span> <span class="o">=</span> <span class="n">structure_df</span><span class="p">[</span><span class="n">structure_df</span><span class="p">[</span><span class="s1">&#39;chain&#39;</span><span class="p">]</span><span class="o">==</span><span class="n">chain</span><span class="p">]</span>
+        <span class="c1"># </span>
+        <span class="n">all_residue_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">_cdf</span><span class="p">[</span><span class="s1">&#39;resid&#39;</span><span class="p">])</span>
+        <span class="c1">#</span>
+        <span class="n">resid_range</span>     <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">all_residue_ids</span><span class="p">),</span><span class="nb">max</span><span class="p">(</span><span class="n">all_residue_ids</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">_cdf</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()):</span>
+            <span class="n">_model_df</span> <span class="o">=</span> <span class="n">_cdf</span><span class="p">[</span><span class="n">_cdf</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span><span class="o">==</span><span class="n">model</span><span class="p">]</span>
+            <span class="n">_model_df</span> <span class="o">=</span> <span class="n">_model_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;resid&#39;</span><span class="p">)</span>
+            <span class="n">_model_df</span> <span class="o">=</span> <span class="n">_model_df</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">resid_range</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">fill_with</span><span class="p">)</span>
+            <span class="n">_model_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model</span> 
+            <span class="n">_model_df</span><span class="p">[</span><span class="s1">&#39;chain&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">chain</span>
+            <span class="n">_model_df</span> <span class="o">=</span> <span class="n">_model_df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+            <span class="n">final_structure_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">final_structure_df</span><span class="p">,</span><span class="n">_model_df</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">final_structure_df</span></div>
+
+
 
 <div class="viewcode-block" id="draw_figures"><a class="viewcode-back" href="../../reference.html#backmap.backmap.draw_figures">[docs]</a><span class="k">def</span> <span class="nf">draw_figures</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate per-chain Ramachandran visualizations and optionally save/show them.</span>
@@ -612,6 +671,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># All figure elements (of plt.gcf() type) are returned with the figures dict </span>
     <span class="n">figures</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1">#</span>
+    <span class="n">structure_df</span> <span class="o">=</span> <span class="n">fill_in_missing_resids</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">fill_with</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
     <span class="c1">#</span>
     <span class="n">unique_chains</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">structure_df</span><span class="p">[</span><span class="s1">&#39;chain&#39;</span><span class="p">])))</span>
     <span class="c1">#</span>
@@ -637,6 +698,8 @@
         <span class="n">vmax</span>           <span class="o">=</span>  <span class="mi">1</span>
         <span class="n">ss_cmap</span>        <span class="o">=</span> <span class="n">ss_cmap</span>        <span class="o">+</span> <span class="s1">&#39;FourColor&#39;</span>
         <span class="n">chirality_cmap</span> <span class="o">=</span> <span class="n">chirality_cmap</span> <span class="o">+</span> <span class="s1">&#39;FourColor&#39;</span>
+    <span class="c1">#</span>
+    <span class="n">structure_df</span> <span class="o">=</span> <span class="n">fill_in_missing_resids</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">fill_with</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
     <span class="c1">#</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; 1  </span><span class="se">\t</span><span class="s2">Ramachandran number (PDB: </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">))</span>
     <span class="n">different_plots</span> <span class="o">=</span> <span class="p">[]</span>
@@ -667,8 +730,7 @@
                     <span class="n">FN</span> <span class="o">=</span> <span class="n">output_dir</span><span class="o">+</span><span class="s1">&#39;/pdb_</span><span class="si">%s</span><span class="s1">_r_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">final_name</span><span class="p">,</span><span class="n">cmap</span><span class="p">)</span>
                 <span class="n">figure_object</span> <span class="o">=</span> <span class="n">write_image</span><span class="p">(</span><span class="n">FN</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="n">write</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">)</span><span class="c1">#,new_fig)</span>
                 <span class="n">figures</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;chain_</span><span class="si">{</span><span class="n">chain</span><span class="si">}</span><span class="s1">_val_cmap</span><span class="si">{</span><span class="n">cmap</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">figure_object</span>
-                <span class="c1">#print(&quot;\tSaved to:&quot;,FN+&#39;.&#39;)</span>
-    <span class="c1">#</span>
+                <span class="c1">#</span>
     <span class="c1">#</span>
     <span class="c1"># Getting only those values for the particular chain </span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; 2.  </span><span class="se">\t</span><span class="s2">Histogram (PDB: 1xqq)&quot;</span><span class="p">)</span>
@@ -732,7 +794,7 @@
             <span class="n">reference_model_number</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">models</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
             
             <span class="n">reference_data</span> <span class="o">=</span> <span class="n">new_data</span><span class="p">[</span><span class="n">new_data</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="n">reference_model_number</span><span class="p">]</span>
-            
+
             <span class="n">final_data</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">sorted_models</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">models</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">mx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">sorted_models</span><span class="p">)):</span>
@@ -741,6 +803,7 @@
                 
                 <span class="n">current_model</span> <span class="o">=</span> <span class="n">new_data</span><span class="p">[</span><span class="n">new_data</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="n">m2</span><span class="p">]</span>
                 <span class="n">current_model</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">current_model</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">new_data</span><span class="p">[</span><span class="n">new_data</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="n">m1</span><span class="p">][:,</span><span class="mi">2</span><span class="p">])</span>
+                
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">final_data</span><span class="p">):</span>
                     <span class="n">final_data</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">current_model</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>

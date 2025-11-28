@@ -61,7 +61,9 @@
 <li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.compare_value_to_list_of_dict"><code class="docutils literal notranslate"><span class="pre">compare_value_to_list_of_dict()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.get_coord_by_key_value_match"><code class="docutils literal notranslate"><span class="pre">get_coord_by_key_value_match()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.obtain_ramachandran_dataframe"><code class="docutils literal notranslate"><span class="pre">obtain_ramachandran_dataframe()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.read_pdb_from_pdbfn_or_filehandle"><code class="docutils literal notranslate"><span class="pre">read_pdb_from_pdbfn_or_filehandle()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.process_PDB"><code class="docutils literal notranslate"><span class="pre">process_PDB()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.fill_in_missing_resids"><code class="docutils literal notranslate"><span class="pre">fill_in_missing_resids()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.draw_figures"><code class="docutils literal notranslate"><span class="pre">draw_figures()</span></code></a></li>
 </ul>
 </li>
@@ -191,7 +193,7 @@ Refer to <a class="reference internal" href="#backmap.backmap.normalized_ramacha
 
 <dl class="py function">
 <dt class="sig sig-object py" id="backmap.backmap.draw_xyz">
-<span class="sig-prename descclassname"><span class="pre">backmap.backmap.</span></span><span class="sig-name descname"><span class="pre">draw_xyz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Greys'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/backmap.html#draw_xyz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.backmap.draw_xyz" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">backmap.backmap.</span></span><span class="sig-name descname"><span class="pre">draw_xyz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Greys'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">missing_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'green'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/backmap.html#draw_xyz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.backmap.draw_xyz" title="Permalink to this definition"></a></dt>
 <dd><p>Render a heatmap-style plot for spatially indexed values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -201,6 +203,7 @@ Refer to <a class="reference internal" href="#backmap.backmap.normalized_ramacha
 <li><p><strong>Z</strong> (<em>Sequence</em><em>[</em><em>float</em><em>]</em>) – Values to plot at each (X, Y) location.</p></li>
 <li><p><strong>ylim</strong> (<em>tuple</em><em>[</em><em>float</em><em>, </em><em>float</em><em>] </em><em>| </em><em>bool</em><em>, </em><em>optional</em>) – Y-axis limits; falsy to leave unchanged.</p></li>
 <li><p><strong>cmap</strong> (<em>str</em><em> or </em><em>matplotlib.colors.Colormap</em><em>, </em><em>optional</em>) – Colormap name or object to use.</p></li>
+<li><p><strong>missing_color</strong> (<em>str</em>) – A color that will be used when a residue is missing (default: ‘green’)</p></li>
 <li><p><strong>xlabel</strong> (<em>str</em><em> or </em><em>bool</em><em>, </em><em>optional</em>) – X-axis label; falsy to skip.</p></li>
 <li><p><strong>ylabel</strong> (<em>str</em><em> or </em><em>bool</em><em>, </em><em>optional</em>) – Y-axis label; falsy to skip.</p></li>
 <li><p><strong>zlabel</strong> (<em>str</em><em> or </em><em>bool</em><em>, </em><em>optional</em>) – Colorbar label; falsy to skip.</p></li>
@@ -305,6 +308,26 @@ leave phi/psi/R as <code class="docutils literal notranslate"><span class="pre">
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="backmap.backmap.read_pdb_from_pdbfn_or_filehandle">
+<span class="sig-prename descclassname"><span class="pre">backmap.backmap.</span></span><span class="sig-name descname"><span class="pre">read_pdb_from_pdbfn_or_filehandle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdbfn_or_filehandle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">structure_df=Empty</span> <span class="pre">DataFrame</span> <span class="pre">Columns:</span> <span class="pre">[]</span> <span class="pre">Index:</span> <span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/backmap.html#read_pdb_from_pdbfn_or_filehandle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.backmap.read_pdb_from_pdbfn_or_filehandle" title="Permalink to this definition"></a></dt>
+<dd><p>Parse PDB content, compute Ramachandran metrics, and merge with an existing dataframe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pdbfn_or_filehandle</strong> – Path to a PDB file or an open file-like object accepted by <code class="docutils literal notranslate"><span class="pre">utils.read_pdb</span></code>.</p></li>
+<li><p><strong>structure_df</strong> (<em>pd.DataFrame</em>) – Existing dataframe of processed structures to append to; empty by default.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Combined residue-level dataframe with continuous model numbering and Ramachandran values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="backmap.backmap.process_PDB">
 <span class="sig-prename descclassname"><span class="pre">backmap.backmap.</span></span><span class="sig-name descname"><span class="pre">process_PDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdbfn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/backmap.html#process_PDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.backmap.process_PDB" title="Permalink to this definition"></a></dt>
 <dd><p>Load PDB file(s) and compute residue-level Ramachandran metrics.</p>
@@ -319,6 +342,29 @@ leave phi/psi/R as <code class="docutils literal notranslate"><span class="pre">
 <dd class="field-even"><p>Per-residue records with model, chain, residue identity, phi,
 psi, and Ramachandran number columns. Returns an empty dataframe when no
 input PDBs are found.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backmap.backmap.fill_in_missing_resids">
+<span class="sig-prename descclassname"><span class="pre">backmap.backmap.</span></span><span class="sig-name descname"><span class="pre">fill_in_missing_resids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_with</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/backmap.html#fill_in_missing_resids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.backmap.fill_in_missing_resids" title="Permalink to this definition"></a></dt>
+<dd><p>Insert placeholder rows for missing residue IDs per chain and model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>structure_df</strong> (<em>pd.DataFrame</em>) – Backbone geometry table containing
+<code class="docutils literal notranslate"><span class="pre">chain</span></code>, <code class="docutils literal notranslate"><span class="pre">model</span></code>, and <code class="docutils literal notranslate"><span class="pre">resid</span></code> columns.</p></li>
+<li><p><strong>fill_with</strong> (<em>Any</em>) – Value used to populate missing residue rows; defaults
+to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Reindexed dataframe spanning continuous residue ranges for
+each chain and model, filled with <code class="docutils literal notranslate"><span class="pre">fill_with</span></code> where data was absent.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
