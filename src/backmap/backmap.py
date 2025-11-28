@@ -163,7 +163,11 @@ def write_image(fn_base, figure_object=None, write=True, show=True):
     return figure_object
 #
 
-def draw_xyz(X,Y,Z, ylim=False, cmap='Greys', xlabel=False,ylabel=False,zlabel=False,title=False,vmin=None,vmax=None):
+def set_nan_color(cmap,color='green'):
+    cmap.set_bad(color, 1.)
+    return cmap
+
+def draw_xyz(X,Y,Z, ylim=False, cmap='Greys', missing_color="green", xlabel=False,ylabel=False,zlabel=False,title=False,vmin=None,vmax=None):
     """Render a heatmap-style plot for spatially indexed values.
 
     Args:
@@ -172,6 +176,7 @@ def draw_xyz(X,Y,Z, ylim=False, cmap='Greys', xlabel=False,ylabel=False,zlabel=F
         Z (Sequence[float]): Values to plot at each (X, Y) location.
         ylim (tuple[float, float] | bool, optional): Y-axis limits; falsy to leave unchanged.
         cmap (str or matplotlib.colors.Colormap, optional): Colormap name or object to use.
+        missing_color (str): A color that will be used when a residue is missing (default: 'green')
         xlabel (str or bool, optional): X-axis label; falsy to skip.
         ylabel (str or bool, optional): Y-axis label; falsy to skip.
         zlabel (str or bool, optional): Colorbar label; falsy to skip.
@@ -185,7 +190,11 @@ def draw_xyz(X,Y,Z, ylim=False, cmap='Greys', xlabel=False,ylabel=False,zlabel=F
     #
     if cmap in local_colormaps.cmaps:
         cmap = local_colormaps.cmaps[cmap]
+    else:
+        cmap = plt.get_cmap(cmap)
     #
+    cmap = set_nan_color(cmap,color=missing_color)
+    
     aspect = 2.
     if len(set(X)) == 1:
         # Some structures have only one model, which is too thin, 
@@ -393,7 +402,7 @@ def obtain_ramachandran_dataframe(coordinates_df, signed=False):
             c = get_coord_by_key_value_match(key='atom',value='CA',list_of_dict=resid_to_records[i])
             d = get_coord_by_key_value_match(key='atom',value='C',list_of_dict=resid_to_records[i])
             
-            phi,psi,rho = False, False, False
+            phi,psi,rho = np.nan, np.nan, np.nan
             #print(len(b)+len(c)+len(d))
             if len(b)+len(c)+len(d) == 9:
                 if im in resid_to_records:
@@ -408,7 +417,7 @@ def obtain_ramachandran_dataframe(coordinates_df, signed=False):
                 # a = model_to_chain_to_resid_atom_to_vals[model][chain][im]["c"] # resid_to_coordC[before]
                 # e = model_to_chain_to_resid_atom_to_vals[model][chain][ip]["n"]  # resid_to_coordN[after]
                 
-                if phi != False and psi != False:
+                if not ( np.isnan(phi) and np.isnan(psi)):
                     rho= normalized_ramachandran_number(phi,psi,signed)
             
             ignore_cols = {'atom','X','Y','Z','unique_model_and_chain'}
@@ -437,6 +446,45 @@ def obtain_ramachandran_dataframe(coordinates_df, signed=False):
 
     return pd.DataFrame(final_records)
 
+def read_pdb_from_pdbfn_or_filehandle(pdbfn_or_filehandle, structure_df=pd.DataFrame()):
+    """Parse PDB content, compute Ramachandran metrics, and merge with an existing dataframe.
+
+    Args:
+        pdbfn_or_filehandle: Path to a PDB file or an open file-like object accepted by ``utils.read_pdb``.
+        structure_df (pd.DataFrame): Existing dataframe of processed structures to append to; empty by default.
+
+    Returns:
+        pd.DataFrame: Combined residue-level dataframe with continuous model numbering and Ramachandran values.
+    """
+    
+    #
+    # READ PDB in the form of a matrix with columns ['model','chain','resid','R']
+    raw_pdb_data = utils.read_pdb(filename_or_filehandle=pdbfn_or_filehandle)
+    raw_pdb_data = utils.bytecheck(raw_pdb_data)
+    #
+    latest_structure_df = obtain_ramachandran_dataframe(raw_pdb_data,signed)
+    #latest_structure_df, latest_structure = calculate_R_from_raw_pdb_data(raw_pdb_data, signed=signed)
+    #
+    if len(latest_structure_df)==0:
+        print("WARNING: PDB FILE '{}' NOT FOUND")
+        return pd.DataFrame()
+    #
+    # Sorting by model number
+    latest_structure_df = latest_structure_df.sort_values(by=['chain','model','resid'],ascending=True)
+    #
+    # Assigning continuous model numbers 
+    old_model_numbers = list(sorted(set(latest_structure_df['model'])))
+    new_model_numbers = range(1, len(old_model_numbers)+1)
+    model_number_conversion = dict(zip(old_model_numbers,new_model_numbers))
+    latest_structure_df['model'] = [model_number_conversion[mn] for mn in latest_structure_df['model']]
+    #
+    # If this is not the first structure file that is being processed...
+    if len(structure_df) > 0:
+        structure_df_max_model = max(set(latest_structure_df['model']))
+        latest_structure_df['model'] = latest_structure_df['model']+structure_df_max_model
+    #
+    structure_df = pd.concat([structure_df,latest_structure_df.copy()])
+    return structure_df
 
 def process_PDB(pdbfn:str, signed:bool=False):
     """
@@ -451,6 +499,7 @@ def process_PDB(pdbfn:str, signed:bool=False):
         psi, and Ramachandran number columns. Returns an empty dataframe when no
         input PDBs are found.
     """
+
     # Since the user can either provide one PDB file *or* one 
     # PDB file-containing directory, we need to resolve these PDBs
     list_pdbfilenames,pdbdir = utils.get_pdb_filenames(pdbfn)
@@ -460,53 +509,29 @@ def process_PDB(pdbfn:str, signed:bool=False):
     #     utils.get_filename_and_filehandle(
     if len(list_pdbfilenames) == 0:
         return pd.DataFrame()
-    
+
     #NAME = os.path.basename(list_pdbfilenames[0])[:-len(".pdb")]
     #target_base = target_dir.rstrip("/")
     #
     structure = np.array([]) # depricated
     structure_df = pd.DataFrame()
-    for pdbfn in list_pdbfilenames:#[:10]:
+    for _pdbfn in list_pdbfilenames:#[:10]:
         # Each PDB filename itself can be an archive of PDB files, 
         #
         # Opening the file, assuming that it could be a list of files (can be, if 
         # the file ends with .tgz .tar.gz or .zip)
-        filehandles = utils.return_filehandle_from_gz_zip_or_normal_file(pdbfn)
+        filehandles = utils.return_filehandle_from_gz_zip_or_normal_file(_pdbfn)
         #
         for f in filehandles:
             # Check if the PDB has no subunit IDs, and then check if segnames exist (right most column)
             # and renaming the subunit IDs alphabetically and then numerically
+            #
+            final_pdbfn = f.name
+            final_pdbfh = f
+            #
+            structure_df = read_pdb_from_pdbfn_or_filehandle(final_pdbfn, structure_df=structure_df)
             
-            pdbfn = f.name
-            pdbfh = f
-
-            # READ PDB in the form of a matrix with columns ['model','chain','resid','R']
-            raw_pdb_data = utils.read_pdb(filename_or_filehandle=pdbfh)
-            raw_pdb_data = utils.bytecheck(raw_pdb_data)
-
-            latest_structure_df = obtain_ramachandran_dataframe(raw_pdb_data,signed)
-            #latest_structure_df, latest_structure = calculate_R_from_raw_pdb_data(raw_pdb_data, signed=signed)
-            #
-            if len(latest_structure_df)==0:
-                print("WARNING: PDB FILE '{}' NOT FOUND")
-                return pd.DataFrame()
-            #
-            # Sorting by model number
-            latest_structure_df = latest_structure_df.sort_values(by=['chain','model','resid'],ascending=True)
-            #
-            # Assigning continuous model numbers 
-            old_model_numbers = list(sorted(set(latest_structure_df['model'])))
-            new_model_numbers = range(1, len(old_model_numbers)+1)
-            model_number_conversion = dict(zip(old_model_numbers,new_model_numbers))
-            latest_structure_df['model'] = [model_number_conversion[mn] for mn in latest_structure_df['model']]
-            #
-            # If this is not the first structure file that is being processed...
-            if len(structure_df) > 0:
-                structure_df_max_model = max(set(latest_structure_df['model']))
-                latest_structure_df['model'] = latest_structure_df['model']+structure_df_max_model
-            #
-            structure_df = pd.concat([structure_df,latest_structure_df.copy()])
-    
+        #
     structure_df.attrs['pdbfn'] = pdbfn
     structure_df.attrs['pdb_name'] = os.path.split(pdbfn)[-1]
     structure_df.attrs['signed'] = signed
@@ -516,6 +541,40 @@ def process_PDB(pdbfn:str, signed:bool=False):
     # print(f'{len(set(residues))=} {residues=}')
     # print(f'{len(set(Rs))=} {Rs=}')
     return structure_df
+
+
+def fill_in_missing_resids(structure_df, fill_with=False):
+    """Insert placeholder rows for missing residue IDs per chain and model.
+
+    Args:
+        structure_df (pd.DataFrame): Backbone geometry table containing
+            ``chain``, ``model``, and ``resid`` columns.
+        fill_with (Any): Value used to populate missing residue rows; defaults
+            to ``False``.
+
+    Returns:
+        pd.DataFrame: Reindexed dataframe spanning continuous residue ranges for
+        each chain and model, filled with ``fill_with`` where data was absent.
+    """
+
+    final_structure_df = pd.DataFrame()
+    for chain in sorted(structure_df['chain'].unique()):
+        _cdf = structure_df[structure_df['chain']==chain]
+        # 
+        all_residue_ids = set(_cdf['resid'])
+        #
+        resid_range     = list(range(min(all_residue_ids),max(all_residue_ids)+1))
+        for model in sorted(_cdf['model'].unique()):
+            _model_df = _cdf[_cdf['model']==model]
+            _model_df = _model_df.set_index('resid')
+            _model_df = _model_df.reindex(resid_range, fill_value=fill_with)
+            _model_df['model'] = model 
+            _model_df['chain'] = chain
+            _model_df = _model_df.reset_index()
+            final_structure_df = pd.concat([final_structure_df,_model_df])
+    return final_structure_df
+
+
 
 def draw_figures(structure_df, output_dir='', write=True, show=True):
     """Generate per-chain Ramachandran visualizations and optionally save/show them.
@@ -535,6 +594,8 @@ def draw_figures(structure_df, output_dir='', write=True, show=True):
     """
     # All figure elements (of plt.gcf() type) are returned with the figures dict 
     figures = {}
+    #
+    structure_df = fill_in_missing_resids(structure_df, fill_with=np.nan)
     #
     unique_chains = list(sorted(set(structure_df['chain'])))
     #
@@ -560,6 +621,8 @@ def draw_figures(structure_df, output_dir='', write=True, show=True):
         vmax           =  1
         ss_cmap        = ss_cmap        + 'FourColor'
         chirality_cmap = chirality_cmap + 'FourColor'
+    #
+    structure_df = fill_in_missing_resids(structure_df, fill_with=np.nan)
     #
     print(" 1  \tRamachandran number (PDB: %s)"%(pdbfn))
     different_plots = []
@@ -590,8 +653,7 @@ def draw_figures(structure_df, output_dir='', write=True, show=True):
                     FN = output_dir+'/pdb_%s_r_%s' %(final_name,cmap)
                 figure_object = write_image(FN, write=write, show=show)#,new_fig)
                 figures[f'chain_{chain}_val_cmap{cmap}'] = figure_object
-                #print("\tSaved to:",FN+'.')
-    #
+                #
     #
     # Getting only those values for the particular chain 
     print(" 2.  \tHistogram (PDB: 1xqq)")
@@ -655,7 +717,7 @@ def draw_figures(structure_df, output_dir='', write=True, show=True):
             reference_model_number = sorted(set(models))[0]
             
             reference_data = new_data[new_data[:,0]==reference_model_number]
-            
+
             final_data = []
             sorted_models = sorted(set(models))
             for mx in range(1,len(sorted_models)):
@@ -664,6 +726,7 @@ def draw_figures(structure_df, output_dir='', write=True, show=True):
                 
                 current_model = new_data[new_data[:,0]==m2]
                 current_model[:,2] = np.abs(current_model[:,2] - new_data[new_data[:,0]==m1][:,2])
+                
                 if not len(final_data):
                     final_data = copy.deepcopy(current_model)
                 else:
