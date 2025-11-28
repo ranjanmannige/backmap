@@ -520,7 +520,7 @@
 <span class="sd">    Load PDB file(s) and compute residue-level Ramachandran metrics.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        pdbfn (str): Path to a PDB file or to a directory containing ``.pdb[.gz|zip]`` files.</span>
+<span class="sd">        pdbfn (str): Path to a PDB file or to a directory containing ``.pdb[.gz|zip|tar]`` files.</span>
 <span class="sd">        signed (bool): If ``True``, compute signed Ramachandran numbers instead of the default unsigned values.</span>
 
 <span class="sd">    Returns:</span>
@@ -544,34 +544,45 @@
     <span class="n">structure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span> <span class="c1"># depricated</span>
     <span class="n">structure_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">pdbfn</span> <span class="ow">in</span> <span class="n">list_pdbfilenames</span><span class="p">:</span><span class="c1">#[:10]:</span>
-        <span class="c1">#print(pdbfn)</span>
-        <span class="c1"># Check if the PDB has no subunit IDs, and then check if segnames exist (right most column)</span>
-        <span class="c1"># and renaming the subunit IDs alphabetically and then numerically</span>
-        
-        <span class="c1"># READ PDB in the form of a matrix with columns [&#39;model&#39;,&#39;chain&#39;,&#39;resid&#39;,&#39;R&#39;]</span>
-        <span class="n">raw_pdb_data</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">read_pdb</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">)</span>
-        <span class="n">latest_structure_df</span> <span class="o">=</span> <span class="n">obtain_ramachandran_dataframe</span><span class="p">(</span><span class="n">raw_pdb_data</span><span class="p">,</span><span class="n">signed</span><span class="p">)</span>
-        <span class="c1">#latest_structure_df, latest_structure = calculate_R_from_raw_pdb_data(raw_pdb_data, signed=signed)</span>
+        <span class="c1"># Each PDB filename itself can be an archive of PDB files, </span>
         <span class="c1">#</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">latest_structure_df</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: PDB FILE &#39;</span><span class="si">{}</span><span class="s2">&#39; NOT FOUND&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="c1"># Opening the file, assuming that it could be a list of files (can be, if </span>
+        <span class="c1"># the file ends with .tgz .tar.gz or .zip)</span>
+        <span class="n">filehandles</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">return_filehandle_from_gz_zip_or_normal_file</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">)</span>
         <span class="c1">#</span>
-        <span class="c1"># Sorting by model number</span>
-        <span class="n">latest_structure_df</span> <span class="o">=</span> <span class="n">latest_structure_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;chain&#39;</span><span class="p">,</span><span class="s1">&#39;model&#39;</span><span class="p">,</span><span class="s1">&#39;resid&#39;</span><span class="p">],</span><span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="c1">#</span>
-        <span class="c1"># Assigning continuous model numbers </span>
-        <span class="n">old_model_numbers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">])))</span>
-        <span class="n">new_model_numbers</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">old_model_numbers</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">model_number_conversion</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">old_model_numbers</span><span class="p">,</span><span class="n">new_model_numbers</span><span class="p">))</span>
-        <span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">model_number_conversion</span><span class="p">[</span><span class="n">mn</span><span class="p">]</span> <span class="k">for</span> <span class="n">mn</span> <span class="ow">in</span> <span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]]</span>
-        <span class="c1">#</span>
-        <span class="c1"># If this is not the first structure file that is being processed...</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">structure_df</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">structure_df_max_model</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]))</span>
-            <span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">structure_df_max_model</span>
-        <span class="c1">#</span>
-        <span class="n">structure_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">structure_df</span><span class="p">,</span><span class="n">latest_structure_df</span><span class="o">.</span><span class="n">copy</span><span class="p">()])</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">filehandles</span><span class="p">:</span>
+            <span class="c1"># Check if the PDB has no subunit IDs, and then check if segnames exist (right most column)</span>
+            <span class="c1"># and renaming the subunit IDs alphabetically and then numerically</span>
+            
+            <span class="n">pdbfn</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">pdbfh</span> <span class="o">=</span> <span class="n">f</span>
+
+            <span class="c1"># READ PDB in the form of a matrix with columns [&#39;model&#39;,&#39;chain&#39;,&#39;resid&#39;,&#39;R&#39;]</span>
+            <span class="n">raw_pdb_data</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">read_pdb</span><span class="p">(</span><span class="n">filename_or_filehandle</span><span class="o">=</span><span class="n">pdbfh</span><span class="p">)</span>
+            <span class="n">raw_pdb_data</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">bytecheck</span><span class="p">(</span><span class="n">raw_pdb_data</span><span class="p">)</span>
+
+            <span class="n">latest_structure_df</span> <span class="o">=</span> <span class="n">obtain_ramachandran_dataframe</span><span class="p">(</span><span class="n">raw_pdb_data</span><span class="p">,</span><span class="n">signed</span><span class="p">)</span>
+            <span class="c1">#latest_structure_df, latest_structure = calculate_R_from_raw_pdb_data(raw_pdb_data, signed=signed)</span>
+            <span class="c1">#</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">latest_structure_df</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: PDB FILE &#39;</span><span class="si">{}</span><span class="s2">&#39; NOT FOUND&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+            <span class="c1">#</span>
+            <span class="c1"># Sorting by model number</span>
+            <span class="n">latest_structure_df</span> <span class="o">=</span> <span class="n">latest_structure_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;chain&#39;</span><span class="p">,</span><span class="s1">&#39;model&#39;</span><span class="p">,</span><span class="s1">&#39;resid&#39;</span><span class="p">],</span><span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1">#</span>
+            <span class="c1"># Assigning continuous model numbers </span>
+            <span class="n">old_model_numbers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">])))</span>
+            <span class="n">new_model_numbers</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">old_model_numbers</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">model_number_conversion</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">old_model_numbers</span><span class="p">,</span><span class="n">new_model_numbers</span><span class="p">))</span>
+            <span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">model_number_conversion</span><span class="p">[</span><span class="n">mn</span><span class="p">]</span> <span class="k">for</span> <span class="n">mn</span> <span class="ow">in</span> <span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]]</span>
+            <span class="c1">#</span>
+            <span class="c1"># If this is not the first structure file that is being processed...</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">structure_df</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">structure_df_max_model</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]))</span>
+                <span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">latest_structure_df</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">structure_df_max_model</span>
+            <span class="c1">#</span>
+            <span class="n">structure_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">structure_df</span><span class="p">,</span><span class="n">latest_structure_df</span><span class="o">.</span><span class="n">copy</span><span class="p">()])</span>
     
     <span class="n">structure_df</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;pdbfn&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pdbfn</span>
     <span class="n">structure_df</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;pdb_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>

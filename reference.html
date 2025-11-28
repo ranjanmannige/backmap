@@ -67,7 +67,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-backmap.utils">utils</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.utils.read_pdb"><code class="docutils literal notranslate"><span class="pre">read_pdb()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#backmap.utils.read_pdb_biopython"><code class="docutils literal notranslate"><span class="pre">read_pdb_biopython()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backmap.utils.bytecheck"><code class="docutils literal notranslate"><span class="pre">bytecheck()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.utils.read_pdb_inhouse"><code class="docutils literal notranslate"><span class="pre">read_pdb_inhouse()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.utils.check_pdb"><code class="docutils literal notranslate"><span class="pre">check_pdb()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.utils.calculate_dihedral_angle"><code class="docutils literal notranslate"><span class="pre">calculate_dihedral_angle()</span></code></a></li>
@@ -76,6 +76,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#backmap.utils.return_tgz_filehandle"><code class="docutils literal notranslate"><span class="pre">return_tgz_filehandle()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.utils.return_zip_file_handle"><code class="docutils literal notranslate"><span class="pre">return_zip_file_handle()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.utils.return_gz_filehandle"><code class="docutils literal notranslate"><span class="pre">return_gz_filehandle()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backmap.utils.return_normal_filehandle"><code class="docutils literal notranslate"><span class="pre">return_normal_filehandle()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.utils.return_filehandle_from_gz_zip_or_normal_file"><code class="docutils literal notranslate"><span class="pre">return_filehandle_from_gz_zip_or_normal_file()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.utils.get_filename_and_filehandle"><code class="docutils literal notranslate"><span class="pre">get_filename_and_filehandle()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.utils.median_filter"><code class="docutils literal notranslate"><span class="pre">median_filter()</span></code></a></li>
@@ -310,7 +311,7 @@ leave phi/psi/R as <code class="docutils literal notranslate"><span class="pre">
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pdbfn</strong> (<em>str</em>) – Path to a PDB file or to a directory containing <code class="docutils literal notranslate"><span class="pre">.pdb[.gz|zip]</span></code> files.</p></li>
+<li><p><strong>pdbfn</strong> (<em>str</em>) – Path to a PDB file or to a directory containing <code class="docutils literal notranslate"><span class="pre">.pdb[.gz|zip|tar]</span></code> files.</p></li>
 <li><p><strong>signed</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, compute signed Ramachandran numbers instead of the default unsigned values.</p></li>
 </ul>
 </dd>
@@ -359,7 +360,7 @@ Functions following <code class="docutils literal notranslate"><span class="pre"
 interesting to most.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="backmap.utils.read_pdb">
-<span class="sig-prename descclassname"><span class="pre">backmap.utils.</span></span><span class="sig-name descname"><span class="pre">read_pdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PathLike</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/utils.html#read_pdb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.utils.read_pdb" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">backmap.utils.</span></span><span class="sig-name descname"><span class="pre">read_pdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename_or_filehandle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PathLike</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/utils.html#read_pdb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.utils.read_pdb" title="Permalink to this definition"></a></dt>
 <dd><p>Reads a PDB and outputs graphs representing Ramachandran number plots.</p>
 <p>Load a PDB file, preferring BioPython parsing with an in-house fallback.</p>
 <p>The function first tries the BioPython-based parser when the library is
@@ -369,8 +370,8 @@ backbone atoms.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>fn</strong> (<em>str</em>) – Path to a PDB file to read. Can be multiple structures separated</p></li>
-<li><p><strong>term;</strong> (<em>by the MODEL</em>) – </p></li>
+<li><p><strong>filename_or_filehandle</strong> (<em>str</em>) – Path to a PDB file to read, or file handle.</p></li>
+<li><p><strong>term.</strong> (<em>Can be multiple structures separated by the MODEL</em>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -384,22 +385,19 @@ identifiers and float32 coordinates.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="backmap.utils.read_pdb_biopython">
-<span class="sig-prename descclassname"><span class="pre">backmap.utils.</span></span><span class="sig-name descname"><span class="pre">read_pdb_biopython</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn_or_filehandle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PathLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">IOBase</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/utils.html#read_pdb_biopython"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.utils.read_pdb_biopython" title="Permalink to this definition"></a></dt>
-<dd><p>Parse a PDB file with BioPython and extract backbone atoms.</p>
+<dt class="sig sig-object py" id="backmap.utils.bytecheck">
+<span class="sig-prename descclassname"><span class="pre">backmap.utils.</span></span><span class="sig-name descname"><span class="pre">bytecheck</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fileblock</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/utils.html#bytecheck"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.utils.bytecheck" title="Permalink to this definition"></a></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">fileblock</span></code> as text, decoding bytes-like input with UTF-8 (if
+not UTF-8 already).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fn_or_filehandle</strong> – Path to a PDB file or readable file-like object
-supported by <code class="docutils literal notranslate"><span class="pre">get_filename_and_filehandle</span></code> (gz/zip/plain).</p>
+<dd class="field-odd"><p><strong>fileblock</strong> – Raw PDB content as <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">bytes</span></code>, or <code class="docutils literal notranslate"><span class="pre">bytearray</span></code>.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Rows for backbone atoms (N, CA, C) across models,
-chains, and residues with columns
-<code class="docutils literal notranslate"><span class="pre">['model','chain','resname','resid','atom','X','Y','Z']</span></code> where
-coordinates are float32.</p>
+<dd class="field-even"><p>Decoded text when given bytes-like input; unchanged string otherwise.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pandas.DataFrame</p>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -512,7 +510,7 @@ returned.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="backmap.utils.return_tgz_filehandle">
 <span class="sig-prename descclassname"><span class="pre">backmap.utils.</span></span><span class="sig-name descname"><span class="pre">return_tgz_filehandle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdbfn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/utils.html#return_tgz_filehandle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.utils.return_tgz_filehandle" title="Permalink to this definition"></a></dt>
-<dd><p>Return file-like handles for every regular file in a tar.gz archive.</p>
+<dd><p>Return file-like handles for every regular file in a tar.gz or tgz archive.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>pdbfn</strong> (<em>str</em><em> | </em><em>os.PathLike</em>) – Path to a <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code>/<code class="docutils literal notranslate"><span class="pre">.tgz</span></code> archive.</p>
@@ -565,6 +563,27 @@ with the requested mode.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>io.BufferedReader | io.TextIOWrapper</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backmap.utils.return_normal_filehandle">
+<span class="sig-prename descclassname"><span class="pre">backmap.utils.</span></span><span class="sig-name descname"><span class="pre">return_normal_filehandle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rt'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/utils.html#return_normal_filehandle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.utils.return_normal_filehandle" title="Permalink to this definition"></a></dt>
+<dd><p>Open an uncompressed PDB file and return it as a single-item list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pdb</strong> (<em>str</em><em> | </em><em>os.PathLike</em>) – Path to the PDB file to open.</p></li>
+<li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – Mode passed to <code class="docutils literal notranslate"><span class="pre">open</span></code> (e.g., <code class="docutils literal notranslate"><span class="pre">'rt'</span></code> for text).
+Defaults to <code class="docutils literal notranslate"><span class="pre">'rt'</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List containing the opened file handle.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[io.TextIOWrapper]</p>
 </dd>
 </dl>
 </dd></dl>

@@ -79,7 +79,9 @@
 <span class="sd">Functions following ``calculate_dihedral_angle()`` are probably not very </span>
 <span class="sd">interesting to most.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">io</span><span class="o">,</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">import</span> <span class="nn">gzip</span>
+<span class="kn">import</span> <span class="nn">io</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
@@ -117,7 +119,7 @@
      <span class="s1">&#39;ALA&#39;</span><span class="p">:</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;VAL&#39;</span><span class="p">:</span><span class="s1">&#39;V&#39;</span><span class="p">,</span> <span class="s1">&#39;GLU&#39;</span><span class="p">:</span> <span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="s1">&#39;TYR&#39;</span><span class="p">:</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;MET&#39;</span><span class="p">:</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span><span class="s1">&#39;XXX&#39;</span><span class="p">:</span><span class="s1">&#39;X&#39;</span><span class="p">}</span>
 <span class="c1">#</span>
 <span class="c1"># ===================================================================================</span>
-<div class="viewcode-block" id="read_pdb"><a class="viewcode-back" href="../../reference.html#backmap.utils.read_pdb">[docs]</a><span class="k">def</span> <span class="nf">read_pdb</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]):</span>
+<div class="viewcode-block" id="read_pdb"><a class="viewcode-back" href="../../reference.html#backmap.utils.read_pdb">[docs]</a><span class="k">def</span> <span class="nf">read_pdb</span><span class="p">(</span><span class="n">filename_or_filehandle</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads a PDB and outputs graphs representing Ramachandran number plots.</span>
 <span class="sd">    </span>
 <span class="sd">    Load a PDB file, preferring BioPython parsing with an in-house fallback.</span>
@@ -126,94 +128,111 @@
 <span class="sd">    installed and the file passes ``check_pdb``. Files that look problematic or</span>
 <span class="sd">    environments without BioPython fall back to the in-house parser to extract</span>
 <span class="sd">    backbone atoms.</span>
-
+<span class="sd">    </span>
 <span class="sd">    Args:</span>
-<span class="sd">        fn (str): Path to a PDB file to read. Can be multiple structures separated </span>
-<span class="sd">        by the MODEL term;</span>
+<span class="sd">        filename_or_filehandle (str): Path to a PDB file to read, or file handle. </span>
+<span class="sd">        Can be multiple structures separated by the MODEL term.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        pandas.DataFrame: Backbone atoms (N, CA, C) with model, chain, residue</span>
 <span class="sd">        identifiers and float32 coordinates.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">raw_pdb_data</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">if</span> <span class="n">biopython_is_installed</span><span class="p">:</span>
-        <span class="n">raw_pdb_data</span> <span class="o">=</span> <span class="n">read_pdb_biopython</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">raw_pdb_data</span> <span class="o">=</span> <span class="n">read_pdb_inhouse</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+    <span class="n">raw_pdb_data</span> <span class="o">=</span> <span class="n">read_pdb_inhouse</span><span class="p">(</span><span class="n">filename_or_filehandle</span><span class="p">)</span>
+    <span class="c1">#raw_pdb_data = False</span>
+    <span class="c1"># if biopython_is_installed:</span>
+    <span class="c1">#     raw_pdb_data = read_pdb_biopython(fn)</span>
+    <span class="c1"># else:</span>
+    <span class="c1">#     raw_pdb_data = read_pdb_inhouse(fn)</span>
     <span class="c1">#</span>
     <span class="k">return</span> <span class="n">raw_pdb_data</span></div>
 
+<span class="c1"># --------------------------------------</span>
+<span class="c1"># MOVING AWAY FROM BIOPYTHON ALLTOGETHER </span>
+<span class="c1"># --------------------------------------</span>
+<span class="c1"># # A PDB reader that uses Biopython</span>
+<span class="c1"># # in case the BipPython module was not installed, an in-house reader exists below</span>
+<span class="c1"># def read_pdb_biopython(fn_or_filehandle:Union[str,os.PathLike,io.IOBase]):</span>
+<span class="c1">#     &quot;&quot;&quot;Parse a PDB file with BioPython and extract backbone atoms.</span>
+<span class="c1">#</span>
+<span class="c1">#     Args:</span>
+<span class="c1">#         fn_or_filehandle: Path to a PDB file or readable file-like object</span>
+<span class="c1">#             supported by ``get_filename_and_filehandle`` (gz/zip/plain).</span>
+<span class="c1">#</span>
+<span class="c1">#     Returns:</span>
+<span class="c1">#         pandas.DataFrame: Rows for backbone atoms (N, CA, C) across models,</span>
+<span class="c1">#         chains, and residues with columns</span>
+<span class="c1">#         ``[&#39;model&#39;,&#39;chain&#39;,&#39;resname&#39;,&#39;resid&#39;,&#39;atom&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;]`` where</span>
+<span class="c1">#         coordinates are float32.</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#   </span>
+<span class="c1">#     fn, f = get_filename_and_filehandle(filename_or_filehandle=fn_or_filehandle)</span>
+<span class="c1">#</span>
+<span class="c1">#     # Parsing with PDB... note that &quot;get_structure takes either a filename OR a filehandle&quot;</span>
+<span class="c1">#     p=PDB.PDBParser() #(PERMISSIVE=1)</span>
+<span class="c1">#     structure=p.get_structure(fn[:-len(&quot;.pdb&quot;)], fn)</span>
+<span class="c1">#     #for model in structure:</span>
+<span class="c1">#     #    print [model.id]</span>
+<span class="c1">#</span>
+<span class="c1">#     #model_to_chain_to_resno_atom_to_vals = {}</span>
+<span class="c1">#     # structure (models) -&gt; model -&gt; chain -&gt; residue -&gt; atom</span>
+<span class="c1">#     mol_rows = []</span>
+<span class="c1">#     for model in structure:</span>
+<span class="c1">#         model_number = model.id</span>
+<span class="c1">#         #</span>
+<span class="c1">#         # if not model_number in model_to_chain_to_resno_atom_to_vals:</span>
+<span class="c1">#         #     model_to_chain_to_resno_atom_to_vals[model_number] = {}</span>
+<span class="c1">#         #</span>
+<span class="c1">#         for chain in model:</span>
+<span class="c1">#             chain_id = chain.id</span>
+<span class="c1">#             # if not segname in model_to_chain_to_resno_atom_to_vals[model_number]:</span>
+<span class="c1">#             #     model_to_chain_to_resno_atom_to_vals[model_number][segname] = {}</span>
+<span class="c1">#            </span>
+<span class="c1">#             for residue in chain:</span>
+<span class="c1">#                 #print(residue.__dict__)</span>
+<span class="c1">#                 #continue</span>
+<span class="c1">#                 resname = residue.resname</span>
+<span class="c1">#                 resno   = residue.id[1]</span>
+<span class="c1">#                 #</span>
+<span class="c1">#                 # Checking if this is an actual residue </span>
+<span class="c1">#                 # (e.g., ACE has a &quot;C&quot;-named atom, but no &#39;N&#39; and &#39;CA&#39;)</span>
+<span class="c1">#                 if(     &#39;N&#39; in residue.child_dict </span>
+<span class="c1">#                     and &#39;CA&#39; in residue.child_dict </span>
+<span class="c1">#                     and &#39;C&#39; in residue.child_dict):</span>
+<span class="c1">#                     pass</span>
+<span class="c1">#                 else:</span>
+<span class="c1">#                     continue</span>
+<span class="c1">#                 #</span>
+<span class="c1">#                 for atom in residue:</span>
+<span class="c1">#                     if atom.name in [&#39;N&#39;,&#39;CA&#39;,&#39;C&#39;]:</span>
+<span class="c1">#                         xyz = tuple(atom.coord)</span>
+<span class="c1">#                         mol_rows.append({&#39;model&#39;:model_number,</span>
+<span class="c1">#                                         &#39;chain&#39;:chain_id,</span>
+<span class="c1">#                                         &#39;resname&#39;:resname,     </span>
+<span class="c1">#                                         &#39;resid&#39;:resno, </span>
+<span class="c1">#                                         &#39;atom&#39;:atom.name, </span>
+<span class="c1">#                                         &#39;X&#39;:xyz[0],</span>
+<span class="c1">#                                         &#39;Y&#39;:xyz[1],</span>
+<span class="c1">#                                         &#39;Z&#39;:xyz[2]})</span>
+<span class="c1">#     df = pd.DataFrame(mol_rows)</span>
+<span class="c1">#     for c in [&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;]:</span>
+<span class="c1">#         df[c] = df[c].astype(&#39;float32&#39;)</span>
+<span class="c1">#     return df</span>
+<span class="c1">#     #</span>
+<span class="c1">#     #return model_to_chain_to_resno_atom_to_vals</span>
 
-<span class="c1"># A PDB reader that uses Biopython</span>
-<span class="c1"># in case the BipPython module was not installed, an in-house reader exists below</span>
-<div class="viewcode-block" id="read_pdb_biopython"><a class="viewcode-back" href="../../reference.html#backmap.utils.read_pdb_biopython">[docs]</a><span class="k">def</span> <span class="nf">read_pdb_biopython</span><span class="p">(</span><span class="n">fn_or_filehandle</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span><span class="n">io</span><span class="o">.</span><span class="n">IOBase</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse a PDB file with BioPython and extract backbone atoms.</span>
+<div class="viewcode-block" id="bytecheck"><a class="viewcode-back" href="../../reference.html#backmap.utils.bytecheck">[docs]</a><span class="k">def</span>  <span class="nf">bytecheck</span><span class="p">(</span><span class="n">fileblock</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return ``fileblock`` as text, decoding bytes-like input with UTF-8 (if </span>
+<span class="sd">    not UTF-8 already).</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        fn_or_filehandle: Path to a PDB file or readable file-like object</span>
-<span class="sd">            supported by ``get_filename_and_filehandle`` (gz/zip/plain).</span>
+<span class="sd">        fileblock: Raw PDB content as ``str``, ``bytes``, or ``bytearray``.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        pandas.DataFrame: Rows for backbone atoms (N, CA, C) across models,</span>
-<span class="sd">        chains, and residues with columns</span>
-<span class="sd">        ``[&#39;model&#39;,&#39;chain&#39;,&#39;resname&#39;,&#39;resid&#39;,&#39;atom&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;]`` where</span>
-<span class="sd">        coordinates are float32.</span>
+<span class="sd">        str: Decoded text when given bytes-like input; unchanged string otherwise.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
-    <span class="n">fn</span><span class="p">,</span> <span class="n">f</span> <span class="o">=</span> <span class="n">get_filename_and_filehandle</span><span class="p">(</span><span class="n">filename_or_filehandle</span><span class="o">=</span><span class="n">fn_or_filehandle</span><span class="p">)</span>
-
-    <span class="c1"># Parsing with PDB... note that &quot;get_structure takes either a filename OR a filehandle&quot;</span>
-    <span class="n">p</span><span class="o">=</span><span class="n">PDB</span><span class="o">.</span><span class="n">PDBParser</span><span class="p">()</span> <span class="c1">#(PERMISSIVE=1)</span>
-    <span class="n">structure</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">get_structure</span><span class="p">(</span><span class="n">fn</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s2">&quot;.pdb&quot;</span><span class="p">)],</span> <span class="n">fn</span><span class="p">)</span>
-    <span class="c1">#for model in structure:</span>
-    <span class="c1">#    print [model.id]</span>
-
-    <span class="c1">#model_to_chain_to_resno_atom_to_vals = {}</span>
-    <span class="c1"># structure (models) -&gt; model -&gt; chain -&gt; residue -&gt; atom</span>
-    <span class="n">mol_rows</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">structure</span><span class="p">:</span>
-        <span class="n">model_number</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">id</span>
-        <span class="c1">#</span>
-        <span class="c1"># if not model_number in model_to_chain_to_resno_atom_to_vals:</span>
-        <span class="c1">#     model_to_chain_to_resno_atom_to_vals[model_number] = {}</span>
-        <span class="c1">#</span>
-        <span class="k">for</span> <span class="n">chain</span> <span class="ow">in</span> <span class="n">model</span><span class="p">:</span>
-            <span class="n">chain_id</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span>
-            <span class="c1"># if not segname in model_to_chain_to_resno_atom_to_vals[model_number]:</span>
-            <span class="c1">#     model_to_chain_to_resno_atom_to_vals[model_number][segname] = {}</span>
-            
-            <span class="k">for</span> <span class="n">residue</span> <span class="ow">in</span> <span class="n">chain</span><span class="p">:</span>
-                <span class="c1">#print(residue.__dict__)</span>
-                <span class="c1">#continue</span>
-                <span class="n">resname</span> <span class="o">=</span> <span class="n">residue</span><span class="o">.</span><span class="n">resname</span>
-                <span class="n">resno</span>   <span class="o">=</span> <span class="n">residue</span><span class="o">.</span><span class="n">id</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                <span class="c1">#</span>
-                <span class="c1"># Checking if this is an actual residue </span>
-                <span class="c1"># (e.g., ACE has a &quot;C&quot;-named atom, but no &#39;N&#39; and &#39;CA&#39;)</span>
-                <span class="k">if</span><span class="p">(</span>     <span class="s1">&#39;N&#39;</span> <span class="ow">in</span> <span class="n">residue</span><span class="o">.</span><span class="n">child_dict</span> 
-                    <span class="ow">and</span> <span class="s1">&#39;CA&#39;</span> <span class="ow">in</span> <span class="n">residue</span><span class="o">.</span><span class="n">child_dict</span> 
-                    <span class="ow">and</span> <span class="s1">&#39;C&#39;</span> <span class="ow">in</span> <span class="n">residue</span><span class="o">.</span><span class="n">child_dict</span><span class="p">):</span>
-                    <span class="k">pass</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">continue</span>
-                <span class="c1">#</span>
-                <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">residue</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;N&#39;</span><span class="p">,</span><span class="s1">&#39;CA&#39;</span><span class="p">,</span><span class="s1">&#39;C&#39;</span><span class="p">]:</span>
-                        <span class="n">xyz</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">coord</span><span class="p">)</span>
-                        <span class="n">mol_rows</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;model&#39;</span><span class="p">:</span><span class="n">model_number</span><span class="p">,</span>
-                                        <span class="s1">&#39;chain&#39;</span><span class="p">:</span><span class="n">chain_id</span><span class="p">,</span>
-                                        <span class="s1">&#39;resname&#39;</span><span class="p">:</span><span class="n">resname</span><span class="p">,</span>     
-                                        <span class="s1">&#39;resid&#39;</span><span class="p">:</span><span class="n">resno</span><span class="p">,</span> 
-                                        <span class="s1">&#39;atom&#39;</span><span class="p">:</span><span class="n">atom</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> 
-                                        <span class="s1">&#39;X&#39;</span><span class="p">:</span><span class="n">xyz</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                                        <span class="s1">&#39;Y&#39;</span><span class="p">:</span><span class="n">xyz</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                                        <span class="s1">&#39;Z&#39;</span><span class="p">:</span><span class="n">xyz</span><span class="p">[</span><span class="mi">2</span><span class="p">]})</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">mol_rows</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span><span class="s1">&#39;Y&#39;</span><span class="p">,</span><span class="s1">&#39;Z&#39;</span><span class="p">]:</span>
-        <span class="n">df</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">df</span></div>
-    <span class="c1">#</span>
-    <span class="c1">#return model_to_chain_to_resno_atom_to_vals</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fileblock</span><span class="p">,</span> <span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytearray</span><span class="p">)):</span>
+        <span class="n">fileblock</span> <span class="o">=</span> <span class="n">fileblock</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">fileblock</span></div>
 
 <span class="c1"># OLD VERSION (IN HOUSE). IT IS FASTER THAN THE CURRENT &quot;read_pdb&quot;, WHICH IS BIOPDB RUN, BUT IT IS NOT </span>
 <span class="c1"># AS WELL TESTED.</span>
@@ -229,15 +248,15 @@
 <span class="sd">        residue with columns ``[&#39;model&#39;,&#39;chain&#39;,&#39;resname&#39;,&#39;resid&#39;,&#39;atom&#39;,&#39;X&#39;,&#39;Y&#39;,&#39;Z&#39;]``</span>
 <span class="sd">        where coordinates are float32.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+    <span class="nb">print</span><span class="p">([</span><span class="n">fn_or_filehandle</span><span class="p">])</span> 
     <span class="n">fn</span><span class="p">,</span> <span class="n">f</span> <span class="o">=</span> <span class="n">get_filename_and_filehandle</span><span class="p">(</span><span class="n">filename_or_filehandle</span><span class="o">=</span><span class="n">fn_or_filehandle</span><span class="p">)</span>
     <span class="c1"># f = open(fn,&quot;r&quot;)</span>
     <span class="n">pdbblock</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     
-    <span class="c1"># Checking if the pdbblock is byte encoded, and switching to plain text</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pdbblock</span><span class="p">,</span> <span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytearray</span><span class="p">)):</span>
-        <span class="n">pdbblock</span> <span class="o">=</span> <span class="n">pdbblock</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+    <span class="n">pdbblock</span> <span class="o">=</span> <span class="n">bytecheck</span><span class="p">(</span><span class="n">pdbblock</span><span class="p">)</span>
+    
+
 
     <span class="c1"># The regular expression that follow are expected to extract key values</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -407,7 +426,8 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        bool: True if ``x`` is an instance of ``io.IOBase``, otherwise False.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">IOBase</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">IOBase</span><span class="p">,</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">TarFile</span><span class="p">,</span> <span class="n">gzip</span><span class="o">.</span><span class="n">GzipFile</span><span class="p">,</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">))</span></div>
+
 
 <div class="viewcode-block" id="get_pdb_filenames"><a class="viewcode-back" href="../../reference.html#backmap.utils.get_pdb_filenames">[docs]</a><span class="k">def</span> <span class="nf">get_pdb_filenames</span><span class="p">(</span><span class="n">pdbfn_or_dir</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Collect `.pdb` filenames from a file or directory and sort them numerically.</span>
@@ -426,7 +446,7 @@
     <span class="n">pdbfn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">pdbfn_or_dir</span><span class="p">)</span>
     <span class="n">pdbdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">)</span>
     <span class="n">list_pdbfilenames</span> <span class="o">=</span> <span class="p">[]</span>
-    
+    <span class="c1">#</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">):</span>
         <span class="c1"># then this pathname leads to a FILE</span>
         <span class="c1"># ... so keep as is</span>
@@ -434,13 +454,12 @@
         <span class="n">name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[\/\.]&#39;</span><span class="p">,</span><span class="n">pdbfn</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
     <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">):</span>
         <span class="n">pdbdir</span> <span class="o">=</span> <span class="n">pdbfn</span>
-        <span class="n">list_pdbfilenames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">pdbdir</span><span class="o">+</span><span class="s2">&quot;/*.pdb&quot;</span><span class="p">))</span>
+        <span class="n">list_pdbfilenames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">pdbdir</span><span class="o">+</span><span class="s2">&quot;/*.pdb.*&quot;</span><span class="p">))</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[\/\.]&#39;</span><span class="p">,</span><span class="n">pdbfn</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1">#print(helpme)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Either filename or directory expected. Exiting.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">list_pdbfilenames</span><span class="p">,</span> <span class="n">pdbdir</span>
-    
     <span class="c1">#</span>
     <span class="c1"># JUST &quot;CLEVERLY&quot; ARRANGING THE FILENAMES, IF WE HAVE A SET OF FILENAMES RATHER THAN ONE</span>
     <span class="c1"># (e.g., list_pdbfilenames = [something2part1,something1part2,something1part1,something10part1]</span>
@@ -453,7 +472,7 @@
 
 
 <div class="viewcode-block" id="return_tgz_filehandle"><a class="viewcode-back" href="../../reference.html#backmap.utils.return_tgz_filehandle">[docs]</a><span class="k">def</span> <span class="nf">return_tgz_filehandle</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return file-like handles for every regular file in a tar.gz archive.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return file-like handles for every regular file in a tar.gz or tgz archive.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        pdbfn (str | os.PathLike): Path to a ``.tar.gz``/``.tgz`` archive.</span>
@@ -473,8 +492,8 @@
                     <span class="n">file_objects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fileobj</span><span class="p">)</span>
                     <span class="c1"># # Read the content from the file-like object</span>
                     <span class="c1">#content = fileobj.read()</span>
-    <span class="n">first_filehandle_in_list</span> <span class="o">=</span> <span class="n">file_objects</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">first_filehandle_in_list</span></div>
+    <span class="c1">#first_filehandle_in_list = file_objects[0]</span>
+    <span class="k">return</span> <span class="n">file_objects</span></div>
 
 <div class="viewcode-block" id="return_zip_file_handle"><a class="viewcode-back" href="../../reference.html#backmap.utils.return_zip_file_handle">[docs]</a><span class="k">def</span> <span class="nf">return_zip_file_handle</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Open the first file inside a zip archive and return a readable handle.</span>
@@ -493,7 +512,7 @@
                                     <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">all_files_in_archive</span><span class="p">]</span>
         <span class="n">first_file_in_archive</span> <span class="o">=</span> <span class="n">all_handles_in_archive</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="c1">#</span>
-        <span class="k">return</span> <span class="n">first_file_in_archive</span></div>
+        <span class="k">return</span> <span class="n">all_handles_in_archive</span></div>
 <span class="c1">#</span>
 <div class="viewcode-block" id="return_gz_filehandle"><a class="viewcode-back" href="../../reference.html#backmap.utils.return_gz_filehandle">[docs]</a><span class="k">def</span> <span class="nf">return_gz_filehandle</span><span class="p">(</span><span class="n">pdb_fn</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;rt&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Open a gzipped PDB file and return a file-like handle.</span>
@@ -507,8 +526,30 @@
 <span class="sd">        io.BufferedReader | io.TextIOWrapper: Handle to the gzipped file opened</span>
 <span class="sd">        with the requested mode.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">gzopen</span><span class="p">(</span><span class="n">pdb_fn</span><span class="p">,</span><span class="n">mode</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="p">[</span><span class="n">gzopen</span><span class="p">(</span><span class="n">pdb_fn</span><span class="p">,</span><span class="n">mode</span><span class="p">)]</span></div>
 <span class="c1">#</span>
+<div class="viewcode-block" id="return_normal_filehandle"><a class="viewcode-back" href="../../reference.html#backmap.utils.return_normal_filehandle">[docs]</a><span class="k">def</span> <span class="nf">return_normal_filehandle</span><span class="p">(</span><span class="n">pdb</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;rt&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Open an uncompressed PDB file and return it as a single-item list.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pdb (str | os.PathLike): Path to the PDB file to open.</span>
+<span class="sd">        mode (str, optional): Mode passed to ``open`` (e.g., ``&#39;rt&#39;`` for text).</span>
+<span class="sd">            Defaults to ``&#39;rt&#39;``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list[io.TextIOWrapper]: List containing the opened file handle.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="nb">open</span><span class="p">(</span><span class="n">pdb</span><span class="p">,</span><span class="n">mode</span><span class="p">)]</span></div>
+
+
+<span class="n">dict_extention_to_open_object</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;.pdb.tar.gz&#39;</span><span class="p">:</span><span class="n">return_tgz_filehandle</span><span class="p">,</span>
+    <span class="s1">&#39;.pdb.tgz&#39;</span><span class="p">:</span><span class="n">return_tgz_filehandle</span><span class="p">,</span>
+    <span class="s1">&#39;.pdb.zip&#39;</span><span class="p">:</span><span class="n">return_zip_file_handle</span><span class="p">,</span>
+    <span class="s1">&#39;.pdb.gz&#39;</span><span class="p">:</span><span class="n">return_gz_filehandle</span><span class="p">,</span>
+    <span class="s1">&#39;.pdb&#39;</span><span class="p">:</span><span class="n">return_normal_filehandle</span><span class="p">,</span>
+<span class="p">}</span>
+
 <div class="viewcode-block" id="return_filehandle_from_gz_zip_or_normal_file"><a class="viewcode-back" href="../../reference.html#backmap.utils.return_filehandle_from_gz_zip_or_normal_file">[docs]</a><span class="k">def</span> <span class="nf">return_filehandle_from_gz_zip_or_normal_file</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a readable handle for `.pdb`, `.pdb.gz`, or `.pdb.zip` inputs.</span>
 
@@ -520,13 +561,6 @@
 <span class="sd">        IOBase: File-like object opened with the appropriate handler for the</span>
 <span class="sd">            given extension, or ``None`` if the extension is unsupported.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">dict_extention_to_open_object</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s1">&#39;.pdb.tar.gz&#39;</span><span class="p">:</span><span class="n">return_tgz_filehandle</span><span class="p">,</span>
-        <span class="s1">&#39;.pdb.tgz&#39;</span><span class="p">:</span><span class="n">return_tgz_filehandle</span><span class="p">,</span>
-        <span class="s1">&#39;.pdb.zip&#39;</span><span class="p">:</span><span class="n">return_zip_file_handle</span><span class="p">,</span>
-        <span class="s1">&#39;.pdb.gz&#39;</span><span class="p">:</span><span class="n">return_gz_filehandle</span><span class="p">,</span>
-        <span class="s1">&#39;.pdb&#39;</span><span class="p">:</span><span class="nb">open</span><span class="p">,</span>
-    <span class="p">}</span>
     <span class="c1">#</span>
     <span class="k">for</span> <span class="n">file_extension</span> <span class="ow">in</span> <span class="n">dict_extention_to_open_object</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">pdbfn</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">file_extension</span><span class="p">):]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">file_extension</span><span class="p">:</span>
@@ -555,10 +589,11 @@
     <span class="n">fn</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">f</span>  <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">is_filehandle</span><span class="p">(</span><span class="n">filename_or_filehandle</span><span class="p">):</span>
-        <span class="n">fn</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">fn</span> <span class="o">=</span> <span class="n">filename_or_filehandle</span><span class="o">.</span><span class="n">name</span>
         <span class="n">f</span>  <span class="o">=</span> <span class="n">filename_or_filehandle</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filename_or_filehandle</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filename_or_filehandle</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-        <span class="n">f</span> <span class="o">=</span> <span class="n">return_filehandle_from_gz_zip_or_normal_file</span><span class="p">(</span><span class="n">filename_or_filehandle</span><span class="p">)</span>
+        <span class="n">list_f</span> <span class="o">=</span> <span class="n">return_filehandle_from_gz_zip_or_normal_file</span><span class="p">(</span><span class="n">filename_or_filehandle</span><span class="p">)</span>
+        <span class="n">f</span>  <span class="o">=</span> <span class="n">list_f</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="c1"># deriving the filenames directly from the filehandle</span>
         <span class="n">fn</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span>
     <span class="k">else</span><span class="p">:</span>
