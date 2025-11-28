@@ -27,6 +27,9 @@
 .. contents::
 
 
+Full documentation available here: [ranjanmannige.github.io/backmap/](https://ranjanmannige.github.io/backmap/.
+
+
 Introduction
 ============
 
