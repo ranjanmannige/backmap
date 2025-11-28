@@ -2,7 +2,9 @@
 Functions following ``calculate_dihedral_angle()`` are probably not very 
 interesting to most."""
 
-import io, os
+import zipfile
+import gzip
+import io, os, glob
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -40,7 +42,7 @@ aa_three_to_one = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
      'ALA': 'A', 'VAL':'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M','XXX':'X'}
 #
 # ===================================================================================
-def read_pdb(fn:Union[str,os.PathLike]):
+def read_pdb(filename_or_filehandle:Union[str,os.PathLike]):
     """Reads a PDB and outputs graphs representing Ramachandran number plots.
     
     Load a PDB file, preferring BioPython parsing with an in-house fallback.
@@ -49,94 +51,111 @@ def read_pdb(fn:Union[str,os.PathLike]):
     installed and the file passes ``check_pdb``. Files that look problematic or
     environments without BioPython fall back to the in-house parser to extract
     backbone atoms.
-
+    
     Args:
-        fn (str): Path to a PDB file to read. Can be multiple structures separated 
-        by the MODEL term;
+        filename_or_filehandle (str): Path to a PDB file to read, or file handle. 
+        Can be multiple structures separated by the MODEL term.
 
     Returns:
         pandas.DataFrame: Backbone atoms (N, CA, C) with model, chain, residue
         identifiers and float32 coordinates.
     """
-    raw_pdb_data = False
-    if biopython_is_installed:
-        raw_pdb_data = read_pdb_biopython(fn)
-    else:
-        raw_pdb_data = read_pdb_inhouse(fn)
+    raw_pdb_data = read_pdb_inhouse(filename_or_filehandle)
+    #raw_pdb_data = False
+    # if biopython_is_installed:
+    #     raw_pdb_data = read_pdb_biopython(fn)
+    # else:
+    #     raw_pdb_data = read_pdb_inhouse(fn)
     #
     return raw_pdb_data
 
+# --------------------------------------
+# MOVING AWAY FROM BIOPYTHON ALLTOGETHER 
+# --------------------------------------
+# # A PDB reader that uses Biopython
+# # in case the BipPython module was not installed, an in-house reader exists below
+# def read_pdb_biopython(fn_or_filehandle:Union[str,os.PathLike,io.IOBase]):
+#     """Parse a PDB file with BioPython and extract backbone atoms.
+#
+#     Args:
+#         fn_or_filehandle: Path to a PDB file or readable file-like object
+#             supported by ``get_filename_and_filehandle`` (gz/zip/plain).
+#
+#     Returns:
+#         pandas.DataFrame: Rows for backbone atoms (N, CA, C) across models,
+#         chains, and residues with columns
+#         ``['model','chain','resname','resid','atom','X','Y','Z']`` where
+#         coordinates are float32.
+#     """
+#   
+#     fn, f = get_filename_and_filehandle(filename_or_filehandle=fn_or_filehandle)
+#
+#     # Parsing with PDB... note that "get_structure takes either a filename OR a filehandle"
+#     p=PDB.PDBParser() #(PERMISSIVE=1)
+#     structure=p.get_structure(fn[:-len(".pdb")], fn)
+#     #for model in structure:
+#     #    print [model.id]
+#
+#     #model_to_chain_to_resno_atom_to_vals = {}
+#     # structure (models) -> model -> chain -> residue -> atom
+#     mol_rows = []
+#     for model in structure:
+#         model_number = model.id
+#         #
+#         # if not model_number in model_to_chain_to_resno_atom_to_vals:
+#         #     model_to_chain_to_resno_atom_to_vals[model_number] = {}
+#         #
+#         for chain in model:
+#             chain_id = chain.id
+#             # if not segname in model_to_chain_to_resno_atom_to_vals[model_number]:
+#             #     model_to_chain_to_resno_atom_to_vals[model_number][segname] = {}
+#            
+#             for residue in chain:
+#                 #print(residue.__dict__)
+#                 #continue
+#                 resname = residue.resname
+#                 resno   = residue.id[1]
+#                 #
+#                 # Checking if this is an actual residue 
+#                 # (e.g., ACE has a "C"-named atom, but no 'N' and 'CA')
+#                 if(     'N' in residue.child_dict 
+#                     and 'CA' in residue.child_dict 
+#                     and 'C' in residue.child_dict):
+#                     pass
+#                 else:
+#                     continue
+#                 #
+#                 for atom in residue:
+#                     if atom.name in ['N','CA','C']:
+#                         xyz = tuple(atom.coord)
+#                         mol_rows.append({'model':model_number,
+#                                         'chain':chain_id,
+#                                         'resname':resname,     
+#                                         'resid':resno, 
+#                                         'atom':atom.name, 
+#                                         'X':xyz[0],
+#                                         'Y':xyz[1],
+#                                         'Z':xyz[2]})
+#     df = pd.DataFrame(mol_rows)
+#     for c in ['X','Y','Z']:
+#         df[c] = df[c].astype('float32')
+#     return df
+#     #
+#     #return model_to_chain_to_resno_atom_to_vals
 
-# A PDB reader that uses Biopython
-# in case the BipPython module was not installed, an in-house reader exists below
-def read_pdb_biopython(fn_or_filehandle:Union[str,os.PathLike,io.IOBase]):
-    """Parse a PDB file with BioPython and extract backbone atoms.
+def  bytecheck(fileblock):
+    """Return ``fileblock`` as text, decoding bytes-like input with UTF-8 (if 
+    not UTF-8 already).
 
     Args:
-        fn_or_filehandle: Path to a PDB file or readable file-like object
-            supported by ``get_filename_and_filehandle`` (gz/zip/plain).
+        fileblock: Raw PDB content as ``str``, ``bytes``, or ``bytearray``.
 
     Returns:
-        pandas.DataFrame: Rows for backbone atoms (N, CA, C) across models,
-        chains, and residues with columns
-        ``['model','chain','resname','resid','atom','X','Y','Z']`` where
-        coordinates are float32.
+        str: Decoded text when given bytes-like input; unchanged string otherwise.
     """
-    
-    fn, f = get_filename_and_filehandle(filename_or_filehandle=fn_or_filehandle)
-
-    # Parsing with PDB... note that "get_structure takes either a filename OR a filehandle"
-    p=PDB.PDBParser() #(PERMISSIVE=1)
-    structure=p.get_structure(fn[:-len(".pdb")], fn)
-    #for model in structure:
-    #    print [model.id]
-
-    #model_to_chain_to_resno_atom_to_vals = {}
-    # structure (models) -> model -> chain -> residue -> atom
-    mol_rows = []
-    for model in structure:
-        model_number = model.id
-        #
-        # if not model_number in model_to_chain_to_resno_atom_to_vals:
-        #     model_to_chain_to_resno_atom_to_vals[model_number] = {}
-        #
-        for chain in model:
-            chain_id = chain.id
-            # if not segname in model_to_chain_to_resno_atom_to_vals[model_number]:
-            #     model_to_chain_to_resno_atom_to_vals[model_number][segname] = {}
-            
-            for residue in chain:
-                #print(residue.__dict__)
-                #continue
-                resname = residue.resname
-                resno   = residue.id[1]
-                #
-                # Checking if this is an actual residue 
-                # (e.g., ACE has a "C"-named atom, but no 'N' and 'CA')
-                if(     'N' in residue.child_dict 
-                    and 'CA' in residue.child_dict 
-                    and 'C' in residue.child_dict):
-                    pass
-                else:
-                    continue
-                #
-                for atom in residue:
-                    if atom.name in ['N','CA','C']:
-                        xyz = tuple(atom.coord)
-                        mol_rows.append({'model':model_number,
-                                        'chain':chain_id,
-                                        'resname':resname,     
-                                        'resid':resno, 
-                                        'atom':atom.name, 
-                                        'X':xyz[0],
-                                        'Y':xyz[1],
-                                        'Z':xyz[2]})
-    df = pd.DataFrame(mol_rows)
-    for c in ['X','Y','Z']:
-        df[c] = df[c].astype('float32')
-    return df
-    #
-    #return model_to_chain_to_resno_atom_to_vals
+    if isinstance(fileblock, (bytes, bytearray)):
+        fileblock = fileblock.decode()
+    return fileblock
 
 # OLD VERSION (IN HOUSE). IT IS FASTER THAN THE CURRENT "read_pdb", WHICH IS BIOPDB RUN, BUT IT IS NOT 
 # AS WELL TESTED.
@@ -152,15 +171,15 @@ def read_pdb_inhouse(fn_or_filehandle:Union[str,os.PathLike]):
         residue with columns ``['model','chain','resname','resid','atom','X','Y','Z']``
         where coordinates are float32.
     """
-    
+    print([fn_or_filehandle]) 
     fn, f = get_filename_and_filehandle(filename_or_filehandle=fn_or_filehandle)
     # f = open(fn,"r")
     pdbblock = f.read()
     f.close()
     
-    # Checking if the pdbblock is byte encoded, and switching to plain text
-    if isinstance(pdbblock, (bytes, bytearray)):
-        pdbblock = pdbblock.decode()
+    pdbblock = bytecheck(pdbblock)
+    
+
 
     # The regular expression that follow are expected to extract key values
     """
@@ -330,7 +349,8 @@ def is_filehandle(x):
     Returns:
         bool: True if ``x`` is an instance of ``io.IOBase``, otherwise False.
     """
-    return isinstance(x, io.IOBase)
+    return isinstance(x, (io.IOBase, tarfile.TarFile, gzip.GzipFile, zipfile.ZipFile))
+
 
 def get_pdb_filenames(pdbfn_or_dir:str):
     """Collect `.pdb` filenames from a file or directory and sort them numerically.
@@ -349,7 +369,7 @@ def get_pdb_filenames(pdbfn_or_dir:str):
     pdbfn = os.path.abspath(pdbfn_or_dir)
     pdbdir = os.path.dirname(pdbfn)
     list_pdbfilenames = []
-    
+    #
     if os.path.isfile(pdbfn):
         # then this pathname leads to a FILE
         # ... so keep as is
@@ -357,13 +377,12 @@ def get_pdb_filenames(pdbfn_or_dir:str):
         name = re.split(r'[\/\.]',pdbfn)[-2]
     elif os.path.isdir(pdbfn):
         pdbdir = pdbfn
-        list_pdbfilenames = sorted(glob.glob(pdbdir+"/*.pdb"))
+        list_pdbfilenames = sorted(glob.glob(pdbdir+"/*.pdb.*"))
         name = re.split(r'[\/\.]',pdbfn)[-1]
     else:
         #print(helpme)
         print("Either filename or directory expected. Exiting.")
         return list_pdbfilenames, pdbdir
-    
     #
     # JUST "CLEVERLY" ARRANGING THE FILENAMES, IF WE HAVE A SET OF FILENAMES RATHER THAN ONE
     # (e.g., list_pdbfilenames = [something2part1,something1part2,something1part1,something10part1]
@@ -376,7 +395,7 @@ def get_pdb_filenames(pdbfn_or_dir:str):
 
 
 def return_tgz_filehandle(pdbfn):
-    """Return file-like handles for every regular file in a tar.gz archive.
+    """Return file-like handles for every regular file in a tar.gz or tgz archive.
 
     Args:
         pdbfn (str | os.PathLike): Path to a ``.tar.gz``/``.tgz`` archive.
@@ -396,8 +415,8 @@ def return_tgz_filehandle(pdbfn):
                     file_objects.append(fileobj)
                     # # Read the content from the file-like object
                     #content = fileobj.read()
-    first_filehandle_in_list = file_objects[0]
-    return first_filehandle_in_list
+    #first_filehandle_in_list = file_objects[0]
+    return file_objects
 
 def return_zip_file_handle(pdbfn, mode='r'):
     """Open the first file inside a zip archive and return a readable handle.
@@ -416,7 +435,7 @@ def return_zip_file_handle(pdbfn, mode='r'):
                                     for file in all_files_in_archive]
         first_file_in_archive = all_handles_in_archive[0]
         #
-        return first_file_in_archive
+        return all_handles_in_archive
 #
 def return_gz_filehandle(pdb_fn,mode='rt'):
     """Open a gzipped PDB file and return a file-like handle.
@@ -430,8 +449,30 @@ def return_gz_filehandle(pdb_fn,mode='rt'):
         io.BufferedReader | io.TextIOWrapper: Handle to the gzipped file opened
         with the requested mode.
     """
-    return gzopen(pdb_fn,mode)
+    return [gzopen(pdb_fn,mode)]
 #
+def return_normal_filehandle(pdb,mode='rt'):
+    """Open an uncompressed PDB file and return it as a single-item list.
+
+    Args:
+        pdb (str | os.PathLike): Path to the PDB file to open.
+        mode (str, optional): Mode passed to ``open`` (e.g., ``'rt'`` for text).
+            Defaults to ``'rt'``.
+
+    Returns:
+        list[io.TextIOWrapper]: List containing the opened file handle.
+    """
+    return [open(pdb,mode)]
+
+
+dict_extention_to_open_object = {
+    '.pdb.tar.gz':return_tgz_filehandle,
+    '.pdb.tgz':return_tgz_filehandle,
+    '.pdb.zip':return_zip_file_handle,
+    '.pdb.gz':return_gz_filehandle,
+    '.pdb':return_normal_filehandle,
+}
+
 def return_filehandle_from_gz_zip_or_normal_file(pdbfn):
     """Return a readable handle for `.pdb`, `.pdb.gz`, or `.pdb.zip` inputs.
 
@@ -443,13 +484,6 @@ def return_filehandle_from_gz_zip_or_normal_file(pdbfn):
         IOBase: File-like object opened with the appropriate handler for the
             given extension, or ``None`` if the extension is unsupported.
     """
-    dict_extention_to_open_object = {
-        '.pdb.tar.gz':return_tgz_filehandle,
-        '.pdb.tgz':return_tgz_filehandle,
-        '.pdb.zip':return_zip_file_handle,
-        '.pdb.gz':return_gz_filehandle,
-        '.pdb':open,
-    }
     #
     for file_extension in dict_extention_to_open_object.keys():
         if pdbfn[-len(file_extension):].lower() == file_extension:
@@ -478,10 +512,11 @@ def get_filename_and_filehandle(filename_or_filehandle):
     fn = None
     f  = None
     if is_filehandle(filename_or_filehandle):
-        fn = f.name
+        fn = filename_or_filehandle.name
         f  = filename_or_filehandle
     elif isinstance(filename_or_filehandle, str) and not isinstance(filename_or_filehandle, list):
-        f = return_filehandle_from_gz_zip_or_normal_file(filename_or_filehandle)
+        list_f = return_filehandle_from_gz_zip_or_normal_file(filename_or_filehandle)
+        f  = list_f[0]
         # deriving the filenames directly from the filehandle
         fn = f.name
     else:

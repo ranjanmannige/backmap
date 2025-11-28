@@ -44,8 +44,8 @@ def test_file_opener():
     ]
     # TEST: opening files of different types
     for pdbfn in same_pdb_content_but_different_compressions:
-        f = backmap.utils.return_filehandle_from_gz_zip_or_normal_file(pdbfn)
-        file_block = f.read()
+        fille_list = backmap.utils.return_filehandle_from_gz_zip_or_normal_file(pdbfn)
+        file_block = fille_list[0].read()
         #
         if isinstance(file_block, (bytes, bytearray)):
             file_block = file_block.decode()
@@ -81,19 +81,8 @@ def test_load_pdb():
     # Set pdb name 
     pdbfn = 'tests/pdbs/1mba.pdb'
     
-    # There are two ways to retrieve PDB data: an in-house way, 
-    # and a method that uses BioPython. We default to the Biopython
-    # method if it is available, as it is likely to be tested and 
-    # debugged more than the in-house version (although the in house 
-    # version is much faster)
-    if 'Bio' in sys.modules:
-        coords_df = backmap.utils.read_pdb_biopython(pdbfn)
-        coords_df_inhouse = backmap.utils.read_pdb_inhouse(pdbfn)
-        # TEST:. They should both yield identical dataframes
-        assert coords_df.equals(coords_df_inhouse)
-    
     # TEST: Known features of the test file are queried here
-    pdb_df = backmap.utils.read_pdb(pdbfn)
+    pdb_df = backmap.utils.read_pdb(filename_or_filehandle=pdbfn)
     assert set(pdb_df['model']) == {0}
     assert set(pdb_df['chain']) == {'A'}
     assert min(pdb_df['resid']) == 1
