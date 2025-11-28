@@ -443,7 +443,7 @@ def process_PDB(pdbfn:str, signed:bool=False):
     Load PDB file(s) and compute residue-level Ramachandran metrics.
 
     Args:
-        pdbfn (str): Path to a PDB file or to a directory containing ``.pdb[.gz|zip]`` files.
+        pdbfn (str): Path to a PDB file or to a directory containing ``.pdb[.gz|zip|tar]`` files.
         signed (bool): If ``True``, compute signed Ramachandran numbers instead of the default unsigned values.
 
     Returns:
@@ -467,34 +467,45 @@ def process_PDB(pdbfn:str, signed:bool=False):
     structure = np.array([]) # depricated
     structure_df = pd.DataFrame()
     for pdbfn in list_pdbfilenames:#[:10]:
-        #print(pdbfn)
-        # Check if the PDB has no subunit IDs, and then check if segnames exist (right most column)
-        # and renaming the subunit IDs alphabetically and then numerically
-        
-        # READ PDB in the form of a matrix with columns ['model','chain','resid','R']
-        raw_pdb_data = utils.read_pdb(pdbfn)
-        latest_structure_df = obtain_ramachandran_dataframe(raw_pdb_data,signed)
-        #latest_structure_df, latest_structure = calculate_R_from_raw_pdb_data(raw_pdb_data, signed=signed)
+        # Each PDB filename itself can be an archive of PDB files, 
         #
-        if len(latest_structure_df)==0:
-            print("WARNING: PDB FILE '{}' NOT FOUND")
-            return pd.DataFrame()
+        # Opening the file, assuming that it could be a list of files (can be, if 
+        # the file ends with .tgz .tar.gz or .zip)
+        filehandles = utils.return_filehandle_from_gz_zip_or_normal_file(pdbfn)
         #
-        # Sorting by model number
-        latest_structure_df = latest_structure_df.sort_values(by=['chain','model','resid'],ascending=True)
-        #
-        # Assigning continuous model numbers 
-        old_model_numbers = list(sorted(set(latest_structure_df['model'])))
-        new_model_numbers = range(1, len(old_model_numbers)+1)
-        model_number_conversion = dict(zip(old_model_numbers,new_model_numbers))
-        latest_structure_df['model'] = [model_number_conversion[mn] for mn in latest_structure_df['model']]
-        #
-        # If this is not the first structure file that is being processed...
-        if len(structure_df) > 0:
-            structure_df_max_model = max(set(latest_structure_df['model']))
-            latest_structure_df['model'] = latest_structure_df['model']+structure_df_max_model
-        #
-        structure_df = pd.concat([structure_df,latest_structure_df.copy()])
+        for f in filehandles:
+            # Check if the PDB has no subunit IDs, and then check if segnames exist (right most column)
+            # and renaming the subunit IDs alphabetically and then numerically
+            
+            pdbfn = f.name
+            pdbfh = f
+
+            # READ PDB in the form of a matrix with columns ['model','chain','resid','R']
+            raw_pdb_data = utils.read_pdb(filename_or_filehandle=pdbfh)
+            raw_pdb_data = utils.bytecheck(raw_pdb_data)
+
+            latest_structure_df = obtain_ramachandran_dataframe(raw_pdb_data,signed)
+            #latest_structure_df, latest_structure = calculate_R_from_raw_pdb_data(raw_pdb_data, signed=signed)
+            #
+            if len(latest_structure_df)==0:
+                print("WARNING: PDB FILE '{}' NOT FOUND")
+                return pd.DataFrame()
+            #
+            # Sorting by model number
+            latest_structure_df = latest_structure_df.sort_values(by=['chain','model','resid'],ascending=True)
+            #
+            # Assigning continuous model numbers 
+            old_model_numbers = list(sorted(set(latest_structure_df['model'])))
+            new_model_numbers = range(1, len(old_model_numbers)+1)
+            model_number_conversion = dict(zip(old_model_numbers,new_model_numbers))
+            latest_structure_df['model'] = [model_number_conversion[mn] for mn in latest_structure_df['model']]
+            #
+            # If this is not the first structure file that is being processed...
+            if len(structure_df) > 0:
+                structure_df_max_model = max(set(latest_structure_df['model']))
+                latest_structure_df['model'] = latest_structure_df['model']+structure_df_max_model
+            #
+            structure_df = pd.concat([structure_df,latest_structure_df.copy()])
     
     structure_df.attrs['pdbfn'] = pdbfn
     structure_df.attrs['pdb_name'] = os.path.split(pdbfn)[-1]
