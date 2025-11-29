@@ -1,7 +1,8 @@
-Examples
-========
+NOTEBOOK EXAMPLES
+=================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    notebooks/examples
+   notebooks/proof
