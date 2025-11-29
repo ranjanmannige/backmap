@@ -10,9 +10,21 @@ maintainers = [
   {name = "Ranjan Mannige", email = "ranjanmannige@gmail.com"}
 ]
 classifiers = [
-    # TODO
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
-license = {text = "MIT"}
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
 dependencies = [
   "matplotlib",
   "pandas",
@@ -33,9 +45,6 @@ test = [
     "ty", # checking types
     "ipdb", # debugging
 ]
-biopython = [
-    "biopython", # If not used, we used a less tested version of a PDB reader
-]
 
 [tool.pytest.ini_options]
 filterwarnings = [
@@ -43,9 +52,11 @@ filterwarnings = [
 ]
 
 [project.urls]
-bugs = "https://github.com/ranjanmannige/backmap/issues"
-changelog = "https://github.com/ranjanmannige/backmap/blob/master/changelog.md"
-homepage = "https://github.com/ranjanmannige/backmap"
+Homepage = "https://github.com/ranjanmannige/backmap"
+Documentation = "https://ranjanmannige.github.io/backmap/"
+Repository = "https://github.com/ranjanmannige/backmap"
+Issues = "https://github.com/ranjanmannige/backmap/issues"
+#Changelog = "https://github.com/ranjanmannige/backmap/blob/main/changelog.md"
 
 [project.scripts]
 backmap = "backmap.cli:app"
