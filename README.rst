@@ -15,7 +15,7 @@
     :target: https://github.com/ranjanmannige/backmap/blob/master/LICENSE.txt
     :alt: License
 
-.. |downloads| image:: https://static.pepy.tech/personalized-badge/backmap?period=total&units=INTERNATIONAL_SYSTEM&left_color=GREY&right_color=GREEN&left_text=downloads
+.. |downloads| image:: https://static.pepy.tech/personalized-badge/backmap?period=total&units=INTERNATIONAL_SYSTEM&left_color=GREY&right_color=BLUE&left_text=downloads
     :alt: Github All Releases
 
 .. |status| image:: https://img.shields.io/pypi/status/Backmap.svg
