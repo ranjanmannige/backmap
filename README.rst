@@ -24,6 +24,8 @@
 .. |pyversions| image:: https://img.shields.io/pypi/pyversions/Backmap.svg
     :alt: Allowed python environments_current_filenames
 
+.. |PyPI Downloads| image:: https://static.pepy.tech/personalized-badge/chemprop?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads
+
 .. contents::
 
 
