@@ -288,75 +288,6 @@ def draw_xyz(X,Y,Z, ylim=False, cmap='Greys', missing_color="green", xlabel=Fals
     return True, ax
 #
 
-# Grouping each data by : TO BE DELETED
-def group_data_by(data,group_by="chain",columns_to_return=['model','resid','R']):
-    '''
-    Groups a tabular numpy array by the values in a specified column and collects the requested columns for each group.
-    
-    Parameters
-    ----------
-    data : np.ndarray
-        Array with column names in the first row and data in subsequent rows.
-    group_by : str
-        Column name used to split the data.
-    columns_to_return : list[str]
-        Column names to extract for each group, in order.
-    
-    Returns
-    -------
-    dict
-        Keys are the unique values in `group_by`; values are lists of numpy arrays matching `columns_to_return`.
-    '''
-    # Getting column indices for each column name
-    rx = {} # "rx" for Row indeX
-    # Taking the first row and getting the column name and index
-    for col in data[0,:]:
-        rx[col] = list(data[0,:]).index(col)
-    # 
-    group_by_values = sorted(set(data[1:,rx[group_by]]))
-    #
-    grouped_data    = {}
-    for filter_value in group_by_values:
-        current_data = data[np.where(data[:,rx[group_by]] == filter_value)]
-        grouped_data[filter_value] = []
-        for return_column in columns_to_return:
-            grouped_data[filter_value].append(current_data[:,rx[return_column]])
-    #    
-    return grouped_data
-#
-
-def compare_value_to_list_of_dict(key,value,list_of_dict):
-    """Check whether any dictionary in the sequence maps ``key`` to ``value``.
-
-    Args:
-        key (str): Dictionary key to inspect for each element.
-        value: Value to match against the entry referenced by ``key``.
-        list_of_dict (Iterable[dict]): Collection of dictionaries to scan.
-
-    Returns:
-        bool: ``True`` if at least one dictionary contains the requested key/value pair, otherwise ``False``.
-    """
-    return any([d[key] == value for d in list_of_dict])
-
-def get_coord_by_key_value_match(key,value,list_of_dict):
-    """Fetch the first matching record's coordinates for a given key/value pair.
-
-    Args:
-        key (str): Dictionary key to compare against ``value``.
-        value: Target value to match within each dictionary.
-        list_of_dict (list[dict]): Sequence of records expected to include ``'X'``, ``'Y'``, and ``'Z'`` entries.
-
-    Returns:
-        list[float]: Coordinates ``[X, Y, Z]`` of the first matching record, or an empty list if none match.
-    """
-    valid_records = [d for d in list_of_dict if d[key]==value]
-    coordinates = []
-    if len(valid_records):
-        record_to_use = valid_records[0]
-        coordinates = [record_to_use['X'],record_to_use['Y'],record_to_use['Z']]
-    
-    return coordinates
-
 def obtain_ramachandran_dataframe(coordinates_df, signed=False):
     """Aggregate residue-level dihedral angles from per-atom backbone coordinates.
 
@@ -398,19 +329,19 @@ def obtain_ramachandran_dataframe(coordinates_df, signed=False):
             # Dihedral notions:   |<-------phi-------->|
             #                            |<------psi--------->|
             #
-            b = get_coord_by_key_value_match(key='atom',value='N',list_of_dict=resid_to_records[i])
-            c = get_coord_by_key_value_match(key='atom',value='CA',list_of_dict=resid_to_records[i])
-            d = get_coord_by_key_value_match(key='atom',value='C',list_of_dict=resid_to_records[i])
+            b = utils.get_coord_by_key_value_match(key='atom',value='N',list_of_dict=resid_to_records[i])
+            c = utils.get_coord_by_key_value_match(key='atom',value='CA',list_of_dict=resid_to_records[i])
+            d = utils.get_coord_by_key_value_match(key='atom',value='C',list_of_dict=resid_to_records[i])
             
             phi,psi,rho = np.nan, np.nan, np.nan
             #print(len(b)+len(c)+len(d))
             if len(b)+len(c)+len(d) == 9:
                 if im in resid_to_records:
-                    a = get_coord_by_key_value_match(key='atom',value='C',list_of_dict=resid_to_records[im])
+                    a = utils.get_coord_by_key_value_match(key='atom',value='C',list_of_dict=resid_to_records[im])
                     if len(a) == 3:
                         phi = utils.calculate_dihedral_angle(np.array([a,b,c,d]))
                 if ip in resid_to_records:
-                    e = get_coord_by_key_value_match(key='atom',value='N',list_of_dict=resid_to_records[ip])
+                    e = utils.get_coord_by_key_value_match(key='atom',value='N',list_of_dict=resid_to_records[ip])
                     if len(e) == 3:
                         psi = utils.calculate_dihedral_angle(np.array([b,c,d,e]))
 
