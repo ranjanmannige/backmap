@@ -24,7 +24,6 @@
 .. |pyversions| image:: https://img.shields.io/pypi/pyversions/Backmap.svg
     :alt: Allowed python environments_current_filenames
 
-
 .. image:: https://static.pepy.tech/personalized-badge/backmap?period=total&units=INTERNATIONAL_SYSTEM&left_color=GREY&right_color=GREEN&left_text=downloads
    :alt: GitHub Downloads (all assets, all releases)
 
