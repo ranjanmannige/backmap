@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>User Reference &mdash; BackMAP 1.0.0 documentation</title>
+  <title>CODE/API MANUAL &mdash; BackMAP 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
 
@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Authors" href="authors_link.html" />
-    <link rel="prev" title="BackMAP EXAMPLES" href="notebooks/examples.html" /> 
+    <link rel="prev" title="Derivation of R" href="notebooks/proof.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,11 +45,10 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="readme_link.html">USER MANUAL</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks.html">Examples</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">User Reference</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks.html">NOTEBOOK EXAMPLES</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">CODE/API MANUAL</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-backmap.backmap">backmap</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.normalized_ramachandran_number"><code class="docutils literal notranslate"><span class="pre">normalized_ramachandran_number()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.ramachandran_number"><code class="docutils literal notranslate"><span class="pre">ramachandran_number()</span></code></a></li>
@@ -57,9 +56,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.R"><code class="docutils literal notranslate"><span class="pre">R()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.write_image"><code class="docutils literal notranslate"><span class="pre">write_image()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.draw_xyz"><code class="docutils literal notranslate"><span class="pre">draw_xyz()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.group_data_by"><code class="docutils literal notranslate"><span class="pre">group_data_by()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.compare_value_to_list_of_dict"><code class="docutils literal notranslate"><span class="pre">compare_value_to_list_of_dict()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.get_coord_by_key_value_match"><code class="docutils literal notranslate"><span class="pre">get_coord_by_key_value_match()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.obtain_ramachandran_dataframe"><code class="docutils literal notranslate"><span class="pre">obtain_ramachandran_dataframe()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.read_pdb_from_pdbfn_or_filehandle"><code class="docutils literal notranslate"><span class="pre">read_pdb_from_pdbfn_or_filehandle()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.process_PDB"><code class="docutils literal notranslate"><span class="pre">process_PDB()</span></code></a></li>
@@ -83,6 +79,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#backmap.utils.get_filename_and_filehandle"><code class="docutils literal notranslate"><span class="pre">get_filename_and_filehandle()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.utils.median_filter"><code class="docutils literal notranslate"><span class="pre">median_filter()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.utils.forceAspect"><code class="docutils literal notranslate"><span class="pre">forceAspect()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backmap.utils.get_coord_by_key_value_match"><code class="docutils literal notranslate"><span class="pre">get_coord_by_key_value_match()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-backmap.cli">cli</a><ul>
@@ -114,7 +111,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">User Reference</li>
+      <li class="breadcrumb-item active">CODE/API MANUAL</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/reference.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -124,8 +121,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="user-reference">
-<h1>User Reference<a class="headerlink" href="#user-reference" title="Permalink to this heading"></a></h1>
+  <section id="code-api-manual">
+<h1>CODE/API MANUAL<a class="headerlink" href="#code-api-manual" title="Permalink to this heading"></a></h1>
 <p>User reference for the BackMAP package.</p>
 <section id="module-backmap.backmap">
 <span id="backmap"></span><h2>backmap<a class="headerlink" href="#module-backmap.backmap" title="Permalink to this heading"></a></h2>
@@ -217,69 +214,6 @@ Refer to <a class="reference internal" href="#backmap.backmap.normalized_ramacha
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>tuple[bool, matplotlib.axes.Axes]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="backmap.backmap.group_data_by">
-<span class="sig-prename descclassname"><span class="pre">backmap.backmap.</span></span><span class="sig-name descname"><span class="pre">group_data_by</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'chain'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns_to_return</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['model',</span> <span class="pre">'resid',</span> <span class="pre">'R']</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/backmap.html#group_data_by"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.backmap.group_data_by" title="Permalink to this definition"></a></dt>
-<dd><p>Groups a tabular numpy array by the values in a specified column and collects the requested columns for each group.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>np.ndarray</em>) – Array with column names in the first row and data in subsequent rows.</p></li>
-<li><p><strong>group_by</strong> (<em>str</em>) – Column name used to split the data.</p></li>
-<li><p><strong>columns_to_return</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – Column names to extract for each group, in order.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Keys are the unique values in <cite>group_by</cite>; values are lists of numpy arrays matching <cite>columns_to_return</cite>.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="backmap.backmap.compare_value_to_list_of_dict">
-<span class="sig-prename descclassname"><span class="pre">backmap.backmap.</span></span><span class="sig-name descname"><span class="pre">compare_value_to_list_of_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_of_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/backmap.html#compare_value_to_list_of_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.backmap.compare_value_to_list_of_dict" title="Permalink to this definition"></a></dt>
-<dd><p>Check whether any dictionary in the sequence maps <code class="docutils literal notranslate"><span class="pre">key</span></code> to <code class="docutils literal notranslate"><span class="pre">value</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>str</em>) – Dictionary key to inspect for each element.</p></li>
-<li><p><strong>value</strong> – Value to match against the entry referenced by <code class="docutils literal notranslate"><span class="pre">key</span></code>.</p></li>
-<li><p><strong>list_of_dict</strong> (<em>Iterable</em><em>[</em><em>dict</em><em>]</em>) – Collection of dictionaries to scan.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if at least one dictionary contains the requested key/value pair, otherwise <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="backmap.backmap.get_coord_by_key_value_match">
-<span class="sig-prename descclassname"><span class="pre">backmap.backmap.</span></span><span class="sig-name descname"><span class="pre">get_coord_by_key_value_match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_of_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/backmap.html#get_coord_by_key_value_match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.backmap.get_coord_by_key_value_match" title="Permalink to this definition"></a></dt>
-<dd><p>Fetch the first matching record’s coordinates for a given key/value pair.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>str</em>) – Dictionary key to compare against <code class="docutils literal notranslate"><span class="pre">value</span></code>.</p></li>
-<li><p><strong>value</strong> – Target value to match within each dictionary.</p></li>
-<li><p><strong>list_of_dict</strong> (<em>list</em><em>[</em><em>dict</em><em>]</em>) – Sequence of records expected to include <code class="docutils literal notranslate"><span class="pre">'X'</span></code>, <code class="docutils literal notranslate"><span class="pre">'Y'</span></code>, and <code class="docutils literal notranslate"><span class="pre">'Z'</span></code> entries.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Coordinates <code class="docutils literal notranslate"><span class="pre">[X,</span> <span class="pre">Y,</span> <span class="pre">Z]</span></code> of the first matching record, or an empty list if none match.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[float]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -722,6 +656,27 @@ current axes.</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="backmap.utils.get_coord_by_key_value_match">
+<span class="sig-prename descclassname"><span class="pre">backmap.utils.</span></span><span class="sig-name descname"><span class="pre">get_coord_by_key_value_match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_of_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/utils.html#get_coord_by_key_value_match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.utils.get_coord_by_key_value_match" title="Permalink to this definition"></a></dt>
+<dd><p>Fetch the first matching record’s coordinates for a given key/value pair.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – Dictionary key to compare against <code class="docutils literal notranslate"><span class="pre">value</span></code>.</p></li>
+<li><p><strong>value</strong> – Target value to match within each dictionary.</p></li>
+<li><p><strong>list_of_dict</strong> (<em>list</em><em>[</em><em>dict</em><em>]</em>) – Sequence of records expected to include <code class="docutils literal notranslate"><span class="pre">'X'</span></code>, <code class="docutils literal notranslate"><span class="pre">'Y'</span></code>, and <code class="docutils literal notranslate"><span class="pre">'Z'</span></code> entries.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Coordinates <code class="docutils literal notranslate"><span class="pre">[X,</span> <span class="pre">Y,</span> <span class="pre">Z]</span></code> of the first matching record, or an empty list if none match.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="module-backmap.cli">
 <span id="cli"></span><h2>cli<a class="headerlink" href="#module-backmap.cli" title="Permalink to this heading"></a></h2>
@@ -855,7 +810,7 @@ and axes are returned so callers can further customize or save the visualization
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="notebooks/examples.html" class="btn btn-neutral float-left" title="BackMAP EXAMPLES" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="notebooks/proof.html" class="btn btn-neutral float-left" title="Derivation of R" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="authors_link.html" class="btn btn-neutral float-right" title="Authors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

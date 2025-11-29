@@ -42,11 +42,10 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../readme_link.html">USER MANUAL</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../notebooks.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../reference.html">User Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks.html">NOTEBOOK EXAMPLES</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">CODE/API MANUAL</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../authors_link.html">Authors</a></li>
 </ul>
 
@@ -365,75 +364,6 @@
     <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ax</span></div>
 <span class="c1">#</span>
 
-<span class="c1"># Grouping each data by : TO BE DELETED</span>
-<div class="viewcode-block" id="group_data_by"><a class="viewcode-back" href="../../reference.html#backmap.backmap.group_data_by">[docs]</a><span class="k">def</span> <span class="nf">group_data_by</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">group_by</span><span class="o">=</span><span class="s2">&quot;chain&quot;</span><span class="p">,</span><span class="n">columns_to_return</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">,</span><span class="s1">&#39;resid&#39;</span><span class="p">,</span><span class="s1">&#39;R&#39;</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Groups a tabular numpy array by the values in a specified column and collects the requested columns for each group.</span>
-<span class="sd">    </span>
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    data : np.ndarray</span>
-<span class="sd">        Array with column names in the first row and data in subsequent rows.</span>
-<span class="sd">    group_by : str</span>
-<span class="sd">        Column name used to split the data.</span>
-<span class="sd">    columns_to_return : list[str]</span>
-<span class="sd">        Column names to extract for each group, in order.</span>
-<span class="sd">    </span>
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    dict</span>
-<span class="sd">        Keys are the unique values in `group_by`; values are lists of numpy arrays matching `columns_to_return`.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="c1"># Getting column indices for each column name</span>
-    <span class="n">rx</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># &quot;rx&quot; for Row indeX</span>
-    <span class="c1"># Taking the first row and getting the column name and index</span>
-    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]:</span>
-        <span class="n">rx</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
-    <span class="c1"># </span>
-    <span class="n">group_by_values</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span><span class="n">rx</span><span class="p">[</span><span class="n">group_by</span><span class="p">]]))</span>
-    <span class="c1">#</span>
-    <span class="n">grouped_data</span>    <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">filter_value</span> <span class="ow">in</span> <span class="n">group_by_values</span><span class="p">:</span>
-        <span class="n">current_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">data</span><span class="p">[:,</span><span class="n">rx</span><span class="p">[</span><span class="n">group_by</span><span class="p">]]</span> <span class="o">==</span> <span class="n">filter_value</span><span class="p">)]</span>
-        <span class="n">grouped_data</span><span class="p">[</span><span class="n">filter_value</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">return_column</span> <span class="ow">in</span> <span class="n">columns_to_return</span><span class="p">:</span>
-            <span class="n">grouped_data</span><span class="p">[</span><span class="n">filter_value</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_data</span><span class="p">[:,</span><span class="n">rx</span><span class="p">[</span><span class="n">return_column</span><span class="p">]])</span>
-    <span class="c1">#    </span>
-    <span class="k">return</span> <span class="n">grouped_data</span></div>
-<span class="c1">#</span>
-
-<div class="viewcode-block" id="compare_value_to_list_of_dict"><a class="viewcode-back" href="../../reference.html#backmap.backmap.compare_value_to_list_of_dict">[docs]</a><span class="k">def</span> <span class="nf">compare_value_to_list_of_dict</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">,</span><span class="n">list_of_dict</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check whether any dictionary in the sequence maps ``key`` to ``value``.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        key (str): Dictionary key to inspect for each element.</span>
-<span class="sd">        value: Value to match against the entry referenced by ``key``.</span>
-<span class="sd">        list_of_dict (Iterable[dict]): Collection of dictionaries to scan.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        bool: ``True`` if at least one dictionary contains the requested key/value pair, otherwise ``False``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">any</span><span class="p">([</span><span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">==</span> <span class="n">value</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">list_of_dict</span><span class="p">])</span></div>
-
-<div class="viewcode-block" id="get_coord_by_key_value_match"><a class="viewcode-back" href="../../reference.html#backmap.backmap.get_coord_by_key_value_match">[docs]</a><span class="k">def</span> <span class="nf">get_coord_by_key_value_match</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">,</span><span class="n">list_of_dict</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch the first matching record&#39;s coordinates for a given key/value pair.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        key (str): Dictionary key to compare against ``value``.</span>
-<span class="sd">        value: Target value to match within each dictionary.</span>
-<span class="sd">        list_of_dict (list[dict]): Sequence of records expected to include ``&#39;X&#39;``, ``&#39;Y&#39;``, and ``&#39;Z&#39;`` entries.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        list[float]: Coordinates ``[X, Y, Z]`` of the first matching record, or an empty list if none match.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">valid_records</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">list_of_dict</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">==</span><span class="n">value</span><span class="p">]</span>
-    <span class="n">coordinates</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_records</span><span class="p">):</span>
-        <span class="n">record_to_use</span> <span class="o">=</span> <span class="n">valid_records</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">coordinates</span> <span class="o">=</span> <span class="p">[</span><span class="n">record_to_use</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span><span class="n">record_to_use</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span><span class="n">record_to_use</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]]</span>
-    
-    <span class="k">return</span> <span class="n">coordinates</span></div>
-
 <div class="viewcode-block" id="obtain_ramachandran_dataframe"><a class="viewcode-back" href="../../reference.html#backmap.backmap.obtain_ramachandran_dataframe">[docs]</a><span class="k">def</span> <span class="nf">obtain_ramachandran_dataframe</span><span class="p">(</span><span class="n">coordinates_df</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Aggregate residue-level dihedral angles from per-atom backbone coordinates.</span>
 
@@ -475,19 +405,19 @@
             <span class="c1"># Dihedral notions:   |&lt;-------phi--------&gt;|</span>
             <span class="c1">#                            |&lt;------psi---------&gt;|</span>
             <span class="c1">#</span>
-            <span class="n">b</span> <span class="o">=</span> <span class="n">get_coord_by_key_value_match</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;atom&#39;</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;N&#39;</span><span class="p">,</span><span class="n">list_of_dict</span><span class="o">=</span><span class="n">resid_to_records</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-            <span class="n">c</span> <span class="o">=</span> <span class="n">get_coord_by_key_value_match</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;atom&#39;</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;CA&#39;</span><span class="p">,</span><span class="n">list_of_dict</span><span class="o">=</span><span class="n">resid_to_records</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-            <span class="n">d</span> <span class="o">=</span> <span class="n">get_coord_by_key_value_match</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;atom&#39;</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span><span class="n">list_of_dict</span><span class="o">=</span><span class="n">resid_to_records</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_coord_by_key_value_match</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;atom&#39;</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;N&#39;</span><span class="p">,</span><span class="n">list_of_dict</span><span class="o">=</span><span class="n">resid_to_records</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_coord_by_key_value_match</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;atom&#39;</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;CA&#39;</span><span class="p">,</span><span class="n">list_of_dict</span><span class="o">=</span><span class="n">resid_to_records</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_coord_by_key_value_match</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;atom&#39;</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span><span class="n">list_of_dict</span><span class="o">=</span><span class="n">resid_to_records</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
             
             <span class="n">phi</span><span class="p">,</span><span class="n">psi</span><span class="p">,</span><span class="n">rho</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
             <span class="c1">#print(len(b)+len(c)+len(d))</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">==</span> <span class="mi">9</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">im</span> <span class="ow">in</span> <span class="n">resid_to_records</span><span class="p">:</span>
-                    <span class="n">a</span> <span class="o">=</span> <span class="n">get_coord_by_key_value_match</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;atom&#39;</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span><span class="n">list_of_dict</span><span class="o">=</span><span class="n">resid_to_records</span><span class="p">[</span><span class="n">im</span><span class="p">])</span>
+                    <span class="n">a</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_coord_by_key_value_match</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;atom&#39;</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">,</span><span class="n">list_of_dict</span><span class="o">=</span><span class="n">resid_to_records</span><span class="p">[</span><span class="n">im</span><span class="p">])</span>
                     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
                         <span class="n">phi</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">calculate_dihedral_angle</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">d</span><span class="p">]))</span>
                 <span class="k">if</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">resid_to_records</span><span class="p">:</span>
-                    <span class="n">e</span> <span class="o">=</span> <span class="n">get_coord_by_key_value_match</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;atom&#39;</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;N&#39;</span><span class="p">,</span><span class="n">list_of_dict</span><span class="o">=</span><span class="n">resid_to_records</span><span class="p">[</span><span class="n">ip</span><span class="p">])</span>
+                    <span class="n">e</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_coord_by_key_value_match</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s1">&#39;atom&#39;</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;N&#39;</span><span class="p">,</span><span class="n">list_of_dict</span><span class="o">=</span><span class="n">resid_to_records</span><span class="p">[</span><span class="n">ip</span><span class="p">])</span>
                     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
                         <span class="n">psi</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">calculate_dihedral_angle</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">e</span><span class="p">]))</span>
 

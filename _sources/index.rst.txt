@@ -8,7 +8,6 @@ Welcome to BackMAP's documentation!
 ###################################
 .. toctree::
    :maxdepth: 1
-   :caption: Contents:
 
    readme_link
    notebooks

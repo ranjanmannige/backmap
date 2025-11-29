@@ -42,11 +42,10 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../readme_link.html">USER MANUAL</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../notebooks.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../reference.html">User Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks.html">NOTEBOOK EXAMPLES</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">CODE/API MANUAL</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../authors_link.html">Authors</a></li>
 </ul>
 
@@ -482,16 +481,16 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">file_objects</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="c1"># Open the tar archive in read mode</span>
-    <span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tar</span><span class="p">:</span>
-        <span class="c1"># Iterate through the members of the archive</span>
-        <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">tar</span><span class="o">.</span><span class="n">getmembers</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">member</span><span class="o">.</span><span class="n">isfile</span><span class="p">():</span>  <span class="c1"># Check if it&#39;s a regular file</span>
-                <span class="c1"># Get a file-like object for the member</span>
-                <span class="n">fileobj</span> <span class="o">=</span> <span class="n">tar</span><span class="o">.</span><span class="n">extractfile</span><span class="p">(</span><span class="n">member</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">fileobj</span><span class="p">:</span>  <span class="c1"># Ensure the file object is not None</span>
-                    <span class="n">file_objects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fileobj</span><span class="p">)</span>
-                    <span class="c1"># # Read the content from the file-like object</span>
-                    <span class="c1">#content = fileobj.read()</span>
+    <span class="n">tar</span> <span class="o">=</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">,</span> <span class="s1">&#39;r:gz&#39;</span><span class="p">)</span>
+    <span class="c1"># Iterate through the members of the archive</span>
+    <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">tar</span><span class="o">.</span><span class="n">getmembers</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">member</span><span class="o">.</span><span class="n">isfile</span><span class="p">():</span>  <span class="c1"># Check if it&#39;s a regular file</span>
+            <span class="c1"># Get a file-like object for the member</span>
+            <span class="n">fileobj</span> <span class="o">=</span> <span class="n">tar</span><span class="o">.</span><span class="n">extractfile</span><span class="p">(</span><span class="n">member</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fileobj</span><span class="p">:</span>  <span class="c1"># Ensure the file object is not None</span>
+                <span class="n">file_objects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fileobj</span><span class="p">)</span>
+                <span class="c1"># # Read the content from the file-like object</span>
+                <span class="c1">#content = fileobj.read()</span>
     <span class="c1">#first_filehandle_in_list = file_objects[0]</span>
     <span class="k">return</span> <span class="n">file_objects</span></div>
 
@@ -648,6 +647,25 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">ax</span><span class="p">:</span> <span class="n">ax</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
     <span class="n">extent</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">()</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="nb">abs</span><span class="p">((</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">-</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span><span class="o">/</span><span class="n">aspect</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="get_coord_by_key_value_match"><a class="viewcode-back" href="../../reference.html#backmap.utils.get_coord_by_key_value_match">[docs]</a><span class="k">def</span> <span class="nf">get_coord_by_key_value_match</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">,</span><span class="n">list_of_dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch the first matching record&#39;s coordinates for a given key/value pair.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        key (str): Dictionary key to compare against ``value``.</span>
+<span class="sd">        value: Target value to match within each dictionary.</span>
+<span class="sd">        list_of_dict (list[dict]): Sequence of records expected to include ``&#39;X&#39;``, ``&#39;Y&#39;``, and ``&#39;Z&#39;`` entries.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list[float]: Coordinates ``[X, Y, Z]`` of the first matching record, or an empty list if none match.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">valid_records</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">list_of_dict</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">==</span><span class="n">value</span><span class="p">]</span>
+    <span class="n">coordinates</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_records</span><span class="p">):</span>
+        <span class="n">record_to_use</span> <span class="o">=</span> <span class="n">valid_records</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">coordinates</span> <span class="o">=</span> <span class="p">[</span><span class="n">record_to_use</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span><span class="n">record_to_use</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span><span class="n">record_to_use</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]]</span>
+    
+    <span class="k">return</span> <span class="n">coordinates</span></div>
 </pre></div>
 
            </div>

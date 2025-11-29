@@ -1,5 +1,5 @@
-User Reference
-##############
+CODE/API MANUAL
+###############
 
 User reference for the BackMAP package.
 
