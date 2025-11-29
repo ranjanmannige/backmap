@@ -25,7 +25,7 @@
     :alt: Allowed python environments_current_filenames
 
 
-.. image:: https://static.pepy.tech/personalized-badge/chemprop?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads
+.. image:: https://static.pepy.tech/personalized-badge/backmap?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads
    :alt: GitHub Downloads (all assets, all releases)
 
 .. contents::
