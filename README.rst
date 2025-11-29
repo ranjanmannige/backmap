@@ -2,7 +2,7 @@
     :alt: BackMAP Banner
     :width: 75%
 
-|pypi| |license| |pyversions| |status| |format| 
+|pypi| |license| |pyversions| |status| |format| |downloads|
 
 .. |pypi| image:: https://img.shields.io/pypi/v/backmap.svg?label=version
     :target: http://pypi.org/project/backmap
