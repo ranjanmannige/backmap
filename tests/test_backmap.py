@@ -40,7 +40,9 @@ def test_file_opener():
     same_pdb_content_but_different_compressions = [ 
         'tests/pdbs/1mba.pdb.zip',
         'tests/pdbs/1mba.pdb',
-        'tests/pdbs/1mba.pdb.gz' 
+        'tests/pdbs/1mba.pdb.gz',
+        'tests/pdbs/1mba.pdb.tar.gz',
+        'tests/pdbs/1mba.pdb.tgz'
     ]
     # TEST: opening files of different types
     for pdbfn in same_pdb_content_but_different_compressions:

@@ -405,16 +405,16 @@ def return_tgz_filehandle(pdbfn):
     """
     file_objects = []
     # Open the tar archive in read mode
-    with tarfile.open(pdbfn, "r") as tar:
-        # Iterate through the members of the archive
-        for member in tar.getmembers():
-            if member.isfile():  # Check if it's a regular file
-                # Get a file-like object for the member
-                fileobj = tar.extractfile(member)
-                if fileobj:  # Ensure the file object is not None
-                    file_objects.append(fileobj)
-                    # # Read the content from the file-like object
-                    #content = fileobj.read()
+    tar = tarfile.open(pdbfn, 'r:gz')
+    # Iterate through the members of the archive
+    for member in tar.getmembers():
+        if member.isfile():  # Check if it's a regular file
+            # Get a file-like object for the member
+            fileobj = tar.extractfile(member)
+            if fileobj:  # Ensure the file object is not None
+                file_objects.append(fileobj)
+                # # Read the content from the file-like object
+                #content = fileobj.read()
     #first_filehandle_in_list = file_objects[0]
     return file_objects
 
@@ -571,3 +571,22 @@ def forceAspect(aspect,ax=False):
     if not ax: ax=plt.gca()
     extent = plt.axis()
     ax.set_aspect(abs((extent[1]-extent[0])/(extent[3]-extent[2]))/aspect)
+
+def get_coord_by_key_value_match(key,value,list_of_dict):
+    """Fetch the first matching record's coordinates for a given key/value pair.
+
+    Args:
+        key (str): Dictionary key to compare against ``value``.
+        value: Target value to match within each dictionary.
+        list_of_dict (list[dict]): Sequence of records expected to include ``'X'``, ``'Y'``, and ``'Z'`` entries.
+
+    Returns:
+        list[float]: Coordinates ``[X, Y, Z]`` of the first matching record, or an empty list if none match.
+    """
+    valid_records = [d for d in list_of_dict if d[key]==value]
+    coordinates = []
+    if len(valid_records):
+        record_to_use = valid_records[0]
+        coordinates = [record_to_use['X'],record_to_use['Y'],record_to_use['Z']]
+    
+    return coordinates
