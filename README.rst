@@ -2,7 +2,7 @@
     :alt: BackMAP Banner
     :width: 75%
 
-|pypi| |license| |pyversions| |status| |downloads| |format|
+|pypi| |license| |pyversions| |status| |downloads|
 
 .. |pypi| image:: https://img.shields.io/pypi/v/backmap.svg?label=version
     :target: http://pypi.org/project/backmap
@@ -12,7 +12,7 @@
     :alt: Format
 
 .. |license| image:: https://img.shields.io/pypi/l/Backmap.svg
-    :target: https://github.com/ranjanmannige/backmap/blob/master/LICENSE.txt
+    :target: https://github.com/ranjanmannige/backmap/blob/master/LICENSE
     :alt: License
 
 .. |downloads| image:: https://static.pepy.tech/personalized-badge/backmap?period=total&units=INTERNATIONAL_SYSTEM&left_color=GREY&right_color=BLUE&left_text=downloads
