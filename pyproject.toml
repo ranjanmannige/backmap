@@ -1,8 +1,8 @@
 [project]
 name = "backmap"
-version = "1.0.0"
+version = "1.0.1"
 description = "Shows protein backbone structures in compact graphical form using Ramachandran numbers"
-readme = "README.md"
+readme = "README.rst"
 authors = [
   {name = "Ranjan Mannige", email = "ranjanmannige@gmail.com"}
 ]
