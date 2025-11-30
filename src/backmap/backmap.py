@@ -6,6 +6,7 @@ import pandas as pd
 from typing import Union
 from . import utils
 from . import local_colormaps
+import matplotlib.patches as patches # for drawing markers
 
 import warnings
 #warnings.filterwarnings("ignore", category=matplotlib.MatplotlibDeprecationWarning)
@@ -505,6 +506,31 @@ def fill_in_missing_resids(structure_df, fill_with=False):
             final_structure_df = pd.concat([final_structure_df,_model_df])
     return final_structure_df
 
+def mark_figure(df,ax=None):
+    """Add right-side markers for residues flagged with ``mark == True``.
+
+    Args:
+        df (pd.DataFrame): Dataframe that may contain ``mark`` and ``resid``
+            columns; rows with ``mark`` set to ``True`` are highlighted.
+        ax (matplotlib.axes.Axes, optional): Axis to annotate; defaults to the
+            current axes when ``None``.
+
+    Returns:
+        matplotlib.axes.Axes: Axis with any mark annotations applied.
+    """
+    if ax is None:
+        ax = plt.gca()
+    if 'mark' in df.columns:
+        for ix,row in df[df['mark']==True].iterrows():
+            resid = row['resid']
+            xmin,xmax = plt.xlim()
+            width = (xmax-xmin)*0.1
+            rect = patches.Rectangle((xmax, resid), width, 1, #transform=ax.transAxes,
+                                linewidth=0, edgecolor='k', facecolor='k',clip_on=False)
+            # Add the patch to the Axes
+            ax.add_patch(rect)
+    return ax
+        
 
 
 def draw_figures(structure_df, output_dir='', write=True, show=True):
@@ -576,6 +602,7 @@ def draw_figures(structure_df, output_dir='', write=True, show=True):
                         , xlabel =r'Frame #', ylabel =r"Residue #",zlabel =r'$\mathcal{R}$'
                         , title=r'Per-residue $\mathcal{R}$; CMAP: '+cmap+'\nPDB: ' + final_name
                         ,  cmap = cmap    ,  vmin=vmin, vmax=vmax)
+                mark_figure(_cdf, ax)
                 #
                 #plt.show()
                 # Now, we display the graph:
