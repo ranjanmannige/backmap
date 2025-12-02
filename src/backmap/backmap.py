@@ -506,22 +506,25 @@ def fill_in_missing_resids(structure_df, fill_with=False):
             final_structure_df = pd.concat([final_structure_df,_model_df])
     return final_structure_df
 
-def mark_figure(df,ax=None):
-    """Add right-side markers for residues flagged with ``mark == True``.
+def mark_figure(df,ax=None,mark_column='mark'):
+    """Add right-side markers to rows flagged in ``mark_column`` on the current plot.
 
     Args:
-        df (pd.DataFrame): Dataframe that may contain ``mark`` and ``resid``
-            columns; rows with ``mark`` set to ``True`` are highlighted.
-        ax (matplotlib.axes.Axes, optional): Axis to annotate; defaults to the
-            current axes when ``None``.
+        df (pd.DataFrame): Table containing a ``resid`` column and a boolean
+            column used to flag residues for annotation.
+        ax (matplotlib.axes.Axes, optional): Axes to annotate; defaults to the
+            current matplotlib axes.
+        mark_column (str): Column name containing boolean markers; defaults to
+            ``'mark'``.
 
     Returns:
-        matplotlib.axes.Axes: Axis with any mark annotations applied.
+        matplotlib.axes.Axes: Axes with rectangle markers added for flagged rows.
     """
+    
     if ax is None:
         ax = plt.gca()
-    if 'mark' in df.columns:
-        for ix,row in df[df['mark']==True].iterrows():
+    if mark_column in df.columns:
+        for ix,row in df[df[mark_column]==True].iterrows():
             resid = row['resid']
             xmin,xmax = plt.xlim()
             width = (xmax-xmin)*0.1
