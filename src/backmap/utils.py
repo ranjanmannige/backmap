@@ -34,6 +34,37 @@ biopython_is_installed = False
 # except:
 #     biopython_is_installed = False
 
+# The regular expression that follow are expected to extract key values
+"""
+ATOM     10 1H   LYS A   1       0.763   3.548  -0.564
+ATOM    482  N   PRO A  61      27.194  -5.761  14.684  1.00  9.09           N  
+ATOM      2  CA  BLYSX   1     -77.937 -26.325   6.934  1.00  0.00      U1    
+ATOM      3  HT2 MET U   1      -1.052  -0.551 -12.281  0.00  0.00      UBIQ  
+          |   |   |  |   |        |       |       |                     |
+     atomno   |   |  |   |        x       y       z                 segname
+       atom type  |  |   |                                          (CHAIN)
+            restype  |   resno
+                    chainID
+"""
+getlines       = re.compile(r"ATOM\s+(?P<atomno>\d+)\s+(?P<atomtype>\S+)\s+(?P<resname>...).(?P<chainname>.)\s+(?P<resno>\d+)\s+(?P<x>\-*\d+\.*\d*)\s+(?P<y>\-*\d+\.*\d*)\s+(?P<z>\-*\d+\.*\d*).{17}(?P<segname>.{5})",re.M)
+getlines.__doc__ = "Pattern to extract PDB ATOM fields including atom id, type, residue info, coordinates, and segname."
+
+getlines_short = re.compile(r"ATOM\s+(?P<atomno>\d+)\s+(?P<atomtype>\S+)\s+(?P<resname>...).(?P<chainname>.)\s+(?P<resno>\d+)\s+(?P<x>\-*\d+\.*\d*)\s+(?P<y>\-*\d+\.*\d*)\s+(?P<z>\-*\d+\.*\d*)",re.M)
+getlines.__doc__ = """Fallback pattern to extract PDB ATOM fields including atom id, type, residue info, coordinates, and segname.
+
+These are the ATOM line formats that these two regular expressions are expected to find:
+ATOM     10 1H   LYS A   1       0.763   3.548  -0.564
+ATOM    482  N   PRO A  61      27.194  -5.761  14.684  1.00  9.09           N  
+ATOM      2  CA  BLYSX   1     -77.937 -26.325   6.934  1.00  0.00      U1    
+ATOM      3  HT2 MET U   1      -1.052  -0.551 -12.281  0.00  0.00      UBIQ  
+          |   |   |  |   |        |       |       |                     |
+     atomno   |   |  |   |        x       y       z                 segname
+       atom type  |  |   |                                          (CHAIN)
+            restype  |   resno
+                    chainID
+
+"""
+
 #
 # Three-to-one amino acid conversion lookup
 aa_three_to_one = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
@@ -178,29 +209,7 @@ def read_pdb_inhouse(fn_or_filehandle:Union[str,os.PathLike]):
     f.close()
     
     pdbblock = bytecheck(pdbblock)
-    
-
-
-    # The regular expression that follow are expected to extract key values
-    """
-    ATOM     10 1H   LYS A   1       0.763   3.548  -0.564
-    ATOM     11 2H   LYS A   1       1.654   2.664   0.488
-    ATOM    482  N   PRO A  61      27.194  -5.761  14.684  1.00  9.09           N  
-    ATOM      2  CA  BLYSX   1     -77.937 -26.325   6.934  1.00  0.00      U1    
-    ATOM      3  CB  BLYSX   1     -79.612 -24.499   7.194  1.00  0.00      U1    
-    ATOM      4  CE  BLYSX   1     -80.894 -24.467   8.039  1.00  0.00      U1    
-    ATOM      5  NZ  BLYSX   1     -80.687 -24.160   9.434  1.00  0.00      U1    
-    ATOM      2  HT1 MET U   1       0.208   0.762 -12.141  0.00  0.00      UBIQ  
-    ATOM      3  HT2 MET U   1      -1.052  -0.551 -12.281  0.00  0.00      UBIQ  
-              |   |   |  |   |        |       |       |                     |
-         atomno   |   |  |   |        x       y       z                 segname
-           atom type  |  |   |                                          (CHAIN)
-                restype  |   3resno
-                     chainID
-    """
-    getlines       = re.compile(r"ATOM\s+(?P<atomno>\d+)\s+(?P<atomtype>\S+)\s+(?P<resname>...).(?P<chainname>.)\s+(?P<resno>\d+)\s+(?P<x>\-*\d+\.*\d*)\s+(?P<y>\-*\d+\.*\d*)\s+(?P<z>\-*\d+\.*\d*).{17}(?P<segname>.{5})",re.M)
-    getlines_short = re.compile(r"ATOM\s+(?P<atomno>\d+)\s+(?P<atomtype>\S+)\s+(?P<resname>...).(?P<chainname>.)\s+(?P<resno>\d+)\s+(?P<x>\-*\d+\.*\d*)\s+(?P<y>\-*\d+\.*\d*)\s+(?P<z>\-*\d+\.*\d*)",re.M)
-    
+        
     resnos = []
     #models = pdbblock.split("\nEND\n")
     models = re.split(r"\nEND|\nMODEL|\nTER",pdbblock)
@@ -464,7 +473,7 @@ def return_normal_filehandle(pdb,mode='rt'):
     """
     return [open(pdb,mode)]
 
-
+# A dictionary that returns the appropriate filhandle given the file extension
 dict_extention_to_open_object = {
     '.pdb.tar.gz':return_tgz_filehandle,
     '.pdb.tgz':return_tgz_filehandle,
