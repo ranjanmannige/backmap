@@ -65,9 +65,6 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-backmap.utils">utils</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#backmap.utils.biopython_is_installed"><code class="docutils literal notranslate"><span class="pre">biopython_is_installed</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#backmap.utils.getlines"><code class="docutils literal notranslate"><span class="pre">getlines</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#backmap.utils.getlines_short"><code class="docutils literal notranslate"><span class="pre">getlines_short</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.utils.read_pdb"><code class="docutils literal notranslate"><span class="pre">read_pdb()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.utils.bytecheck"><code class="docutils literal notranslate"><span class="pre">bytecheck()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.utils.read_pdb_inhouse"><code class="docutils literal notranslate"><span class="pre">read_pdb_inhouse()</span></code></a></li>
@@ -366,66 +363,6 @@ RMSD heatmaps computed per chain.</p>
 <p>Utility functions important for loading and processing PDB files.
 Functions following <code class="docutils literal notranslate"><span class="pre">calculate_dihedral_angle()</span></code> are probably not very
 interesting to most.</p>
-<dl class="py data">
-<dt class="sig sig-object py" id="backmap.utils.biopython_is_installed">
-<span class="sig-prename descclassname"><span class="pre">backmap.utils.</span></span><span class="sig-name descname"><span class="pre">biopython_is_installed</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#backmap.utils.biopython_is_installed" title="Permalink to this definition"></a></dt>
-<dd><p>ATOM     10 1H   LYS A   1       0.763   3.548  -0.564
-ATOM    482  N   PRO A  61      27.194  -5.761  14.684  1.00  9.09           N
-ATOM      2  CA  BLYSX   1     -77.937 -26.325   6.934  1.00  0.00      U1
-ATOM      3  HT2 MET U   1      -1.052  -0.551 -12.281  0.00  0.00      UBIQ</p>
-<blockquote>
-<div><blockquote>
-<div><div class="line-block">
-<div class="line">|   |  |   |        |       |       |                     |</div>
-</div>
-</div></blockquote>
-<dl class="simple">
-<dt>atomno   |   |  |   |        x       y       z                 segname</dt><dd><dl class="simple">
-<dt>atom type  |  |   |                                          (CHAIN)</dt><dd><dl class="simple">
-<dt>restype  |   resno</dt><dd><p>chainID</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd>
-</dl>
-</div></blockquote>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="backmap.utils.getlines">
-<span class="sig-prename descclassname"><span class="pre">backmap.utils.</span></span><span class="sig-name descname"><span class="pre">getlines</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('ATOM\\s+(?P&lt;atomno&gt;\\d+)\\s+(?P&lt;atomtype&gt;\\S+)\\s+(?P&lt;resname&gt;...).(?P&lt;chainname&gt;.)\\s+(?P&lt;resno&gt;\\d+)\\s+(?P&lt;x&gt;\\-*\\d+\\.*\\d*)\\s+(?P&lt;y&gt;\\-*\\d+\\.*\\d*)\\s+(?P&lt;z&gt;\\-*\\d+\\.*\\d*).{17}(?P&lt;segname,</span> <span class="pre">re.MULTILINE)</span></em><a class="headerlink" href="#backmap.utils.getlines" title="Permalink to this definition"></a></dt>
-<dd><p>Pattern to extract PDB ATOM fields including atom id, type, residue info, coordinates, and segname.</p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="backmap.utils.getlines_short">
-<span class="sig-prename descclassname"><span class="pre">backmap.utils.</span></span><span class="sig-name descname"><span class="pre">getlines_short</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">re.compile('ATOM\\s+(?P&lt;atomno&gt;\\d+)\\s+(?P&lt;atomtype&gt;\\S+)\\s+(?P&lt;resname&gt;...).(?P&lt;chainname&gt;.)\\s+(?P&lt;resno&gt;\\d+)\\s+(?P&lt;x&gt;\\-*\\d+\\.*\\d*)\\s+(?P&lt;y&gt;\\-*\\d+\\.*\\d*)\\s+(?P&lt;z&gt;\\-*\\d+\\.*\\d*)',</span> <span class="pre">re.MULTILINE)</span></em><a class="headerlink" href="#backmap.utils.getlines_short" title="Permalink to this definition"></a></dt>
-<dd><p>Fallback pattern to extract PDB ATOM fields including atom id, type, residue info, coordinates, and segname.</p>
-<p>These are the ATOM line formats that these two regular expressions are expected to find:
-ATOM     10 1H   LYS A   1       0.763   3.548  -0.564
-ATOM    482  N   PRO A  61      27.194  -5.761  14.684  1.00  9.09           N
-ATOM      2  CA  BLYSX   1     -77.937 -26.325   6.934  1.00  0.00      U1
-ATOM      3  HT2 MET U   1      -1.052  -0.551 -12.281  0.00  0.00      UBIQ</p>
-<blockquote>
-<div><blockquote>
-<div><div class="line-block">
-<div class="line">|   |  |   |        |       |       |                     |</div>
-</div>
-</div></blockquote>
-<dl class="simple">
-<dt>atomno   |   |  |   |        x       y       z                 segname</dt><dd><dl class="simple">
-<dt>atom type  |  |   |                                          (CHAIN)</dt><dd><dl class="simple">
-<dt>restype  |   resno</dt><dd><p>chainID</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd>
-</dl>
-</div></blockquote>
-</dd></dl>
-
 <dl class="py function">
 <dt class="sig sig-object py" id="backmap.utils.read_pdb">
 <span class="sig-prename descclassname"><span class="pre">backmap.utils.</span></span><span class="sig-name descname"><span class="pre">read_pdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename_or_filehandle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PathLike</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/utils.html#read_pdb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.utils.read_pdb" title="Permalink to this definition"></a></dt>

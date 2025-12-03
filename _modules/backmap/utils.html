@@ -111,35 +111,11 @@
 <span class="c1">#     biopython_is_installed = False</span>
 
 <span class="c1"># The regular expression that follow are expected to extract key values</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">ATOM     10 1H   LYS A   1       0.763   3.548  -0.564</span>
-<span class="sd">ATOM    482  N   PRO A  61      27.194  -5.761  14.684  1.00  9.09           N  </span>
-<span class="sd">ATOM      2  CA  BLYSX   1     -77.937 -26.325   6.934  1.00  0.00      U1    </span>
-<span class="sd">ATOM      3  HT2 MET U   1      -1.052  -0.551 -12.281  0.00  0.00      UBIQ  </span>
-<span class="sd">          |   |   |  |   |        |       |       |                     |</span>
-<span class="sd">     atomno   |   |  |   |        x       y       z                 segname</span>
-<span class="sd">       atom type  |  |   |                                          (CHAIN)</span>
-<span class="sd">            restype  |   resno</span>
-<span class="sd">                    chainID</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># Pattern to extract PDB ATOM fields including atom id, type, residue info, coordinates, and segname</span>
 <span class="n">getlines</span>       <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;ATOM\s+(?P&lt;atomno&gt;\d+)\s+(?P&lt;atomtype&gt;\S+)\s+(?P&lt;resname&gt;...).(?P&lt;chainname&gt;.)\s+(?P&lt;resno&gt;\d+)\s+(?P&lt;x&gt;\-*\d+\.*\d*)\s+(?P&lt;y&gt;\-*\d+\.*\d*)\s+(?P&lt;z&gt;\-*\d+\.*\d*).</span><span class="si">{17}</span><span class="s2">(?P&lt;segname&gt;.</span><span class="si">{5}</span><span class="s2">)&quot;</span><span class="p">,</span><span class="n">re</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
-<span class="s2">&quot;Pattern to extract PDB ATOM fields including atom id, type, residue info, coordinates, and segname.&quot;</span>
 
+<span class="c1"># Fallback pattern to extract PDB ATOM fields including atom id, type, residue info, coordinates, and segname</span>
 <span class="n">getlines_short</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;ATOM\s+(?P&lt;atomno&gt;\d+)\s+(?P&lt;atomtype&gt;\S+)\s+(?P&lt;resname&gt;...).(?P&lt;chainname&gt;.)\s+(?P&lt;resno&gt;\d+)\s+(?P&lt;x&gt;\-*\d+\.*\d*)\s+(?P&lt;y&gt;\-*\d+\.*\d*)\s+(?P&lt;z&gt;\-*\d+\.*\d*)&quot;</span><span class="p">,</span><span class="n">re</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
-<span class="sd">&quot;&quot;&quot;Fallback pattern to extract PDB ATOM fields including atom id, type, residue info, coordinates, and segname.</span>
-
-<span class="sd">These are the ATOM line formats that these two regular expressions are expected to find:</span>
-<span class="sd">ATOM     10 1H   LYS A   1       0.763   3.548  -0.564</span>
-<span class="sd">ATOM    482  N   PRO A  61      27.194  -5.761  14.684  1.00  9.09           N  </span>
-<span class="sd">ATOM      2  CA  BLYSX   1     -77.937 -26.325   6.934  1.00  0.00      U1    </span>
-<span class="sd">ATOM      3  HT2 MET U   1      -1.052  -0.551 -12.281  0.00  0.00      UBIQ  </span>
-<span class="sd">          |   |   |  |   |        |       |       |                     |</span>
-<span class="sd">     atomno   |   |  |   |        x       y       z                 segname</span>
-<span class="sd">       atom type  |  |   |                                          (CHAIN)</span>
-<span class="sd">            restype  |   resno</span>
-<span class="sd">                    chainID</span>
-
-<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c1">#</span>
 <span class="c1"># Three-to-one amino acid conversion lookup</span>
@@ -301,7 +277,19 @@
         <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">model_index</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">model_number</span> <span class="o">=</span> <span class="n">model_index</span>
-            
+<span class="w">            </span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            ATOM     10 1H   LYS A   1       0.763   3.548  -0.564</span>
+<span class="sd">            ATOM    482  N   PRO A  61      27.194  -5.761  14.684  1.00  9.09           N  </span>
+<span class="sd">            ATOM      2  CA  BLYSX   1     -77.937 -26.325   6.934  1.00  0.00      U1    </span>
+<span class="sd">            ATOM      3  HT2 MET U   1      -1.052  -0.551 -12.281  0.00  0.00      UBIQ  </span>
+<span class="sd">                      |   |   |  |   |        |       |       |                     |</span>
+<span class="sd">                 atomno   |   |  |   |        x       y       z                 segname</span>
+<span class="sd">                   atom type  |  |   |                                          (CHAIN)</span>
+<span class="sd">                        restype  |   resno</span>
+<span class="sd">                                chainID</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+
             <span class="n">segname_exists</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="n">currentlines</span> <span class="o">=</span> <span class="n">getlines</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">getlines</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
