@@ -35,35 +35,11 @@ biopython_is_installed = False
 #     biopython_is_installed = False
 
 # The regular expression that follow are expected to extract key values
-"""
-ATOM     10 1H   LYS A   1       0.763   3.548  -0.564
-ATOM    482  N   PRO A  61      27.194  -5.761  14.684  1.00  9.09           N  
-ATOM      2  CA  BLYSX   1     -77.937 -26.325   6.934  1.00  0.00      U1    
-ATOM      3  HT2 MET U   1      -1.052  -0.551 -12.281  0.00  0.00      UBIQ  
-          |   |   |  |   |        |       |       |                     |
-     atomno   |   |  |   |        x       y       z                 segname
-       atom type  |  |   |                                          (CHAIN)
-            restype  |   resno
-                    chainID
-"""
+# Pattern to extract PDB ATOM fields including atom id, type, residue info, coordinates, and segname
 getlines       = re.compile(r"ATOM\s+(?P<atomno>\d+)\s+(?P<atomtype>\S+)\s+(?P<resname>...).(?P<chainname>.)\s+(?P<resno>\d+)\s+(?P<x>\-*\d+\.*\d*)\s+(?P<y>\-*\d+\.*\d*)\s+(?P<z>\-*\d+\.*\d*).{17}(?P<segname>.{5})",re.M)
-"Pattern to extract PDB ATOM fields including atom id, type, residue info, coordinates, and segname."
 
+# Fallback pattern to extract PDB ATOM fields including atom id, type, residue info, coordinates, and segname
 getlines_short = re.compile(r"ATOM\s+(?P<atomno>\d+)\s+(?P<atomtype>\S+)\s+(?P<resname>...).(?P<chainname>.)\s+(?P<resno>\d+)\s+(?P<x>\-*\d+\.*\d*)\s+(?P<y>\-*\d+\.*\d*)\s+(?P<z>\-*\d+\.*\d*)",re.M)
-"""Fallback pattern to extract PDB ATOM fields including atom id, type, residue info, coordinates, and segname.
-
-These are the ATOM line formats that these two regular expressions are expected to find:
-ATOM     10 1H   LYS A   1       0.763   3.548  -0.564
-ATOM    482  N   PRO A  61      27.194  -5.761  14.684  1.00  9.09           N  
-ATOM      2  CA  BLYSX   1     -77.937 -26.325   6.934  1.00  0.00      U1    
-ATOM      3  HT2 MET U   1      -1.052  -0.551 -12.281  0.00  0.00      UBIQ  
-          |   |   |  |   |        |       |       |                     |
-     atomno   |   |  |   |        x       y       z                 segname
-       atom type  |  |   |                                          (CHAIN)
-            restype  |   resno
-                    chainID
-
-"""
 
 #
 # Three-to-one amino acid conversion lookup
@@ -226,6 +202,18 @@ def read_pdb_inhouse(fn_or_filehandle:Union[str,os.PathLike]):
         if len(model.rstrip()) > 1:
             model_number = model_index
             
+            """
+            ATOM     10 1H   LYS A   1       0.763   3.548  -0.564
+            ATOM    482  N   PRO A  61      27.194  -5.761  14.684  1.00  9.09           N  
+            ATOM      2  CA  BLYSX   1     -77.937 -26.325   6.934  1.00  0.00      U1    
+            ATOM      3  HT2 MET U   1      -1.052  -0.551 -12.281  0.00  0.00      UBIQ  
+                      |   |   |  |   |        |       |       |                     |
+                 atomno   |   |  |   |        x       y       z                 segname
+                   atom type  |  |   |                                          (CHAIN)
+                        restype  |   resno
+                                chainID
+            """
+
             segname_exists = 1
             currentlines = getlines.finditer(model)
             if not getlines.search(model):
