@@ -258,8 +258,8 @@ def read_pdb_inhouse(fn_or_filehandle:Union[str,os.PathLike]):
     #t0 = time.time()
     #print "#\treading...",
     for model_index in range(len(models)):
-        model = models[model_index]
-        if len(model.rstrip()) > 1:
+        model_block = models[model_index]
+        if len(model_block.rstrip().lstrip()) > 1:
             model_number = model_index
             
             """
@@ -273,45 +273,15 @@ def read_pdb_inhouse(fn_or_filehandle:Union[str,os.PathLike]):
                         restype  |   resno
                                 chainID
             """
-            mol_rows += parse_PDB_lines(model)
-            for ix in range(len(mol_rows)):
-                mol_rows[ix]['model'] = model_number
-            # ------------------------------------------------------
-            # The line above replaced with this commented out block:
-            # ------------------------------------------------------
-            # segname_exists = 1
-            # currentlines = getlines.finditer(model)
-            # if not getlines.search(model):
-            #     currentlines = getlines_short.finditer(model)
-            #     segname_exists = 0
-            # 
-            # for vals in currentlines:
-            #     #vals = i.groupdict()
-            #     atomtype = vals["atomtype"] #line[11:17].lstrip().rstrip()
-            #    
-            #     if atomtype in ["CA", "N", "C"]:
-            #         resname = vals["resname"]
-            #         resno = int(vals["resno"]) #int(resno) #int(line[22:26].lstrip().rstrip())
-            #         xyz = np.array([float(vals["x"]),float(vals["y"]),float(vals["z"])])
-            #       
-            #         segname = "A"
-            #         if segname_exists:
-            #             segname = vals["chainname"].lstrip().rstrip()
-            #       
-            #         mol_rows.append({'model':model_number,
-            #                          'chain':segname,
-            #                        'resname':resname,     
-            #                          'resid':resno, 
-            #                           'atom':atomtype, 
-            #                              'X':xyz[0],
-            #                              'Y':xyz[1],
-            #                              'Z':xyz[2]})
-            #         #
-            #         #model_to_chain_to_resno_atom_to_vals[model_number][segname][resno][atomtype] = xyz
-            #         #model_to_chain_to_resno_atom_to_vals[model_number][segname][resno]["resname"] = vals["resname"]
-            #     #
             
-            
+            all_atom_mol_rows = parse_PDB_lines(model_block)
+            backbone_mol_rows = []
+            for row_dict in all_atom_mol_rows:
+                if row_dict['atom'] in ["CA", "N", "C"]:
+                    row_dict['model'] = model_number
+                    backbone_mol_rows.append(row_dict)
+            mol_rows += backbone_mol_rows
+            #
         #
     #
     df = pd.DataFrame(mol_rows)
