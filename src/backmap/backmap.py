@@ -359,26 +359,9 @@ def obtain_ramachandran_dataframe(coordinates_df, signed=False):
                 current_row.update({"phi":phi, "psi": psi, "R":rho} )
             final_records.append(current_row)
     
-    
-    '''
-
-    Inputs:
-        pdbfn:str                    Filepath that points to either a PDB *OR* a directory that contains .pdb files
-        signed:bool=False            Switch to using the signed Ramachandran number (default=False)
-    Outputs:
-        structure_df      A pandas dataframe describing each backbone atom, containing the following keys:
-                          'model': PDB chain MODEL number ()
-                          'chain': PDB CHAIN
-                          'resname': three letter residue name
-                          'phi': the backbone dihedral angle phi 
-                          'psi': the backbone dihedral angle psi
-                          'R': the Ramachandran number
-    '''
-    
-
     return pd.DataFrame(final_records)
 
-def read_pdb_from_pdbfn_or_filehandle(pdbfn_or_filehandle, structure_df=pd.DataFrame()):
+def read_pdb_from_pdbfn_or_filehandle(pdbfn_or_filehandle, structure_df=pd.DataFrame(), signed=False):
     """Parse PDB content, compute Ramachandran metrics, and merge with an existing dataframe.
 
     Args:
@@ -386,7 +369,9 @@ def read_pdb_from_pdbfn_or_filehandle(pdbfn_or_filehandle, structure_df=pd.DataF
         structure_df (pd.DataFrame): Existing dataframe of processed structures to append to; empty by default.
 
     Returns:
-        pd.DataFrame: Combined residue-level dataframe with continuous model numbering and Ramachandran values.
+        pd.DataFrame: Per-residue records with model, chain, residue identity, phi,
+        psi, and Ramachandran number columns. Returns an empty dataframe when no
+        input PDBs are found.
     """
     
     #
@@ -394,7 +379,7 @@ def read_pdb_from_pdbfn_or_filehandle(pdbfn_or_filehandle, structure_df=pd.DataF
     raw_pdb_data = utils.read_pdb(filename_or_filehandle=pdbfn_or_filehandle)
     raw_pdb_data = utils.bytecheck(raw_pdb_data)
     #
-    latest_structure_df = obtain_ramachandran_dataframe(raw_pdb_data,signed)
+    latest_structure_df = obtain_ramachandran_dataframe(raw_pdb_data,signed=signed)
     #latest_structure_df, latest_structure = calculate_R_from_raw_pdb_data(raw_pdb_data, signed=signed)
     #
     if len(latest_structure_df)==0:
@@ -418,54 +403,75 @@ def read_pdb_from_pdbfn_or_filehandle(pdbfn_or_filehandle, structure_df=pd.DataF
     structure_df = pd.concat([structure_df,latest_structure_df.copy()])
     return structure_df
 
-def process_PDB(pdbfn:str, signed:bool=False):
-    """
-    Load PDB file(s) and compute residue-level Ramachandran metrics.
+def process_PDB(pdbfn_or_filehandle, signed=False):
+    """Collect residue-level Ramachandran data from one or more PDB inputs.
+
+    Accepts either an open file handle or a path to a PDB file/directory/archive,
+    expands archives and directories into individual file handles, and aggregates
+    the parsed structures into a single dataframe with optional signed torsion
+    angles.
 
     Args:
-        pdbfn (str): Path to a PDB file or to a directory containing ``.pdb[.gz|zip|tar]`` files.
-        signed (bool): If ``True``, compute signed Ramachandran numbers instead of the default unsigned values.
+        pdbfn_or_filehandle: PDB path, directory containing PDBs, archive, or an
+            open file-like object to parse.
+        signed (bool): Whether to compute signed Ramachandran angles.
 
     Returns:
-        pd.DataFrame: Per-residue records with model, chain, residue identity, phi,
-        psi, and Ramachandran number columns. Returns an empty dataframe when no
-        input PDBs are found.
+        pd.DataFrame: Combined dataframe of all parsed PDB residues with a `pdbfn`
+            attribute set on the dataframe metadata.
     """
-
-    # Since the user can either provide one PDB file *or* one 
-    # PDB file-containing directory, we need to resolve these PDBs
-    list_pdbfilenames,pdbdir = utils.get_pdb_filenames(pdbfn)
-    #
-    
-    # for list_pdb_filenames:
-    #     utils.get_filename_and_filehandle(
-    if len(list_pdbfilenames) == 0:
-        return pd.DataFrame()
 
     #NAME = os.path.basename(list_pdbfilenames[0])[:-len(".pdb")]
     #target_base = target_dir.rstrip("/")
     #
-    structure = np.array([]) # depricated
-    structure_df = pd.DataFrame()
-    for _pdbfn in list_pdbfilenames:#[:10]:
-        # Each PDB filename itself can be an archive of PDB files, 
+    pdbfn = ''
+    all_filehandles = []
+    if utils.is_filehandle(pdbfn_or_filehandle):
+        # Treating pdbfn_or_filehandle as a handle
+        all_filehandles.append(pdbfn_or_filehandle)
+        if (not "name" in pdbfn_or_filehandle.__dict__) or (not pdbfn_or_filehandle.name):
+            pdbfn_or_filehandle.name = ''
+        elif len(pdbfn_or_filehandle.name) > 0:
+            pdbfn = pdbfn_or_filehandle.name
+        else:
+            pdbfn_or_filehandle.name = ''
+    else:
+        # Treating pdbfn_or_filehandle as a file/directory path
+        pdbfn = pdbfn_or_filehandle
+        # Since the user can either provide one PDB file *or* one 
+        # PDB file-containing directory, we need to resolve these PDBs
+        list_pdbfilenames, pdbdir = utils.get_pdb_filenames(pdbfn)
         #
-        # Opening the file, assuming that it could be a list of files (can be, if 
-        # the file ends with .tgz .tar.gz or .zip)
-        filehandles = utils.return_filehandle_from_gz_zip_or_normal_file(_pdbfn)
-        #
-        for f in filehandles:
-            # Check if the PDB has no subunit IDs, and then check if segnames exist (right most column)
-            # and renaming the subunit IDs alphabetically and then numerically
-            #
-            final_pdbfn = f.name
-            final_pdbfh = f
-            #
-            structure_df = read_pdb_from_pdbfn_or_filehandle(final_pdbfn, structure_df=structure_df)
+        
+        # for list_pdb_filenames:
+        #     utils.get_filename_and_filehandle(
+        if len(list_pdbfilenames) == 0:
+            return pd.DataFrame()
+
+        for _pdbfn in list_pdbfilenames:#[:10]:
             
-        #
+            # Each PDB filename itself can be an archive of PDB files, 
+            #
+            # Opening the file, assuming that it could be a list of files (can be, if 
+            # the file ends with .tgz .tar.gz or .zip)
+            filehandles = utils.return_filehandle_from_gz_zip_or_normal_file(_pdbfn)
+            #
+            for f in filehandles:
+                # Check if the PDB has no subunit IDs, and then check if segnames exist (right most column)
+                # and renaming the subunit IDs alphabetically and then numerically
+                #
+                final_pdbfn = f.name
+                final_pdbfh = f
+                all_filehandles.append(final_pdbfh)
+                #
+    
+    # The analysis block
+    structure_df = pd.DataFrame()
+    for fh in all_filehandles:
+        structure_df = read_pdb_from_pdbfn_or_filehandle(fh, structure_df=structure_df, signed=signed)
+    #
     structure_df.attrs['pdbfn'] = pdbfn
-    structure_df.attrs['pdb_name'] = os.path.split(pdbfn)[-1]
+    structure_df.attrs['pdb_name'] = os.path.basename(pdbfn)
     structure_df.attrs['signed'] = signed
     #
     # models, residues, Rs = list(structure_df['model']),list(structure_df['resid']),list(structure_df['R'])
@@ -527,8 +533,10 @@ def mark_figure(df,ax=None,mark_column='mark'):
         for ix,row in df[df[mark_column]==True].iterrows():
             resid = row['resid']
             xmin,xmax = plt.xlim()
-            width = (xmax-xmin)*0.1
-            rect = patches.Rectangle((xmax, resid), width, 1, #transform=ax.transAxes,
+            width = (xmax-xmin)*0.02
+            if xmax-xmin == 1:
+                width = 0.1
+            rect = patches.Rectangle((xmax, resid-1), width, 1, #transform=ax.transAxes,
                                 linewidth=0, edgecolor='k', facecolor='k',clip_on=False)
             # Add the patch to the Axes
             ax.add_patch(rect)
@@ -569,7 +577,11 @@ def draw_figures(structure_df, output_dir='', write=True, show=True):
         if not os.path.isdir(output_dir):
             os.makedirs(output_dir)
     #
-    name = os.path.split(pdbfn)[-1][:-len('.pdb')]
+    name = os.path.split(pdbfn)[-1]
+    # Removing the ".pdb", if present
+    if name[-len('.pdb'):].lower() == '.pdb':
+        name = name[:-len('.pdb')]
+    
     print(" ---- \t---------")
     #
     vmin           =  0 
