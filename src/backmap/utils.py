@@ -47,10 +47,10 @@ ATOM      3  HT2 MET U   1      -1.052  -0.551 -12.281  0.00  0.00      UBIQ
                     chainID
 """
 getlines       = re.compile(r"ATOM\s+(?P<atomno>\d+)\s+(?P<atomtype>\S+)\s+(?P<resname>...).(?P<chainname>.)\s+(?P<resno>\d+)\s+(?P<x>\-*\d+\.*\d*)\s+(?P<y>\-*\d+\.*\d*)\s+(?P<z>\-*\d+\.*\d*).{17}(?P<segname>.{5})",re.M)
-getlines.__doc__ = "Pattern to extract PDB ATOM fields including atom id, type, residue info, coordinates, and segname."
+"Pattern to extract PDB ATOM fields including atom id, type, residue info, coordinates, and segname."
 
 getlines_short = re.compile(r"ATOM\s+(?P<atomno>\d+)\s+(?P<atomtype>\S+)\s+(?P<resname>...).(?P<chainname>.)\s+(?P<resno>\d+)\s+(?P<x>\-*\d+\.*\d*)\s+(?P<y>\-*\d+\.*\d*)\s+(?P<z>\-*\d+\.*\d*)",re.M)
-getlines.__doc__ = """Fallback pattern to extract PDB ATOM fields including atom id, type, residue info, coordinates, and segname.
+"""Fallback pattern to extract PDB ATOM fields including atom id, type, residue info, coordinates, and segname.
 
 These are the ATOM line formats that these two regular expressions are expected to find:
 ATOM     10 1H   LYS A   1       0.763   3.548  -0.564
@@ -202,7 +202,7 @@ def read_pdb_inhouse(fn_or_filehandle:Union[str,os.PathLike]):
         residue with columns ``['model','chain','resname','resid','atom','X','Y','Z']``
         where coordinates are float32.
     """
-    print([fn_or_filehandle]) 
+    # print([fn_or_filehandle]) 
     fn, f = get_filename_and_filehandle(filename_or_filehandle=fn_or_filehandle)
     # f = open(fn,"r")
     pdbblock = f.read()
