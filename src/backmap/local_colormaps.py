@@ -35,8 +35,9 @@ c2 = [1,1,0] # yellow                  |   \_ /   |             |  \_     |
 c3 = [1,0,0] # red                 psi |c3  /\_c2 |         psi |    \_   |
 c4 = [0,0,1] # blue                    |  /    \_ |             |      \_ |
 bc = [1,1,1] # white                   |/  c1    \|             |c3      \|
-             #                         ------------             -----------
+             #                  ------------             -----------
              #                             phi                      phi
+
 # DEFINING POSITIONS AND COLORS BY SECONDARY STRUCTURE:
 # POSITIONS
 helix_start = 0.31 # the start of the helical region (all assuming R in [0,1])
@@ -88,7 +89,7 @@ cmap_ranges = {}
 # POSITION: 0        COLORSWITCH         1
 #    COLOR: | white - red | blue - white |
 cdict = {
-#                         white  white          red    blue          white  white
+#                   white  white                  red    blue          white  white
 	'red':   ((0.00,  bc[0], bc[0]), (COLORSWITCH,  c3[0], c4[0]), (1.0, bc[0], bc[0])), 
 	'green': ((0.00,  bc[1], bc[1]), (COLORSWITCH,  c3[1], c4[1]), (1.0, bc[1], bc[1])),
 	'blue':  ((0.00,  bc[2], bc[2]), (COLORSWITCH,  c3[2], c4[2]), (1.0, bc[2], bc[2])) 
@@ -104,7 +105,7 @@ cmap_ranges['Chirality'] = [0,1]
 # POSITION: 0              0.25             0.5           0.75            1
 #    COLOR: | white - black | yellow - white | white - red | blue - white |
 cdict = {
-#                         red    red                    white  white         blue   blue
+#                    red    red                   white  white         blue   blue
 	'red':   ((0.00,  c3[0], c3[0]), (COLORSWITCH,  bc[0], bc[0]), (1.0, c4[0], c4[0])), 
 	'green': ((0.00,  c3[1], c3[1]), (COLORSWITCH,  bc[1], bc[1]), (1.0, c4[1], c4[1])),
 	'blue':  ((0.00,  c3[2], c3[2]), (COLORSWITCH,  bc[2], bc[2]), (1.0, c4[2], c4[2])) 
@@ -120,7 +121,7 @@ cmap_ranges['Chirality_r'] = [0,1]
 # POSITION: 0              0.25             0.5           0.75            1
 #    COLOR: | white - black | yellow - white | white - red | blue - white |
 cdict = {
-#                         white  white           black  yellow         white  white           white  white         blue   blue
+#                   white  white           black  yellow         white  white           white  white         blue   blue
 	'red':   ((0.00,  bc[0], bc[0]), (0.25,  c1[0], c2[0]), (0.50, bc[0], bc[0]), (0.75,  c3[0], c4[0]), (1.0, bc[0], bc[0])), 
 	'green': ((0.00,  bc[1], bc[1]), (0.25,  c1[1], c2[1]), (0.50, bc[1], bc[1]), (0.75,  c3[1], c4[1]), (1.0, bc[1], bc[1])),
 	'blue':  ((0.00,  bc[2], bc[2]), (0.25,  c1[2], c2[2]), (0.50, bc[2], bc[2]), (0.75,  c3[2], c4[2]), (1.0, bc[2], bc[2])) 
@@ -240,7 +241,9 @@ def display_cmaps():
 
         # 2. Create a Normalize object (optional, but good for controlling the color range)
         # This maps data values (e.g., 0 to 1) to the 0-1 range of the colormap
-        norm = colors.Normalize(vmin=-1, vmax=1)
+        norm = colors.Normalize(vmin=0, vmax=1)
+        if 'fourcolor' in cmap_key.lower():
+          norm = colors.Normalize(vmin=-1, vmax=1)
 
         # 3. Create a ScalarMappable object
         # This object connects the colormap and the normalization to a "mappable" entity
