@@ -240,6 +240,66 @@
         <span class="n">fileblock</span> <span class="o">=</span> <span class="n">fileblock</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">fileblock</span></div>
 
+<div class="viewcode-block" id="parse_PDB_lines"><a class="viewcode-back" href="../../reference.html#backmap.utils.parse_PDB_lines">[docs]</a><span class="k">def</span> <span class="nf">parse_PDB_lines</span><span class="p">(</span><span class="n">pdb_block</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a PDB text block into a list of atom dictionaries.</span>
+<span class="sd">    File parsing based on: </span>
+<span class="sd">    https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/tutorials/pdbintro.html</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        pdb_block (str): Raw PDB contents containing ``ATOM`` records.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list[dict]: One dict per atom with parsed fields ``atomno``, ``atomtype``,</span>
+<span class="sd">        ``resname``, ``chainname``, ``resno``, ``x``, ``y``, ``z``, ``occupancy``,</span>
+<span class="sd">        ``tf``, and ``segname``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># Following the numbering from: </span>
+    <span class="c1"># </span>
+    <span class="n">atom_dictionary_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">pdb_block</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">):</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span>
+        <span class="n">len_line</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">len_line</span> <span class="ow">and</span> <span class="n">line</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;ATOM&#39;</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;atomno&#39;</span><span class="p">:</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">11</span><span class="p">]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()),</span>
+                <span class="s1">&#39;atom&#39;</span><span class="p">:</span>  <span class="n">line</span><span class="p">[</span><span class="mi">11</span><span class="p">:</span><span class="mi">16</span><span class="p">]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(),</span>
+                <span class="s1">&#39;resname&#39;</span><span class="p">:</span>   <span class="n">line</span><span class="p">[</span><span class="mi">17</span><span class="p">:</span><span class="mi">21</span><span class="p">]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(),</span>
+                <span class="s1">&#39;chain&#39;</span><span class="p">:</span> <span class="n">line</span><span class="p">[</span><span class="mi">21</span><span class="p">],</span>
+                <span class="s1">&#39;resid&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">22</span><span class="p">:</span><span class="mi">26</span><span class="p">]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()),</span>
+                <span class="s1">&#39;X&#39;</span><span class="p">:</span>   <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">28</span><span class="p">:</span><span class="mi">38</span><span class="p">]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()),</span>
+                <span class="s1">&#39;Y&#39;</span><span class="p">:</span>   <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">38</span><span class="p">:</span><span class="mi">46</span><span class="p">]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()),</span>
+                <span class="s1">&#39;Z&#39;</span><span class="p">:</span>   <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">46</span><span class="p">:</span><span class="mi">54</span><span class="p">]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()),</span>
+            <span class="p">}</span>
+            <span class="n">occupancy</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">len_line</span> <span class="o">&gt;=</span> <span class="mi">54</span><span class="p">:</span>
+                <span class="n">occupancy</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">55</span><span class="p">:</span><span class="mi">60</span><span class="p">]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">occupancy</span><span class="p">):</span>
+                    <span class="n">occupancy</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">occupancy</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">occupancy</span> <span class="o">=</span> <span class="kc">None</span>
+                            
+            <span class="n">tf</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">len_line</span> <span class="o">&gt;=</span> <span class="mi">60</span><span class="p">:</span>
+                <span class="n">tf</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">61</span><span class="p">:</span><span class="mi">66</span><span class="p">]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tf</span><span class="p">):</span>
+                    <span class="n">tf</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">tf</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">tf</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">segname</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">len_line</span> <span class="o">&gt;=</span> <span class="mi">72</span><span class="p">:</span>
+                <span class="n">segname</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">72</span><span class="p">:</span><span class="mi">76</span><span class="p">]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">segname</span><span class="p">):</span>
+                    <span class="n">segname</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="c1">#</span>
+            <span class="n">d</span><span class="p">[</span><span class="s1">&#39;occupancy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">occupancy</span>
+            <span class="n">d</span><span class="p">[</span><span class="s1">&#39;tf&#39;</span><span class="p">]</span>        <span class="o">=</span> <span class="n">tf</span>
+            <span class="n">d</span><span class="p">[</span><span class="s1">&#39;segname&#39;</span><span class="p">]</span>   <span class="o">=</span> <span class="n">segname</span>
+
+            <span class="n">atom_dictionary_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+    <span class="c1">#</span>
+    <span class="k">return</span> <span class="n">atom_dictionary_list</span></div>
+
 <span class="c1"># OLD VERSION (IN HOUSE). IT IS FASTER THAN THE CURRENT &quot;read_pdb&quot;, WHICH IS BIOPDB RUN, BUT IT IS NOT </span>
 <span class="c1"># AS WELL TESTED.</span>
 <div class="viewcode-block" id="read_pdb_inhouse"><a class="viewcode-back" href="../../reference.html#backmap.utils.read_pdb_inhouse">[docs]</a><span class="k">def</span> <span class="nf">read_pdb_inhouse</span><span class="p">(</span><span class="n">fn_or_filehandle</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]):</span>
@@ -289,42 +349,45 @@
 <span class="sd">                        restype  |   resno</span>
 <span class="sd">                                chainID</span>
 <span class="sd">            &quot;&quot;&quot;</span>
-
-            <span class="n">segname_exists</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="n">currentlines</span> <span class="o">=</span> <span class="n">getlines</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">getlines</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
-                <span class="n">currentlines</span> <span class="o">=</span> <span class="n">getlines_short</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-                <span class="n">segname_exists</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">mol_rows</span> <span class="o">+=</span> <span class="n">parse_PDB_lines</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mol_rows</span><span class="p">)):</span>
+                <span class="n">mol_rows</span><span class="p">[</span><span class="n">ix</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model_number</span>
+            <span class="c1"># ------------------------------------------------------</span>
+            <span class="c1"># The line above replaced with this commented out block:</span>
+            <span class="c1"># ------------------------------------------------------</span>
+            <span class="c1"># segname_exists = 1</span>
+            <span class="c1"># currentlines = getlines.finditer(model)</span>
+            <span class="c1"># if not getlines.search(model):</span>
+            <span class="c1">#     currentlines = getlines_short.finditer(model)</span>
+            <span class="c1">#     segname_exists = 0</span>
+            <span class="c1"># </span>
+            <span class="c1"># for vals in currentlines:</span>
+            <span class="c1">#     #vals = i.groupdict()</span>
+            <span class="c1">#     atomtype = vals[&quot;atomtype&quot;] #line[11:17].lstrip().rstrip()</span>
+            <span class="c1">#    </span>
+            <span class="c1">#     if atomtype in [&quot;CA&quot;, &quot;N&quot;, &quot;C&quot;]:</span>
+            <span class="c1">#         resname = vals[&quot;resname&quot;]</span>
+            <span class="c1">#         resno = int(vals[&quot;resno&quot;]) #int(resno) #int(line[22:26].lstrip().rstrip())</span>
+            <span class="c1">#         xyz = np.array([float(vals[&quot;x&quot;]),float(vals[&quot;y&quot;]),float(vals[&quot;z&quot;])])</span>
+            <span class="c1">#       </span>
+            <span class="c1">#         segname = &quot;A&quot;</span>
+            <span class="c1">#         if segname_exists:</span>
+            <span class="c1">#             segname = vals[&quot;chainname&quot;].lstrip().rstrip()</span>
+            <span class="c1">#       </span>
+            <span class="c1">#         mol_rows.append({&#39;model&#39;:model_number,</span>
+            <span class="c1">#                          &#39;chain&#39;:segname,</span>
+            <span class="c1">#                        &#39;resname&#39;:resname,     </span>
+            <span class="c1">#                          &#39;resid&#39;:resno, </span>
+            <span class="c1">#                           &#39;atom&#39;:atomtype, </span>
+            <span class="c1">#                              &#39;X&#39;:xyz[0],</span>
+            <span class="c1">#                              &#39;Y&#39;:xyz[1],</span>
+            <span class="c1">#                              &#39;Z&#39;:xyz[2]})</span>
+            <span class="c1">#         #</span>
+            <span class="c1">#         #model_to_chain_to_resno_atom_to_vals[model_number][segname][resno][atomtype] = xyz</span>
+            <span class="c1">#         #model_to_chain_to_resno_atom_to_vals[model_number][segname][resno][&quot;resname&quot;] = vals[&quot;resname&quot;]</span>
+            <span class="c1">#     #</span>
             
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">currentlines</span><span class="p">:</span>
-                <span class="n">vals</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
-                <span class="n">atomtype</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="s2">&quot;atomtype&quot;</span><span class="p">]</span> <span class="c1">#line[11:17].lstrip().rstrip()</span>
-                
-                <span class="k">if</span> <span class="n">atomtype</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;CA&quot;</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">]:</span>
-                    <span class="n">resname</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="s2">&quot;resname&quot;</span><span class="p">]</span>
-                    <span class="n">resno</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="s2">&quot;resno&quot;</span><span class="p">])</span> <span class="c1">#int(resno) #int(line[22:26].lstrip().rstrip())</span>
-                    <span class="n">xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]),</span><span class="nb">float</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]),</span><span class="nb">float</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">])])</span>
-                    
-                    <span class="n">segname</span> <span class="o">=</span> <span class="s2">&quot;A&quot;</span>
-                    <span class="k">if</span> <span class="n">segname_exists</span><span class="p">:</span>
-                        <span class="n">segname</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="s2">&quot;chainname&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
-                    
-                    <span class="n">mol_rows</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;model&#39;</span><span class="p">:</span><span class="n">model_number</span><span class="p">,</span>
-                                     <span class="s1">&#39;chain&#39;</span><span class="p">:</span><span class="n">segname</span><span class="p">,</span>
-                                   <span class="s1">&#39;resname&#39;</span><span class="p">:</span><span class="n">resname</span><span class="p">,</span>     
-                                     <span class="s1">&#39;resid&#39;</span><span class="p">:</span><span class="n">resno</span><span class="p">,</span> 
-                                      <span class="s1">&#39;atom&#39;</span><span class="p">:</span><span class="n">atomtype</span><span class="p">,</span> 
-                                         <span class="s1">&#39;X&#39;</span><span class="p">:</span><span class="n">xyz</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                                         <span class="s1">&#39;Y&#39;</span><span class="p">:</span><span class="n">xyz</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                                         <span class="s1">&#39;Z&#39;</span><span class="p">:</span><span class="n">xyz</span><span class="p">[</span><span class="mi">2</span><span class="p">]})</span>
-                    <span class="c1">#</span>
-                    <span class="c1">#model_to_chain_to_resno_atom_to_vals[model_number][segname][resno][atomtype] = xyz</span>
-                    <span class="c1">#model_to_chain_to_resno_atom_to_vals[model_number][segname][resno][&quot;resname&quot;] = vals[&quot;resname&quot;]</span>
-                <span class="c1">#</span>
-            <span class="c1">#</span>
-            <span class="c1">#if not len(model_to_chain_to_resno_atom_to_vals[model_number]):</span>
-            <span class="c1">#    del model_to_chain_to_resno_atom_to_vals[model_number]</span>
-            <span class="c1">#    model_number-=1</span>
+            
         <span class="c1">#</span>
     <span class="c1">#</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">mol_rows</span><span class="p">)</span>

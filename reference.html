@@ -67,6 +67,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#module-backmap.utils">utils</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.utils.read_pdb"><code class="docutils literal notranslate"><span class="pre">read_pdb()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.utils.bytecheck"><code class="docutils literal notranslate"><span class="pre">bytecheck()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backmap.utils.parse_PDB_lines"><code class="docutils literal notranslate"><span class="pre">parse_PDB_lines()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.utils.read_pdb_inhouse"><code class="docutils literal notranslate"><span class="pre">read_pdb_inhouse()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.utils.check_pdb"><code class="docutils literal notranslate"><span class="pre">check_pdb()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.utils.calculate_dihedral_angle"><code class="docutils literal notranslate"><span class="pre">calculate_dihedral_angle()</span></code></a></li>
@@ -403,6 +404,27 @@ not UTF-8 already).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backmap.utils.parse_PDB_lines">
+<span class="sig-prename descclassname"><span class="pre">backmap.utils.</span></span><span class="sig-name descname"><span class="pre">parse_PDB_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdb_block</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/utils.html#parse_PDB_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.utils.parse_PDB_lines" title="Permalink to this definition"></a></dt>
+<dd><p>Convert a PDB text block into a list of atom dictionaries.
+File parsing based on:
+<a class="reference external" href="https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/tutorials/pdbintro.html">https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/tutorials/pdbintro.html</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pdb_block</strong> (<em>str</em>) – Raw PDB contents containing <code class="docutils literal notranslate"><span class="pre">ATOM</span></code> records.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>One dict per atom with parsed fields <code class="docutils literal notranslate"><span class="pre">atomno</span></code>, <code class="docutils literal notranslate"><span class="pre">atomtype</span></code>,
+<code class="docutils literal notranslate"><span class="pre">resname</span></code>, <code class="docutils literal notranslate"><span class="pre">chainname</span></code>, <code class="docutils literal notranslate"><span class="pre">resno</span></code>, <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">z</span></code>, <code class="docutils literal notranslate"><span class="pre">occupancy</span></code>,
+<code class="docutils literal notranslate"><span class="pre">tf</span></code>, and <code class="docutils literal notranslate"><span class="pre">segname</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[dict]</p>
 </dd>
 </dl>
 </dd></dl>
