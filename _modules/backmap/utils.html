@@ -334,8 +334,8 @@
     <span class="c1">#t0 = time.time()</span>
     <span class="c1">#print &quot;#\treading...&quot;,</span>
     <span class="k">for</span> <span class="n">model_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">models</span><span class="p">)):</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">model_index</span><span class="p">]</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">model_block</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">model_index</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">model_block</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">lstrip</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">model_number</span> <span class="o">=</span> <span class="n">model_index</span>
 <span class="w">            </span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
@@ -349,45 +349,15 @@
 <span class="sd">                        restype  |   resno</span>
 <span class="sd">                                chainID</span>
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="n">mol_rows</span> <span class="o">+=</span> <span class="n">parse_PDB_lines</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mol_rows</span><span class="p">)):</span>
-                <span class="n">mol_rows</span><span class="p">[</span><span class="n">ix</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model_number</span>
-            <span class="c1"># ------------------------------------------------------</span>
-            <span class="c1"># The line above replaced with this commented out block:</span>
-            <span class="c1"># ------------------------------------------------------</span>
-            <span class="c1"># segname_exists = 1</span>
-            <span class="c1"># currentlines = getlines.finditer(model)</span>
-            <span class="c1"># if not getlines.search(model):</span>
-            <span class="c1">#     currentlines = getlines_short.finditer(model)</span>
-            <span class="c1">#     segname_exists = 0</span>
-            <span class="c1"># </span>
-            <span class="c1"># for vals in currentlines:</span>
-            <span class="c1">#     #vals = i.groupdict()</span>
-            <span class="c1">#     atomtype = vals[&quot;atomtype&quot;] #line[11:17].lstrip().rstrip()</span>
-            <span class="c1">#    </span>
-            <span class="c1">#     if atomtype in [&quot;CA&quot;, &quot;N&quot;, &quot;C&quot;]:</span>
-            <span class="c1">#         resname = vals[&quot;resname&quot;]</span>
-            <span class="c1">#         resno = int(vals[&quot;resno&quot;]) #int(resno) #int(line[22:26].lstrip().rstrip())</span>
-            <span class="c1">#         xyz = np.array([float(vals[&quot;x&quot;]),float(vals[&quot;y&quot;]),float(vals[&quot;z&quot;])])</span>
-            <span class="c1">#       </span>
-            <span class="c1">#         segname = &quot;A&quot;</span>
-            <span class="c1">#         if segname_exists:</span>
-            <span class="c1">#             segname = vals[&quot;chainname&quot;].lstrip().rstrip()</span>
-            <span class="c1">#       </span>
-            <span class="c1">#         mol_rows.append({&#39;model&#39;:model_number,</span>
-            <span class="c1">#                          &#39;chain&#39;:segname,</span>
-            <span class="c1">#                        &#39;resname&#39;:resname,     </span>
-            <span class="c1">#                          &#39;resid&#39;:resno, </span>
-            <span class="c1">#                           &#39;atom&#39;:atomtype, </span>
-            <span class="c1">#                              &#39;X&#39;:xyz[0],</span>
-            <span class="c1">#                              &#39;Y&#39;:xyz[1],</span>
-            <span class="c1">#                              &#39;Z&#39;:xyz[2]})</span>
-            <span class="c1">#         #</span>
-            <span class="c1">#         #model_to_chain_to_resno_atom_to_vals[model_number][segname][resno][atomtype] = xyz</span>
-            <span class="c1">#         #model_to_chain_to_resno_atom_to_vals[model_number][segname][resno][&quot;resname&quot;] = vals[&quot;resname&quot;]</span>
-            <span class="c1">#     #</span>
             
-            
+            <span class="n">all_atom_mol_rows</span> <span class="o">=</span> <span class="n">parse_PDB_lines</span><span class="p">(</span><span class="n">model_block</span><span class="p">)</span>
+            <span class="n">backbone_mol_rows</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">row_dict</span> <span class="ow">in</span> <span class="n">all_atom_mol_rows</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">row_dict</span><span class="p">[</span><span class="s1">&#39;atom&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;CA&quot;</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">]:</span>
+                    <span class="n">row_dict</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model_number</span>
+                    <span class="n">backbone_mol_rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row_dict</span><span class="p">)</span>
+            <span class="n">mol_rows</span> <span class="o">+=</span> <span class="n">backbone_mol_rows</span>
+            <span class="c1">#</span>
         <span class="c1">#</span>
     <span class="c1">#</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">mol_rows</span><span class="p">)</span>
