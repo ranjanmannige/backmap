@@ -1,6 +1,6 @@
 [project]
 name = "backmap"
-version = "1.0.1"
+version = "1.1.0"
 description = "Shows protein backbone structures in compact graphical form using Ramachandran numbers"
 readme = "README.rst"
 authors = [
