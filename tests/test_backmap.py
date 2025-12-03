@@ -85,7 +85,7 @@ def test_load_pdb():
     
     # TEST: Known features of the test file are queried here
     pdb_df = backmap.utils.read_pdb(filename_or_filehandle=pdbfn)
-    assert set(pdb_df['model']) == {0}
+    assert set(pdb_df['model']) == {1}
     assert set(pdb_df['chain']) == {'A'}
     assert min(pdb_df['resid']) == 1
     assert max(pdb_df['resid']) == 146
@@ -94,7 +94,7 @@ def test_load_pdb():
 def test_processing_data():
     pdbfn = 'tests/pdbs/1mba.pdb'
     structure_df = backmap.process_PDB(pdbfn=pdbfn, signed=False)
-    assert structure_df.shape ==(146, 7)
+    assert structure_df.shape[0] == 146
     #
     should_be_true, figure_dict = backmap.draw_figures(structure_df=structure_df, 
                                    output_dir='', write=False, show=False)

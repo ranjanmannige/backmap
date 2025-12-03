@@ -164,6 +164,66 @@ def  bytecheck(fileblock):
         fileblock = fileblock.decode()
     return fileblock
 
+def parse_PDB_lines(pdb_block):
+    """Convert a PDB text block into a list of atom dictionaries.
+    File parsing based on: 
+    https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/tutorials/pdbintro.html
+    
+    Args:
+        pdb_block (str): Raw PDB contents containing ``ATOM`` records.
+
+    Returns:
+        list[dict]: One dict per atom with parsed fields ``atomno``, ``atomtype``,
+        ``resname``, ``chainname``, ``resno``, ``x``, ``y``, ``z``, ``occupancy``,
+        ``tf``, and ``segname``.
+    """
+    
+    # Following the numbering from: 
+    # 
+    atom_dictionary_list = []
+    for line in pdb_block.split('\n'):
+        line = line.lstrip()
+        len_line = len(line)
+        if len_line and line[:4] == 'ATOM':
+            d = {
+                'atomno':int(line[4:11].lstrip().rstrip()),
+                'atom':  line[11:16].lstrip().rstrip(),
+                'resname':   line[17:21].lstrip().rstrip(),
+                'chain': line[21],
+                'resid': int(line[22:26].lstrip().rstrip()),
+                'X':   float(line[28:38].lstrip().rstrip()),
+                'Y':   float(line[38:46].lstrip().rstrip()),
+                'Z':   float(line[46:54].lstrip().rstrip()),
+            }
+            occupancy = None
+            if len_line >= 54:
+                occupancy = line[55:60].lstrip().rstrip()
+                if len(occupancy):
+                    occupancy = float(occupancy)
+                else:
+                    occupancy = None
+                            
+            tf = None
+            if len_line >= 60:
+                tf = line[61:66].lstrip().rstrip()
+                if len(tf):
+                    tf = float(tf)
+                else:
+                    tf = None
+            segname = None
+            if len_line >= 72:
+                segname = line[72:76].lstrip().rstrip()
+                if not len(segname):
+                    segname = None
+            #
+            d['occupancy'] = occupancy
+            d['tf']        = tf
+            d['segname']   = segname
+
+            atom_dictionary_list.append(d)
+    #
+    return atom_dictionary_list
+
 # OLD VERSION (IN HOUSE). IT IS FASTER THAN THE CURRENT "read_pdb", WHICH IS BIOPDB RUN, BUT IT IS NOT 
 # AS WELL TESTED.
 def read_pdb_inhouse(fn_or_filehandle:Union[str,os.PathLike]):
@@ -213,42 +273,45 @@ def read_pdb_inhouse(fn_or_filehandle:Union[str,os.PathLike]):
                         restype  |   resno
                                 chainID
             """
-
-            segname_exists = 1
-            currentlines = getlines.finditer(model)
-            if not getlines.search(model):
-                currentlines = getlines_short.finditer(model)
-                segname_exists = 0
+            mol_rows += parse_PDB_lines(model)
+            for ix in range(len(mol_rows)):
+                mol_rows[ix]['model'] = model_number
+            # ------------------------------------------------------
+            # The line above replaced with this commented out block:
+            # ------------------------------------------------------
+            # segname_exists = 1
+            # currentlines = getlines.finditer(model)
+            # if not getlines.search(model):
+            #     currentlines = getlines_short.finditer(model)
+            #     segname_exists = 0
+            # 
+            # for vals in currentlines:
+            #     #vals = i.groupdict()
+            #     atomtype = vals["atomtype"] #line[11:17].lstrip().rstrip()
+            #    
+            #     if atomtype in ["CA", "N", "C"]:
+            #         resname = vals["resname"]
+            #         resno = int(vals["resno"]) #int(resno) #int(line[22:26].lstrip().rstrip())
+            #         xyz = np.array([float(vals["x"]),float(vals["y"]),float(vals["z"])])
+            #       
+            #         segname = "A"
+            #         if segname_exists:
+            #             segname = vals["chainname"].lstrip().rstrip()
+            #       
+            #         mol_rows.append({'model':model_number,
+            #                          'chain':segname,
+            #                        'resname':resname,     
+            #                          'resid':resno, 
+            #                           'atom':atomtype, 
+            #                              'X':xyz[0],
+            #                              'Y':xyz[1],
+            #                              'Z':xyz[2]})
+            #         #
+            #         #model_to_chain_to_resno_atom_to_vals[model_number][segname][resno][atomtype] = xyz
+            #         #model_to_chain_to_resno_atom_to_vals[model_number][segname][resno]["resname"] = vals["resname"]
+            #     #
             
-            for i in currentlines:
-                vals = i.groupdict()
-                atomtype = vals["atomtype"] #line[11:17].lstrip().rstrip()
-                
-                if atomtype in ["CA", "N", "C"]:
-                    resname = vals["resname"]
-                    resno = int(vals["resno"]) #int(resno) #int(line[22:26].lstrip().rstrip())
-                    xyz = np.array([float(vals["x"]),float(vals["y"]),float(vals["z"])])
-                    
-                    segname = "A"
-                    if segname_exists:
-                        segname = vals["chainname"].lstrip().rstrip()
-                    
-                    mol_rows.append({'model':model_number,
-                                     'chain':segname,
-                                   'resname':resname,     
-                                     'resid':resno, 
-                                      'atom':atomtype, 
-                                         'X':xyz[0],
-                                         'Y':xyz[1],
-                                         'Z':xyz[2]})
-                    #
-                    #model_to_chain_to_resno_atom_to_vals[model_number][segname][resno][atomtype] = xyz
-                    #model_to_chain_to_resno_atom_to_vals[model_number][segname][resno]["resname"] = vals["resname"]
-                #
-            #
-            #if not len(model_to_chain_to_resno_atom_to_vals[model_number]):
-            #    del model_to_chain_to_resno_atom_to_vals[model_number]
-            #    model_number-=1
+            
         #
     #
     df = pd.DataFrame(mol_rows)
