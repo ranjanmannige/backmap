@@ -6,3 +6,4 @@ NOTEBOOK EXAMPLES
 
    notebooks/examples
    notebooks/proof
+   notebooks/download

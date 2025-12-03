@@ -434,27 +434,10 @@
                                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ignore_cols</span><span class="p">}</span>
                 <span class="n">current_row</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;phi&quot;</span><span class="p">:</span><span class="n">phi</span><span class="p">,</span> <span class="s2">&quot;psi&quot;</span><span class="p">:</span> <span class="n">psi</span><span class="p">,</span> <span class="s2">&quot;R&quot;</span><span class="p">:</span><span class="n">rho</span><span class="p">}</span> <span class="p">)</span>
             <span class="n">final_records</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_row</span><span class="p">)</span>
-<span class="w">    </span>
-<span class="w">    </span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-
-<span class="sd">    Inputs:</span>
-<span class="sd">        pdbfn:str                    Filepath that points to either a PDB *OR* a directory that contains .pdb files</span>
-<span class="sd">        signed:bool=False            Switch to using the signed Ramachandran number (default=False)</span>
-<span class="sd">    Outputs:</span>
-<span class="sd">        structure_df      A pandas dataframe describing each backbone atom, containing the following keys:</span>
-<span class="sd">                          &#39;model&#39;: PDB chain MODEL number ()</span>
-<span class="sd">                          &#39;chain&#39;: PDB CHAIN</span>
-<span class="sd">                          &#39;resname&#39;: three letter residue name</span>
-<span class="sd">                          &#39;phi&#39;: the backbone dihedral angle phi </span>
-<span class="sd">                          &#39;psi&#39;: the backbone dihedral angle psi</span>
-<span class="sd">                          &#39;R&#39;: the Ramachandran number</span>
-<span class="sd">    &#39;&#39;&#39;</span>
     
-
     <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">final_records</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="read_pdb_from_pdbfn_or_filehandle"><a class="viewcode-back" href="../../reference.html#backmap.backmap.read_pdb_from_pdbfn_or_filehandle">[docs]</a><span class="k">def</span> <span class="nf">read_pdb_from_pdbfn_or_filehandle</span><span class="p">(</span><span class="n">pdbfn_or_filehandle</span><span class="p">,</span> <span class="n">structure_df</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()):</span>
+<div class="viewcode-block" id="read_pdb_from_pdbfn_or_filehandle"><a class="viewcode-back" href="../../reference.html#backmap.backmap.read_pdb_from_pdbfn_or_filehandle">[docs]</a><span class="k">def</span> <span class="nf">read_pdb_from_pdbfn_or_filehandle</span><span class="p">(</span><span class="n">pdbfn_or_filehandle</span><span class="p">,</span> <span class="n">structure_df</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(),</span> <span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse PDB content, compute Ramachandran metrics, and merge with an existing dataframe.</span>
 
 <span class="sd">    Args:</span>
@@ -462,7 +445,9 @@
 <span class="sd">        structure_df (pd.DataFrame): Existing dataframe of processed structures to append to; empty by default.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        pd.DataFrame: Combined residue-level dataframe with continuous model numbering and Ramachandran values.</span>
+<span class="sd">        pd.DataFrame: Per-residue records with model, chain, residue identity, phi,</span>
+<span class="sd">        psi, and Ramachandran number columns. Returns an empty dataframe when no</span>
+<span class="sd">        input PDBs are found.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="c1">#</span>
@@ -470,7 +455,7 @@
     <span class="n">raw_pdb_data</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">read_pdb</span><span class="p">(</span><span class="n">filename_or_filehandle</span><span class="o">=</span><span class="n">pdbfn_or_filehandle</span><span class="p">)</span>
     <span class="n">raw_pdb_data</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">bytecheck</span><span class="p">(</span><span class="n">raw_pdb_data</span><span class="p">)</span>
     <span class="c1">#</span>
-    <span class="n">latest_structure_df</span> <span class="o">=</span> <span class="n">obtain_ramachandran_dataframe</span><span class="p">(</span><span class="n">raw_pdb_data</span><span class="p">,</span><span class="n">signed</span><span class="p">)</span>
+    <span class="n">latest_structure_df</span> <span class="o">=</span> <span class="n">obtain_ramachandran_dataframe</span><span class="p">(</span><span class="n">raw_pdb_data</span><span class="p">,</span><span class="n">signed</span><span class="o">=</span><span class="n">signed</span><span class="p">)</span>
     <span class="c1">#latest_structure_df, latest_structure = calculate_R_from_raw_pdb_data(raw_pdb_data, signed=signed)</span>
     <span class="c1">#</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">latest_structure_df</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
@@ -494,54 +479,75 @@
     <span class="n">structure_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">structure_df</span><span class="p">,</span><span class="n">latest_structure_df</span><span class="o">.</span><span class="n">copy</span><span class="p">()])</span>
     <span class="k">return</span> <span class="n">structure_df</span></div>
 
-<div class="viewcode-block" id="process_PDB"><a class="viewcode-back" href="../../reference.html#backmap.backmap.process_PDB">[docs]</a><span class="k">def</span> <span class="nf">process_PDB</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">signed</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Load PDB file(s) and compute residue-level Ramachandran metrics.</span>
+<div class="viewcode-block" id="process_PDB"><a class="viewcode-back" href="../../reference.html#backmap.backmap.process_PDB">[docs]</a><span class="k">def</span> <span class="nf">process_PDB</span><span class="p">(</span><span class="n">pdbfn_or_filehandle</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Collect residue-level Ramachandran data from one or more PDB inputs.</span>
+
+<span class="sd">    Accepts either an open file handle or a path to a PDB file/directory/archive,</span>
+<span class="sd">    expands archives and directories into individual file handles, and aggregates</span>
+<span class="sd">    the parsed structures into a single dataframe with optional signed torsion</span>
+<span class="sd">    angles.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        pdbfn (str): Path to a PDB file or to a directory containing ``.pdb[.gz|zip|tar]`` files.</span>
-<span class="sd">        signed (bool): If ``True``, compute signed Ramachandran numbers instead of the default unsigned values.</span>
+<span class="sd">        pdbfn_or_filehandle: PDB path, directory containing PDBs, archive, or an</span>
+<span class="sd">            open file-like object to parse.</span>
+<span class="sd">        signed (bool): Whether to compute signed Ramachandran angles.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        pd.DataFrame: Per-residue records with model, chain, residue identity, phi,</span>
-<span class="sd">        psi, and Ramachandran number columns. Returns an empty dataframe when no</span>
-<span class="sd">        input PDBs are found.</span>
+<span class="sd">        pd.DataFrame: Combined dataframe of all parsed PDB residues with a `pdbfn`</span>
+<span class="sd">            attribute set on the dataframe metadata.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="c1"># Since the user can either provide one PDB file *or* one </span>
-    <span class="c1"># PDB file-containing directory, we need to resolve these PDBs</span>
-    <span class="n">list_pdbfilenames</span><span class="p">,</span><span class="n">pdbdir</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_pdb_filenames</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">)</span>
-    <span class="c1">#</span>
-    
-    <span class="c1"># for list_pdb_filenames:</span>
-    <span class="c1">#     utils.get_filename_and_filehandle(</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_pdbfilenames</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
 
     <span class="c1">#NAME = os.path.basename(list_pdbfilenames[0])[:-len(&quot;.pdb&quot;)]</span>
     <span class="c1">#target_base = target_dir.rstrip(&quot;/&quot;)</span>
     <span class="c1">#</span>
-    <span class="n">structure</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span> <span class="c1"># depricated</span>
-    <span class="n">structure_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">_pdbfn</span> <span class="ow">in</span> <span class="n">list_pdbfilenames</span><span class="p">:</span><span class="c1">#[:10]:</span>
-        <span class="c1"># Each PDB filename itself can be an archive of PDB files, </span>
+    <span class="n">pdbfn</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">all_filehandles</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">is_filehandle</span><span class="p">(</span><span class="n">pdbfn_or_filehandle</span><span class="p">):</span>
+        <span class="c1"># Treating pdbfn_or_filehandle as a handle</span>
+        <span class="n">all_filehandles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pdbfn_or_filehandle</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="s2">&quot;name&quot;</span> <span class="ow">in</span> <span class="n">pdbfn_or_filehandle</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">pdbfn_or_filehandle</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+            <span class="n">pdbfn_or_filehandle</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">pdbfn_or_filehandle</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">pdbfn</span> <span class="o">=</span> <span class="n">pdbfn_or_filehandle</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pdbfn_or_filehandle</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Treating pdbfn_or_filehandle as a file/directory path</span>
+        <span class="n">pdbfn</span> <span class="o">=</span> <span class="n">pdbfn_or_filehandle</span>
+        <span class="c1"># Since the user can either provide one PDB file *or* one </span>
+        <span class="c1"># PDB file-containing directory, we need to resolve these PDBs</span>
+        <span class="n">list_pdbfilenames</span><span class="p">,</span> <span class="n">pdbdir</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_pdb_filenames</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">)</span>
         <span class="c1">#</span>
-        <span class="c1"># Opening the file, assuming that it could be a list of files (can be, if </span>
-        <span class="c1"># the file ends with .tgz .tar.gz or .zip)</span>
-        <span class="n">filehandles</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">return_filehandle_from_gz_zip_or_normal_file</span><span class="p">(</span><span class="n">_pdbfn</span><span class="p">)</span>
-        <span class="c1">#</span>
-        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">filehandles</span><span class="p">:</span>
-            <span class="c1"># Check if the PDB has no subunit IDs, and then check if segnames exist (right most column)</span>
-            <span class="c1"># and renaming the subunit IDs alphabetically and then numerically</span>
-            <span class="c1">#</span>
-            <span class="n">final_pdbfn</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span>
-            <span class="n">final_pdbfh</span> <span class="o">=</span> <span class="n">f</span>
-            <span class="c1">#</span>
-            <span class="n">structure_df</span> <span class="o">=</span> <span class="n">read_pdb_from_pdbfn_or_filehandle</span><span class="p">(</span><span class="n">final_pdbfn</span><span class="p">,</span> <span class="n">structure_df</span><span class="o">=</span><span class="n">structure_df</span><span class="p">)</span>
+        
+        <span class="c1"># for list_pdb_filenames:</span>
+        <span class="c1">#     utils.get_filename_and_filehandle(</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_pdbfilenames</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">_pdbfn</span> <span class="ow">in</span> <span class="n">list_pdbfilenames</span><span class="p">:</span><span class="c1">#[:10]:</span>
             
-        <span class="c1">#</span>
+            <span class="c1"># Each PDB filename itself can be an archive of PDB files, </span>
+            <span class="c1">#</span>
+            <span class="c1"># Opening the file, assuming that it could be a list of files (can be, if </span>
+            <span class="c1"># the file ends with .tgz .tar.gz or .zip)</span>
+            <span class="n">filehandles</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">return_filehandle_from_gz_zip_or_normal_file</span><span class="p">(</span><span class="n">_pdbfn</span><span class="p">)</span>
+            <span class="c1">#</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">filehandles</span><span class="p">:</span>
+                <span class="c1"># Check if the PDB has no subunit IDs, and then check if segnames exist (right most column)</span>
+                <span class="c1"># and renaming the subunit IDs alphabetically and then numerically</span>
+                <span class="c1">#</span>
+                <span class="n">final_pdbfn</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span>
+                <span class="n">final_pdbfh</span> <span class="o">=</span> <span class="n">f</span>
+                <span class="n">all_filehandles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">final_pdbfh</span><span class="p">)</span>
+                <span class="c1">#</span>
+    
+    <span class="c1"># The analysis block</span>
+    <span class="n">structure_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">fh</span> <span class="ow">in</span> <span class="n">all_filehandles</span><span class="p">:</span>
+        <span class="n">structure_df</span> <span class="o">=</span> <span class="n">read_pdb_from_pdbfn_or_filehandle</span><span class="p">(</span><span class="n">fh</span><span class="p">,</span> <span class="n">structure_df</span><span class="o">=</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="n">signed</span><span class="p">)</span>
+    <span class="c1">#</span>
     <span class="n">structure_df</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;pdbfn&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pdbfn</span>
-    <span class="n">structure_df</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;pdb_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">structure_df</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;pdb_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">)</span>
     <span class="n">structure_df</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;signed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">signed</span>
     <span class="c1">#</span>
     <span class="c1"># models, residues, Rs = list(structure_df[&#39;model&#39;]),list(structure_df[&#39;resid&#39;]),list(structure_df[&#39;R&#39;])</span>
@@ -603,8 +609,10 @@
         <span class="k">for</span> <span class="n">ix</span><span class="p">,</span><span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">mark_column</span><span class="p">]</span><span class="o">==</span><span class="kc">True</span><span class="p">]</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
             <span class="n">resid</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;resid&#39;</span><span class="p">]</span>
             <span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">()</span>
-            <span class="n">width</span> <span class="o">=</span> <span class="p">(</span><span class="n">xmax</span><span class="o">-</span><span class="n">xmin</span><span class="p">)</span><span class="o">*</span><span class="mf">0.1</span>
-            <span class="n">rect</span> <span class="o">=</span> <span class="n">patches</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">((</span><span class="n">xmax</span><span class="p">,</span> <span class="n">resid</span><span class="p">),</span> <span class="n">width</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="c1">#transform=ax.transAxes,</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="p">(</span><span class="n">xmax</span><span class="o">-</span><span class="n">xmin</span><span class="p">)</span><span class="o">*</span><span class="mf">0.02</span>
+            <span class="k">if</span> <span class="n">xmax</span><span class="o">-</span><span class="n">xmin</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">width</span> <span class="o">=</span> <span class="mf">0.1</span>
+            <span class="n">rect</span> <span class="o">=</span> <span class="n">patches</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">((</span><span class="n">xmax</span><span class="p">,</span> <span class="n">resid</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">width</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="c1">#transform=ax.transAxes,</span>
                                 <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span><span class="n">clip_on</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="c1"># Add the patch to the Axes</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
@@ -645,7 +653,11 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">output_dir</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
     <span class="c1">#</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;.pdb&#39;</span><span class="p">)]</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="c1"># Removing the &quot;.pdb&quot;, if present</span>
+    <span class="k">if</span> <span class="n">name</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;.pdb&#39;</span><span class="p">):]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;.pdb&#39;</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;.pdb&#39;</span><span class="p">)]</span>
+    
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; ---- </span><span class="se">\t</span><span class="s2">---------&quot;</span><span class="p">)</span>
     <span class="c1">#</span>
     <span class="n">vmin</span>           <span class="o">=</span>  <span class="mi">0</span> 

@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Authors" href="authors_link.html" />
-    <link rel="prev" title="Derivation of R" href="notebooks/proof.html" /> 
+    <link rel="prev" title="Downloading and viewing a PDB from RCSB" href="notebooks/download.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -245,7 +245,7 @@ leave phi/psi/R as <code class="docutils literal notranslate"><span class="pre">
 
 <dl class="py function">
 <dt class="sig sig-object py" id="backmap.backmap.read_pdb_from_pdbfn_or_filehandle">
-<span class="sig-prename descclassname"><span class="pre">backmap.backmap.</span></span><span class="sig-name descname"><span class="pre">read_pdb_from_pdbfn_or_filehandle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdbfn_or_filehandle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">structure_df=Empty</span> <span class="pre">DataFrame</span> <span class="pre">Columns:</span> <span class="pre">[]</span> <span class="pre">Index:</span> <span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/backmap.html#read_pdb_from_pdbfn_or_filehandle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.backmap.read_pdb_from_pdbfn_or_filehandle" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">backmap.backmap.</span></span><span class="sig-name descname"><span class="pre">read_pdb_from_pdbfn_or_filehandle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdbfn_or_filehandle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">structure_df=Empty</span> <span class="pre">DataFrame</span> <span class="pre">Columns:</span> <span class="pre">[]</span> <span class="pre">Index:</span> <span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signed=False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/backmap.html#read_pdb_from_pdbfn_or_filehandle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.backmap.read_pdb_from_pdbfn_or_filehandle" title="Permalink to this definition"></a></dt>
 <dd><p>Parse PDB content, compute Ramachandran metrics, and merge with an existing dataframe.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -255,7 +255,9 @@ leave phi/psi/R as <code class="docutils literal notranslate"><span class="pre">
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Combined residue-level dataframe with continuous model numbering and Ramachandran values.</p>
+<dd class="field-even"><p>Per-residue records with model, chain, residue identity, phi,
+psi, and Ramachandran number columns. Returns an empty dataframe when no
+input PDBs are found.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
@@ -265,19 +267,26 @@ leave phi/psi/R as <code class="docutils literal notranslate"><span class="pre">
 
 <dl class="py function">
 <dt class="sig sig-object py" id="backmap.backmap.process_PDB">
-<span class="sig-prename descclassname"><span class="pre">backmap.backmap.</span></span><span class="sig-name descname"><span class="pre">process_PDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdbfn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/backmap.html#process_PDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.backmap.process_PDB" title="Permalink to this definition"></a></dt>
-<dd><p>Load PDB file(s) and compute residue-level Ramachandran metrics.</p>
+<span class="sig-prename descclassname"><span class="pre">backmap.backmap.</span></span><span class="sig-name descname"><span class="pre">process_PDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdbfn_or_filehandle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/backmap.html#process_PDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.backmap.process_PDB" title="Permalink to this definition"></a></dt>
+<dd><p>Collect residue-level Ramachandran data from one or more PDB inputs.</p>
+<p>Accepts either an open file handle or a path to a PDB file/directory/archive,
+expands archives and directories into individual file handles, and aggregates
+the parsed structures into a single dataframe with optional signed torsion
+angles.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pdbfn</strong> (<em>str</em>) – Path to a PDB file or to a directory containing <code class="docutils literal notranslate"><span class="pre">.pdb[.gz|zip|tar]</span></code> files.</p></li>
-<li><p><strong>signed</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, compute signed Ramachandran numbers instead of the default unsigned values.</p></li>
+<li><p><strong>pdbfn_or_filehandle</strong> – PDB path, directory containing PDBs, archive, or an
+open file-like object to parse.</p></li>
+<li><p><strong>signed</strong> (<em>bool</em>) – Whether to compute signed Ramachandran angles.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Per-residue records with model, chain, residue identity, phi,
-psi, and Ramachandran number columns. Returns an empty dataframe when no
-input PDBs are found.</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>Combined dataframe of all parsed PDB residues with a <cite>pdbfn</cite></dt><dd><p>attribute set on the dataframe metadata.</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
@@ -857,7 +866,7 @@ and axes are returned so callers can further customize or save the visualization
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="notebooks/proof.html" class="btn btn-neutral float-left" title="Derivation of R" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="notebooks/download.html" class="btn btn-neutral float-left" title="Downloading and viewing a PDB from RCSB" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="authors_link.html" class="btn btn-neutral float-right" title="Authors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
