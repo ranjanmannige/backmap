@@ -85,7 +85,7 @@ def test_load_pdb():
     
     # TEST: Known features of the test file are queried here
     pdb_df = backmap.utils.read_pdb(filename_or_filehandle=pdbfn)
-    assert set(pdb_df['model']) == {1}
+    assert set(pdb_df['model']) == {0}
     assert set(pdb_df['chain']) == {'A'}
     assert min(pdb_df['resid']) == 1
     assert max(pdb_df['resid']) == 146
