@@ -156,6 +156,12 @@ def write_image(fn_base, figure_object=None, write=True, show=True):
     if figure_object is None:
         figure_object = plt.gcf()
     if write:
+        # Checking base dir and creating if needed
+        base_dir = os.path.dirname(fn_base+'.xyz')
+        if os.path.isdir(base_dir):
+            print(f'Creating dir: {base_dir}')
+            os.makedirs(base_dir)
+        #
         print("\tSaving to:"+fn_base+'.[eps|png]')
         figure_object.savefig(fn_base+'.eps',dpi=200,bbox_inches='tight')
         figure_object.savefig(fn_base+'.png',dpi=200,bbox_inches='tight')
@@ -493,8 +499,15 @@ def fill_in_missing_resids(structure_df, fill_with=False):
     Returns:
         pd.DataFrame: Reindexed dataframe spanning continuous residue ranges for
         each chain and model, filled with ``fill_with`` where data was absent.
-    """
+        An additional key-value pair is added to the structure_df.attrs: {'filled_na': True},
+        which prevents this function from being recalculated downstream
 
+    """
+    
+    if 'filled_na' in structure_df.attrs and structure_df.attrs['filled_na']:
+        # Not performing this function, as we have already done it
+        return structure_df
+    
     final_structure_df = pd.DataFrame()
     for chain in sorted(structure_df['chain'].unique()):
         _cdf = structure_df[structure_df['chain']==chain]
@@ -543,135 +556,80 @@ def mark_figure(df,ax=None,mark_column='mark'):
     return ax
         
 
-
-def draw_figures(structure_df, output_dir='', write=True, show=True):
-    """Generate per-chain Ramachandran visualizations and optionally save/show them.
-
-    Args:
-        structure_df (pd.DataFrame): Per-residue Ramachandran data containing at
-            least ``model``, ``chain``, ``resid``, and ``R`` columns.
-        output_dir (str, optional): Directory to write figures; defaults to
-            ``<pdbdir>/reports`` when empty and ``write`` is ``True``.
-        write (bool): If ``True``, save ``.eps`` and ``.png`` files for each plot.
-        show (bool): If ``True``, display figures after creation.
-
-    Returns:
-        tuple[bool, dict]: ``(True, figures)`` where ``figures`` maps plot labels
-        to matplotlib figure objects for the value maps, histograms, RMSF, and
-        RMSD heatmaps computed per chain.
-    """
-    # All figure elements (of plt.gcf() type) are returned with the figures dict 
-    figures = {}
-    #
-    structure_df = fill_in_missing_resids(structure_df, fill_with=np.nan)
-    #
+def get_unique_chains(structure_df,chain_col='chain'):
     unique_chains = list(sorted(set(structure_df['chain'])))
-    #
-    pdbfn = structure_df.attrs['pdbfn']
-    pdbdir = os.path.dirname(pdbfn)
-    if write:
-        if len(output_dir) == 0:
-            output_dir = pdbdir+"/reports/"
+    return unique_chains
 
-        # Making the report directory, if not created already
-        if not os.path.isdir(output_dir):
-            os.makedirs(output_dir)
+def get_pdbfn_name_and_dir(structure_df, output_dir=''):
+    pdbfn = ''
+    pdbdir = './'
+    if 'pdbfn' in structure_df.attrs:
+        pdbfn = structure_df.attrs['pdbfn']
+        pdbdir = os.path.dirname(pdbfn)
     #
-    name = os.path.split(pdbfn)[-1]
+    if not output_dir:
+        output_dir = ''
+    
+    if len(output_dir) == 0:
+        output_dir = pdbdir+"/reports/"
+    #
+    name = os.path.basename(pdbfn)
     # Removing the ".pdb", if present
     if name[-len('.pdb'):].lower() == '.pdb':
         name = name[:-len('.pdb')]
     
-    print(" ---- \t---------")
-    #
-    vmin           =  0 
-    vmax           =  1
-    ss_cmap        = 'SecondaryStructure'
-    chirality_cmap = 'Chirality'
-    if signed:
-        vmin           = -1 
-        vmax           =  1
-        ss_cmap        = ss_cmap        + 'FourColor'
-        chirality_cmap = chirality_cmap + 'FourColor'
-    #
+    return name, pdbfn, output_dir
+
+def draw_per_residue_plot(structure_df, output_dir='', write=False, show=False, v_limit = (0,1), cmap='SecondaryStructure'):
+    # The ramachandran plot is limited to [0, 1]
+    vmin = v_limit[0]
+    vmax = v_limit[1]
+    
+    name, pdbfn, output_dir = get_pdbfn_name_and_dir(structure_df, output_dir)
     structure_df = fill_in_missing_resids(structure_df, fill_with=np.nan)
-    #
-    print(" 1  \tRamachandran number (PDB: %s)"%(pdbfn))
-    different_plots = []
-    # setting the name of the colormap
-    for cmap in ['Greys',ss_cmap,chirality_cmap]: #, 'Chirality_r', 'SecondaryStructureHard']:
-        # DRAWING A SINGLE GRAPH
-        for chain in unique_chains:
-            final_name = name
-            if len(chain.rstrip()):
-                final_name+='-'+str(chain)
-            #
-            # Getting the X,Y,Z values for each entry
-            #models, residues, Rs = grouped_data[chain]
-            _cdf = structure_df[structure_df['chain']==chain]
-            models, residues, Rs = list(_cdf['model']),list(_cdf['resid']),list(_cdf['R'])
-            #
-            # Finally, creating (but not showing) the graph 
-            if True:
-                assertion, ax = draw_xyz(X = models  ,      Y = residues  ,     Z = Rs
-                        , xlabel =r'Frame #', ylabel =r"Residue #",zlabel =r'$\mathcal{R}$'
-                        , title=r'Per-residue $\mathcal{R}$; CMAP: '+cmap+'\nPDB: ' + final_name
-                        ,  cmap = cmap    ,  vmin=vmin, vmax=vmax)
-                mark_figure(_cdf, ax)
-                #
-                #plt.show()
-                # Now, we display the graph:
-                FN = None
-                if write:
-                    FN = output_dir+'/pdb_%s_r_%s' %(final_name,cmap)
-                figure_object = write_image(FN, write=write, show=show)#,new_fig)
-                figures[f'chain_{chain}_val_cmap{cmap}'] = figure_object
-                #
-    #
-    # Getting only those values for the particular chain 
-    print(" 2.  \tHistogram (PDB: 1xqq)")
+    
+    unique_chains = get_unique_chains(structure_df)
+    figures = {}
+    # DRAWING A SINGLE GRAPH PER CHAIN
     for chain in unique_chains:
         final_name = name
         if len(chain.rstrip()):
             final_name+='-'+str(chain)
-        
+        #
         # Getting the X,Y,Z values for each entry
         #models, residues, Rs = grouped_data[chain]
         _cdf = structure_df[structure_df['chain']==chain]
         models, residues, Rs = list(_cdf['model']),list(_cdf['resid']),list(_cdf['R'])
-        
-        X = []; Y=[]; Z=[]; # Will set X=model, Y=R, Z=P(R)
-        # Bundling the three lists into one 2d array
-        new_data =  np.array(list(zip(models,residues,Rs)))
-        # Getting all R values, model by model
-        for m in sorted(set(new_data[:,0])): # column 0 is the model column
-            # Getting all Rs for that model #
-            current_rs = new_data[np.where(new_data[:,0]==m)][:,2] # column 2 contains R
-            # Getting the histogram
-            a,b = np.histogram(current_rs,bins=np.arange(vmin,vmax+0.0001,0.01))
-            max_count = float(np.max(a))
-            for i in range(len(a)):
-                X.append(m)
-                Y.append((b[i]+b[i+1])/2.0)
-                Z.append(a[i]/float(np.max(a)))
-        
-        if True:
-            # Finally, creating (but not showing) the graph 
-            plt.clf()
-            is_true, ax = draw_xyz(X = X       ,      Y = Y  ,                Z = Z
-            ,xlabel ='Frame #', ylabel =r"$\mathcal{R}$",zlabel =r"$P'(\mathcal{R})$:"
-                ,cmap = 'Greys', ylim=[vmin,vmax],title=r'Per-model $\mathcal{R}$-histogram'+'\nPDB: '+final_name)
-            plt.yticks(np.arange(vmin,vmax+0.00001,0.2))
-            # Now, we display the graph:
-            FN = None
-            if write:
-                FN = output_dir+'/pdb_%s_his'%(final_name)
-            figure_object = write_image(FN, write=write, show=show)
-            figures[f'chain_{chain}_his_cmap{cmap}'] = figure_object
-            #print("\tSaved to:",FN)
-    #
-    #
-    print(" 3.  \tRMSF (PDB: {})".format(name))
+        #
+        # Finally, creating (but not showing) the graph 
+        assertion, ax = draw_xyz(X = models  ,      Y = residues  ,     Z = Rs
+                , xlabel =r'Frame #', ylabel =r"Residue #",zlabel =r'$\mathcal{R}$'
+                , title=r'Per-residue $\mathcal{R}$; CMAP: '+cmap+'\nPDB: ' + final_name
+                ,  cmap = cmap    ,  vmin=vmin, vmax=vmax)
+        mark_figure(_cdf, ax)
+        #
+        #plt.show()
+        # Now, we display the graph:
+        FN = None
+        if write:
+            FN = output_dir+'/pdb_%s_r_%s' %(final_name,cmap)
+        figure_object = write_image(FN, write=write, show=show)#,new_fig)
+        figures[f'chain_{chain}_val_cmap{cmap}'] = figure_object
+        #
+    return figures
+
+def draw_per_residue_RMSF(structure_df, output_dir='', write=False, show=False, v_limit = (0,1), cmap='Blues'):
+    # The ramachandran plot is limited to [0, 1]
+    vmin = v_limit[0]
+    vmax = v_limit[1]
+    
+    name, pdbfn, output_dir = get_pdbfn_name_and_dir(structure_df, output_dir)
+
+    structure_df = fill_in_missing_resids(structure_df, fill_with=np.nan)
+    
+    unique_chains = get_unique_chains(structure_df)
+    figures = {}
+    # DRAWING A SINGLE GRAPH PER CHAIN
     for chain in unique_chains:
         final_name = name
         if len(chain.rstrip()):
@@ -711,23 +669,34 @@ def draw_figures(structure_df, output_dir='', write=True, show=True):
             Z = final_data[:,2]; 
             
             # Finally, creating (but not showing) the graph 
-            if True:
-                plt.clf()
-                is_true, ax = draw_xyz(X = X       ,      Y = Y  ,                Z = Z
-                    ,xlabel ='Frame #', ylabel =r"Residue #",zlabel ="$D_{-1}$"
-                    ,cmap = 'Blues', title='Per-residue deviation $D_{-1} = |\\mathcal{R}_t - \\mathcal{R}_{t-1}|$\nPDB: '+ final_name)
-                
-                # Now, we display the graph:
-                FN = None
-                if write:
-                    FN = output_dir+'/pdb_%s_rmsf'%(final_name)
-                figure_object = write_image(FN, write=write, show=show)
-                figures[f'chain_{chain}_rmsf_cmap{cmap}'] = figure_object
+            plt.clf()
+            is_true, ax = draw_xyz(X = X       ,      Y = Y  ,                Z = Z
+                ,xlabel ='Frame #', ylabel =r"Residue #",zlabel ="$D_{-1}$"
+                ,cmap = cmap, title='Per-residue deviation $D_{-1} = |\\mathcal{R}_t - \\mathcal{R}_{t-1}|$\nPDB: '+ final_name)
+            
+            # Now, we display the graph:
+            FN = None
+            if write:
+                FN = output_dir+'/pdb_%s_rmsf'%(final_name)
+            figure_object = write_image(FN, write=write, show=show)
+            figures[f'chain_{chain}_rmsf_cmap{cmap}'] = figure_object
         else:
             print('\tChain "%s" has only one model. Not drawing this graph.' %(chain))
-    #
-    #
-    print(f' 4.  \tRMSD (PDB: {name})')
+        #
+    return figures
+
+def draw_per_residue_RMSD(structure_df, output_dir='', write=False, show=False, v_limit = (0,1), cmap='Reds'):
+    # The ramachandran plot is limited to [0, 1]
+    vmin = v_limit[0]
+    vmax = v_limit[1]
+    
+    name, pdbfn, output_dir = get_pdbfn_name_and_dir(structure_df, output_dir)
+
+    structure_df = fill_in_missing_resids(structure_df, fill_with=np.nan)
+    
+    unique_chains = get_unique_chains(structure_df)
+    figures = {}
+    # DRAWING A SINGLE GRAPH PER CHAIN
     for chain in unique_chains:
         final_name = name
         if len(chain.rstrip()):
@@ -761,22 +730,132 @@ def draw_figures(structure_df, output_dir='', write=True, show=True):
             Y = final_data[:,1]; 
             Z = final_data[:,2]; 
             
-            
-            if True:
-                # Finally, creating (but not showing) the graph 
-                plt.clf()
-                is_true, ax = draw_xyz(X = X, Y = Y, Z = Z,
-                                xlabel = 'Frame #', ylabel = "Residue #", zlabel ="$D_{1}$",
-                                cmap = 'Reds', title= r'Per-residue deviation $D_{1} = |\mathcal{R}_t - \mathcal{R}_{1}|$'+'\nPDB: '+final_name)
-                #plt.yticks(np.arange(0,1.00001,0.2))
-                # Now, we display the graph:
-                FN = None
-                if write:
-                    FN = output_dir+'/pdb_%s_rmsd'%(final_name)
-                figure_object = write_image(FN, write=write, show=show)
-                figures[f'chain_{chain}_rmsd_cmap{cmap}'] = figure_object
+            # Finally, creating (but not showing) the graph 
+            plt.clf()
+            is_true, ax = draw_xyz(X = X, Y = Y, Z = Z,
+                            xlabel = 'Frame #', ylabel = "Residue #", zlabel ="$D_{1}$",
+                            cmap = cmap, title= r'Per-residue deviation $D_{1} = |\mathcal{R}_t - \mathcal{R}_{1}|$'+'\nPDB: '+final_name)
+            #plt.yticks(np.arange(0,1.00001,0.2))
+            # Now, we display the graph:
+            FN = None
+            if write:
+                FN = output_dir+'/pdb_%s_rmsd'%(final_name)
+            figure_object = write_image(FN, write=write, show=show)
+            figures[f'chain_{chain}_rmsd_cmap{cmap}'] = figure_object
         else:
             print('\tChain "%s" has only one model. Not drawing this graph.' %(chain))
+
+    return figures
+
+
+def draw_per_model_histogram(structure_df, output_dir='', write=False, show=False, bin_steps=0.2, v_limit = (0,1), cmap='Greys'):
+    # The ramachandran plot is limited to [0, 1]
+    vmin = v_limit[0]
+    vmax = v_limit[1]
+    
+    name, pdbfn, output_dir = get_pdbfn_name_and_dir(structure_df, output_dir)
+
+    structure_df = fill_in_missing_resids(structure_df, fill_with=np.nan)
+    
+    unique_chains = get_unique_chains(structure_df)
+    figures = {}
+    # DRAWING A SINGLE GRAPH PER CHAIN
+    for chain in unique_chains:
+        final_name = name
+        if len(chain.rstrip()):
+            final_name+='-'+str(chain)
+        
+        # Getting the X,Y,Z values for each entry
+        #models, residues, Rs = grouped_data[chain]
+        _cdf = structure_df[structure_df['chain']==chain]
+        models, residues, Rs = list(_cdf['model']),list(_cdf['resid']),list(_cdf['R'])
+        
+        X = []; Y=[]; Z=[]; # Will set X=model, Y=R, Z=P(R)
+        # Bundling the three lists into one 2d array
+        new_data =  np.array(list(zip(models,residues,Rs)))
+        # Getting all R values, model by model
+        for m in sorted(set(new_data[:,0])): # column 0 is the model column
+            # Getting all Rs for that model #
+            current_rs = new_data[np.where(new_data[:,0]==m)][:,2] # column 2 contains R
+            # Getting the histogram
+            a,b = np.histogram(current_rs,bins=np.arange(vmin,vmax+0.0001,0.01))
+            max_count = float(np.max(a))
+            for i in range(len(a)):
+                X.append(m)
+                Y.append((b[i]+b[i+1])/2.0)
+                Z.append(a[i]/float(np.max(a)))
+        
+    
+        # Finally, creating (but not showing) the graph 
+        plt.clf()
+        is_true, ax = draw_xyz(X = X       ,      Y = Y  ,                Z = Z
+        ,xlabel ='Frame #', ylabel =r"$\mathcal{R}$",zlabel =r"$P'(\mathcal{R})$:"
+            ,cmap = cmap, ylim=[vmin,vmax],title=r'Per-model $\mathcal{R}$-histogram'+'\nPDB: '+final_name)
+        plt.yticks(np.arange(vmin,vmax+bin_steps/10,bin_steps))
+        # Now, we display the graph:
+        FN = None
+        if write:
+            FN = output_dir+'/pdb_%s_his'%(final_name)
+        figure_object = write_image(FN, write=write, show=show)
+        figures[f'chain_{chain}_his_cmap{cmap}'] = figure_object
+        #print("\tSaved to:",FN)
+
+    return figures
+
+
+def draw_figures(structure_df, output_dir='', write=True, show=True):
+    """Generate per-chain Ramachandran visualizations and optionally save/show them.
+
+    Args:
+        structure_df (pd.DataFrame): Per-residue Ramachandran data containing at
+            least ``model``, ``chain``, ``resid``, and ``R`` columns.
+        output_dir (str, optional): Directory to write figures; defaults to
+            ``<pdbdir>/reports`` when empty and ``write`` is ``True``.
+        write (bool): If ``True``, save ``.eps`` and ``.png`` files for each plot.
+        show (bool): If ``True``, display figures after creation.
+
+    Returns:
+        tuple[bool, dict]: ``(True, figures)`` where ``figures`` maps plot labels
+        to matplotlib figure objects for the value maps, histograms, RMSF, and
+        RMSD heatmaps computed per chain.
+    """
+    # All figure elements (of plt.gcf() type) are returned with the figures dict 
+    figures = {}
+    #
+    structure_df = fill_in_missing_resids(structure_df, fill_with=np.nan)
+    #
+    #
+    vmin,vmax = (0,1); ss_cmap = 'SecondaryStructure'; chirality_cmap = 'Chirality'
+    if signed:
+        vmin,vmax = (-1,1); ss_cmap = ss_cmap + 'FourColor'; chirality_cmap = chirality_cmap + 'FourColor'
+    #
+    # SECTION 1
+    # setting the name of the colormap
+    for cmap in [ss_cmap,chirality_cmap]: #, 'Chirality_r', 'SecondaryStructureHard']:
+        current_figures = draw_per_residue_plot(structure_df, output_dir, 
+                                                write, show, 
+                                                v_limit = (vmin,vmax), cmap=cmap)
+        figures.update(current_figures)
+    #
+    #
+    # SECTION 2: RMSF
+    current_figures = draw_per_residue_RMSF(structure_df, output_dir, 
+                                            write, show, 
+                                            v_limit = (0,1), cmap='Blues')
+    figures.update(current_figures)
+    #
+    #
+    # SECTION 3: RMSD
+    current_figures = draw_per_residue_RMSD(structure_df, output_dir, 
+                                            write, show, 
+                                            v_limit = (0,1), cmap='Reds')
+    figures.update(current_figures)
+    #
+    # SECTION 4
+    current_figures = draw_per_model_histogram(structure_df, output_dir, 
+                                               write, show, bin_steps=0.1, 
+                                               v_limit = (0,1), cmap='Greys')
+    figures.update(current_figures)
     #
     plt.clf()
     #
