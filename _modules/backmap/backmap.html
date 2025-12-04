@@ -232,6 +232,12 @@
     <span class="k">if</span> <span class="n">figure_object</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">figure_object</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">write</span><span class="p">:</span>
+        <span class="c1"># Checking base dir and creating if needed</span>
+        <span class="n">base_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fn_base</span><span class="o">+</span><span class="s1">&#39;.xyz&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">base_dir</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Creating dir: </span><span class="si">{</span><span class="n">base_dir</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">base_dir</span><span class="p">)</span>
+        <span class="c1">#</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Saving to:&quot;</span><span class="o">+</span><span class="n">fn_base</span><span class="o">+</span><span class="s1">&#39;.[eps|png]&#39;</span><span class="p">)</span>
         <span class="n">figure_object</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fn_base</span><span class="o">+</span><span class="s1">&#39;.eps&#39;</span><span class="p">,</span><span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span><span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
         <span class="n">figure_object</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">fn_base</span><span class="o">+</span><span class="s1">&#39;.png&#39;</span><span class="p">,</span><span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span><span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
@@ -569,8 +575,15 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        pd.DataFrame: Reindexed dataframe spanning continuous residue ranges for</span>
 <span class="sd">        each chain and model, filled with ``fill_with`` where data was absent.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">        An additional key-value pair is added to the structure_df.attrs: {&#39;filled_na&#39;: True},</span>
+<span class="sd">        which prevents this function from being recalculated downstream</span>
 
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">if</span> <span class="s1">&#39;filled_na&#39;</span> <span class="ow">in</span> <span class="n">structure_df</span><span class="o">.</span><span class="n">attrs</span> <span class="ow">and</span> <span class="n">structure_df</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;filled_na&#39;</span><span class="p">]:</span>
+        <span class="c1"># Not performing this function, as we have already done it</span>
+        <span class="k">return</span> <span class="n">structure_df</span>
+    
     <span class="n">final_structure_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">chain</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">structure_df</span><span class="p">[</span><span class="s1">&#39;chain&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()):</span>
         <span class="n">_cdf</span> <span class="o">=</span> <span class="n">structure_df</span><span class="p">[</span><span class="n">structure_df</span><span class="p">[</span><span class="s1">&#39;chain&#39;</span><span class="p">]</span><span class="o">==</span><span class="n">chain</span><span class="p">]</span>
@@ -619,135 +632,137 @@
     <span class="k">return</span> <span class="n">ax</span></div>
         
 
+<span class="k">def</span> <span class="nf">get_unique_chains</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span><span class="n">chain_col</span><span class="o">=</span><span class="s1">&#39;chain&#39;</span><span class="p">):</span>
+    <span class="n">unique_chains</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">structure_df</span><span class="p">[</span><span class="s1">&#39;chain&#39;</span><span class="p">])))</span>
+    <span class="k">return</span> <span class="n">unique_chains</span>
 
-<div class="viewcode-block" id="draw_figures"><a class="viewcode-back" href="../../reference.html#backmap.backmap.draw_figures">[docs]</a><span class="k">def</span> <span class="nf">draw_figures</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate per-chain Ramachandran visualizations and optionally save/show them.</span>
+<div class="viewcode-block" id="get_pdbfn_name_and_dir"><a class="viewcode-back" href="../../reference.html#backmap.backmap.get_pdbfn_name_and_dir">[docs]</a><span class="k">def</span> <span class="nf">get_pdbfn_name_and_dir</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Infer PDB filename, directory, and base name from dataframe metadata.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        structure_df (pd.DataFrame): Per-residue Ramachandran data containing at</span>
-<span class="sd">            least ``model``, ``chain``, ``resid``, and ``R`` columns.</span>
-<span class="sd">        output_dir (str, optional): Directory to write figures; defaults to</span>
-<span class="sd">            ``&lt;pdbdir&gt;/reports`` when empty and ``write`` is ``True``.</span>
-<span class="sd">        write (bool): If ``True``, save ``.eps`` and ``.png`` files for each plot.</span>
-<span class="sd">        show (bool): If ``True``, display figures after creation.</span>
+<span class="sd">        structure_df (pd.DataFrame): Structure dataframe carrying a ``pdbfn``</span>
+<span class="sd">            entry in ``attrs`` when available.</span>
+<span class="sd">        output_dir (str, optional): Preferred output directory. Defaults to the</span>
+<span class="sd">            PDB directory + ``/reports/`` when unset. </span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        tuple[bool, dict]: ``(True, figures)`` where ``figures`` maps plot labels</span>
-<span class="sd">        to matplotlib figure objects for the value maps, histograms, RMSF, and</span>
-<span class="sd">        RMSD heatmaps computed per chain.</span>
+<span class="sd">        tuple[str, str, str]: ``(name, pdbfn, output_dir)`` where ``name`` is the</span>
+<span class="sd">            PDB file stem, ``pdbfn`` is the full path (or empty string), and</span>
+<span class="sd">            ``output_dir`` is the resolved reports directory. If a `io.StringIO`</span>
+<span class="sd">            was provided instead of a filehandle, then the returned ``output_dir`` </span>
+<span class="sd">            reverts to &#39;./reports/&#39;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># All figure elements (of plt.gcf() type) are returned with the figures dict </span>
-    <span class="n">figures</span> <span class="o">=</span> <span class="p">{}</span>
+    
+    <span class="n">pdbfn</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="n">pdbdir</span> <span class="o">=</span> <span class="s1">&#39;./&#39;</span>
+    <span class="k">if</span> <span class="s1">&#39;pdbfn&#39;</span> <span class="ow">in</span> <span class="n">structure_df</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
+        <span class="n">pdbfn</span> <span class="o">=</span> <span class="n">structure_df</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;pdbfn&#39;</span><span class="p">]</span>
+        <span class="n">pdbdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">)</span>
     <span class="c1">#</span>
-    <span class="n">structure_df</span> <span class="o">=</span> <span class="n">fill_in_missing_resids</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">fill_with</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">output_dir</span><span class="p">:</span>
+        <span class="n">output_dir</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">output_dir</span> <span class="o">=</span> <span class="n">pdbdir</span><span class="o">+</span><span class="s2">&quot;/reports/&quot;</span>
     <span class="c1">#</span>
-    <span class="n">unique_chains</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">structure_df</span><span class="p">[</span><span class="s1">&#39;chain&#39;</span><span class="p">])))</span>
-    <span class="c1">#</span>
-    <span class="n">pdbfn</span> <span class="o">=</span> <span class="n">structure_df</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;pdbfn&#39;</span><span class="p">]</span>
-    <span class="n">pdbdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">write</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">output_dir</span> <span class="o">=</span> <span class="n">pdbdir</span><span class="o">+</span><span class="s2">&quot;/reports/&quot;</span>
-
-        <span class="c1"># Making the report directory, if not created already</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">output_dir</span><span class="p">):</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
-    <span class="c1">#</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">)</span>
     <span class="c1"># Removing the &quot;.pdb&quot;, if present</span>
     <span class="k">if</span> <span class="n">name</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;.pdb&#39;</span><span class="p">):]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;.pdb&#39;</span><span class="p">:</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;.pdb&#39;</span><span class="p">)]</span>
     
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; ---- </span><span class="se">\t</span><span class="s2">---------&quot;</span><span class="p">)</span>
-    <span class="c1">#</span>
-    <span class="n">vmin</span>           <span class="o">=</span>  <span class="mi">0</span> 
-    <span class="n">vmax</span>           <span class="o">=</span>  <span class="mi">1</span>
-    <span class="n">ss_cmap</span>        <span class="o">=</span> <span class="s1">&#39;SecondaryStructure&#39;</span>
-    <span class="n">chirality_cmap</span> <span class="o">=</span> <span class="s1">&#39;Chirality&#39;</span>
-    <span class="k">if</span> <span class="n">signed</span><span class="p">:</span>
-        <span class="n">vmin</span>           <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> 
-        <span class="n">vmax</span>           <span class="o">=</span>  <span class="mi">1</span>
-        <span class="n">ss_cmap</span>        <span class="o">=</span> <span class="n">ss_cmap</span>        <span class="o">+</span> <span class="s1">&#39;FourColor&#39;</span>
-        <span class="n">chirality_cmap</span> <span class="o">=</span> <span class="n">chirality_cmap</span> <span class="o">+</span> <span class="s1">&#39;FourColor&#39;</span>
-    <span class="c1">#</span>
+    <span class="k">return</span> <span class="n">name</span><span class="p">,</span> <span class="n">pdbfn</span><span class="p">,</span> <span class="n">output_dir</span></div>
+
+<div class="viewcode-block" id="draw_per_residue_plot"><a class="viewcode-back" href="../../reference.html#backmap.backmap.draw_per_residue_plot">[docs]</a><span class="k">def</span> <span class="nf">draw_per_residue_plot</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;SecondaryStructure&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot per-residue R values for each chain and optionally save/show images.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        structure_df (pd.DataFrame): Structure dataframe containing ``model``,</span>
+<span class="sd">            ``resid``, ``R``, and ``chain`` columns.</span>
+<span class="sd">        output_dir (str, optional): Directory for written images. Defaults to</span>
+<span class="sd">            the reports directory derived from ``structure_df`` metadata.</span>
+<span class="sd">        write (bool, optional): Whether to write images to disk. Defaults to</span>
+<span class="sd">            False.</span>
+<span class="sd">        show (bool, optional): Whether to display plots interactively. Defaults</span>
+<span class="sd">            to False.</span>
+<span class="sd">        v_limit (tuple, optional): ``(vmin, vmax)`` limits for the colormap.</span>
+<span class="sd">            Defaults to (0, 1).</span>
+<span class="sd">        cmap (str, optional): Matplotlib colormap name. Defaults to</span>
+<span class="sd">            &#39;SecondaryStructure&#39;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict[str, Any]: Mapping of chain identifiers to figure-like objects</span>
+<span class="sd">        produced by ``write_image``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># The ramachandran plot is limited to [0, 1]</span>
+    <span class="n">vmin</span> <span class="o">=</span> <span class="n">v_limit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">vmax</span> <span class="o">=</span> <span class="n">v_limit</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="n">name</span><span class="p">,</span> <span class="n">pdbfn</span><span class="p">,</span> <span class="n">output_dir</span> <span class="o">=</span> <span class="n">get_pdbfn_name_and_dir</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span>
     <span class="n">structure_df</span> <span class="o">=</span> <span class="n">fill_in_missing_resids</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">fill_with</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
-    <span class="c1">#</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; 1  </span><span class="se">\t</span><span class="s2">Ramachandran number (PDB: </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">))</span>
-    <span class="n">different_plots</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="c1"># setting the name of the colormap</span>
-    <span class="k">for</span> <span class="n">cmap</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Greys&#39;</span><span class="p">,</span><span class="n">ss_cmap</span><span class="p">,</span><span class="n">chirality_cmap</span><span class="p">]:</span> <span class="c1">#, &#39;Chirality_r&#39;, &#39;SecondaryStructureHard&#39;]:</span>
-        <span class="c1"># DRAWING A SINGLE GRAPH</span>
-        <span class="k">for</span> <span class="n">chain</span> <span class="ow">in</span> <span class="n">unique_chains</span><span class="p">:</span>
-            <span class="n">final_name</span> <span class="o">=</span> <span class="n">name</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()):</span>
-                <span class="n">final_name</span><span class="o">+=</span><span class="s1">&#39;-&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">chain</span><span class="p">)</span>
-            <span class="c1">#</span>
-            <span class="c1"># Getting the X,Y,Z values for each entry</span>
-            <span class="c1">#models, residues, Rs = grouped_data[chain]</span>
-            <span class="n">_cdf</span> <span class="o">=</span> <span class="n">structure_df</span><span class="p">[</span><span class="n">structure_df</span><span class="p">[</span><span class="s1">&#39;chain&#39;</span><span class="p">]</span><span class="o">==</span><span class="n">chain</span><span class="p">]</span>
-            <span class="n">models</span><span class="p">,</span> <span class="n">residues</span><span class="p">,</span> <span class="n">Rs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">_cdf</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]),</span><span class="nb">list</span><span class="p">(</span><span class="n">_cdf</span><span class="p">[</span><span class="s1">&#39;resid&#39;</span><span class="p">]),</span><span class="nb">list</span><span class="p">(</span><span class="n">_cdf</span><span class="p">[</span><span class="s1">&#39;R&#39;</span><span class="p">])</span>
-            <span class="c1">#</span>
-            <span class="c1"># Finally, creating (but not showing) the graph </span>
-            <span class="k">if</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="n">assertion</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">draw_xyz</span><span class="p">(</span><span class="n">X</span> <span class="o">=</span> <span class="n">models</span>  <span class="p">,</span>      <span class="n">Y</span> <span class="o">=</span> <span class="n">residues</span>  <span class="p">,</span>     <span class="n">Z</span> <span class="o">=</span> <span class="n">Rs</span>
-                        <span class="p">,</span> <span class="n">xlabel</span> <span class="o">=</span><span class="sa">r</span><span class="s1">&#39;Frame #&#39;</span><span class="p">,</span> <span class="n">ylabel</span> <span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Residue #&quot;</span><span class="p">,</span><span class="n">zlabel</span> <span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\mathcal</span><span class="si">{R}</span><span class="s1">$&#39;</span>
-                        <span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;Per-residue $\mathcal</span><span class="si">{R}</span><span class="s1">$; CMAP: &#39;</span><span class="o">+</span><span class="n">cmap</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">PDB: &#39;</span> <span class="o">+</span> <span class="n">final_name</span>
-                        <span class="p">,</span>  <span class="n">cmap</span> <span class="o">=</span> <span class="n">cmap</span>    <span class="p">,</span>  <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
-                <span class="n">mark_figure</span><span class="p">(</span><span class="n">_cdf</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
-                <span class="c1">#</span>
-                <span class="c1">#plt.show()</span>
-                <span class="c1"># Now, we display the graph:</span>
-                <span class="n">FN</span> <span class="o">=</span> <span class="kc">None</span>
-                <span class="k">if</span> <span class="n">write</span><span class="p">:</span>
-                    <span class="n">FN</span> <span class="o">=</span> <span class="n">output_dir</span><span class="o">+</span><span class="s1">&#39;/pdb_</span><span class="si">%s</span><span class="s1">_r_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">final_name</span><span class="p">,</span><span class="n">cmap</span><span class="p">)</span>
-                <span class="n">figure_object</span> <span class="o">=</span> <span class="n">write_image</span><span class="p">(</span><span class="n">FN</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="n">write</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">)</span><span class="c1">#,new_fig)</span>
-                <span class="n">figures</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;chain_</span><span class="si">{</span><span class="n">chain</span><span class="si">}</span><span class="s1">_val_cmap</span><span class="si">{</span><span class="n">cmap</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">figure_object</span>
-                <span class="c1">#</span>
-    <span class="c1">#</span>
-    <span class="c1"># Getting only those values for the particular chain </span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; 2.  </span><span class="se">\t</span><span class="s2">Histogram (PDB: 1xqq)&quot;</span><span class="p">)</span>
+    
+    <span class="n">unique_chains</span> <span class="o">=</span> <span class="n">get_unique_chains</span><span class="p">(</span><span class="n">structure_df</span><span class="p">)</span>
+    <span class="n">figures</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1"># DRAWING A SINGLE GRAPH PER CHAIN</span>
     <span class="k">for</span> <span class="n">chain</span> <span class="ow">in</span> <span class="n">unique_chains</span><span class="p">:</span>
         <span class="n">final_name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()):</span>
             <span class="n">final_name</span><span class="o">+=</span><span class="s1">&#39;-&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">chain</span><span class="p">)</span>
-        
+        <span class="c1">#</span>
         <span class="c1"># Getting the X,Y,Z values for each entry</span>
         <span class="c1">#models, residues, Rs = grouped_data[chain]</span>
         <span class="n">_cdf</span> <span class="o">=</span> <span class="n">structure_df</span><span class="p">[</span><span class="n">structure_df</span><span class="p">[</span><span class="s1">&#39;chain&#39;</span><span class="p">]</span><span class="o">==</span><span class="n">chain</span><span class="p">]</span>
         <span class="n">models</span><span class="p">,</span> <span class="n">residues</span><span class="p">,</span> <span class="n">Rs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">_cdf</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]),</span><span class="nb">list</span><span class="p">(</span><span class="n">_cdf</span><span class="p">[</span><span class="s1">&#39;resid&#39;</span><span class="p">]),</span><span class="nb">list</span><span class="p">(</span><span class="n">_cdf</span><span class="p">[</span><span class="s1">&#39;R&#39;</span><span class="p">])</span>
-        
-        <span class="n">X</span> <span class="o">=</span> <span class="p">[];</span> <span class="n">Y</span><span class="o">=</span><span class="p">[];</span> <span class="n">Z</span><span class="o">=</span><span class="p">[];</span> <span class="c1"># Will set X=model, Y=R, Z=P(R)</span>
-        <span class="c1"># Bundling the three lists into one 2d array</span>
-        <span class="n">new_data</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">models</span><span class="p">,</span><span class="n">residues</span><span class="p">,</span><span class="n">Rs</span><span class="p">)))</span>
-        <span class="c1"># Getting all R values, model by model</span>
-        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">new_data</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])):</span> <span class="c1"># column 0 is the model column</span>
-            <span class="c1"># Getting all Rs for that model #</span>
-            <span class="n">current_rs</span> <span class="o">=</span> <span class="n">new_data</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">new_data</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="n">m</span><span class="p">)][:,</span><span class="mi">2</span><span class="p">]</span> <span class="c1"># column 2 contains R</span>
-            <span class="c1"># Getting the histogram</span>
-            <span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">current_rs</span><span class="p">,</span><span class="n">bins</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span><span class="n">vmax</span><span class="o">+</span><span class="mf">0.0001</span><span class="p">,</span><span class="mf">0.01</span><span class="p">))</span>
-            <span class="n">max_count</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)):</span>
-                <span class="n">X</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-                <span class="n">Y</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="mf">2.0</span><span class="p">)</span>
-                <span class="n">Z</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">a</span><span class="p">)))</span>
-        
-        <span class="k">if</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="c1"># Finally, creating (but not showing) the graph </span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
-            <span class="n">is_true</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">draw_xyz</span><span class="p">(</span><span class="n">X</span> <span class="o">=</span> <span class="n">X</span>       <span class="p">,</span>      <span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span>  <span class="p">,</span>                <span class="n">Z</span> <span class="o">=</span> <span class="n">Z</span>
-            <span class="p">,</span><span class="n">xlabel</span> <span class="o">=</span><span class="s1">&#39;Frame #&#39;</span><span class="p">,</span> <span class="n">ylabel</span> <span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\mathcal</span><span class="si">{R}</span><span class="s2">$&quot;</span><span class="p">,</span><span class="n">zlabel</span> <span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$P&#39;(\mathcal</span><span class="si">{R}</span><span class="s2">)$:&quot;</span>
-                <span class="p">,</span><span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;Greys&#39;</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="n">vmin</span><span class="p">,</span><span class="n">vmax</span><span class="p">],</span><span class="n">title</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;Per-model $\mathcal</span><span class="si">{R}</span><span class="s1">$-histogram&#39;</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">PDB: &#39;</span><span class="o">+</span><span class="n">final_name</span><span class="p">)</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span><span class="n">vmax</span><span class="o">+</span><span class="mf">0.00001</span><span class="p">,</span><span class="mf">0.2</span><span class="p">))</span>
-            <span class="c1"># Now, we display the graph:</span>
-            <span class="n">FN</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="k">if</span> <span class="n">write</span><span class="p">:</span>
-                <span class="n">FN</span> <span class="o">=</span> <span class="n">output_dir</span><span class="o">+</span><span class="s1">&#39;/pdb_</span><span class="si">%s</span><span class="s1">_his&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">final_name</span><span class="p">)</span>
-            <span class="n">figure_object</span> <span class="o">=</span> <span class="n">write_image</span><span class="p">(</span><span class="n">FN</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="n">write</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">)</span>
-            <span class="n">figures</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;chain_</span><span class="si">{</span><span class="n">chain</span><span class="si">}</span><span class="s1">_his_cmap</span><span class="si">{</span><span class="n">cmap</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">figure_object</span>
-            <span class="c1">#print(&quot;\tSaved to:&quot;,FN)</span>
-    <span class="c1">#</span>
-    <span class="c1">#</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; 3.  </span><span class="se">\t</span><span class="s2">RMSF (PDB: </span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="c1">#</span>
+        <span class="c1"># Finally, creating (but not showing) the graph </span>
+        <span class="n">assertion</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">draw_xyz</span><span class="p">(</span><span class="n">X</span> <span class="o">=</span> <span class="n">models</span>  <span class="p">,</span>      <span class="n">Y</span> <span class="o">=</span> <span class="n">residues</span>  <span class="p">,</span>     <span class="n">Z</span> <span class="o">=</span> <span class="n">Rs</span>
+                <span class="p">,</span> <span class="n">xlabel</span> <span class="o">=</span><span class="sa">r</span><span class="s1">&#39;Frame #&#39;</span><span class="p">,</span> <span class="n">ylabel</span> <span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Residue #&quot;</span><span class="p">,</span><span class="n">zlabel</span> <span class="o">=</span><span class="sa">r</span><span class="s1">&#39;$\mathcal</span><span class="si">{R}</span><span class="s1">$&#39;</span>
+                <span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;Per-residue $\mathcal</span><span class="si">{R}</span><span class="s1">$; CMAP: &#39;</span><span class="o">+</span><span class="n">cmap</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">PDB: &#39;</span> <span class="o">+</span> <span class="n">final_name</span>
+                <span class="p">,</span>  <span class="n">cmap</span> <span class="o">=</span> <span class="n">cmap</span>    <span class="p">,</span>  <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
+        <span class="n">mark_figure</span><span class="p">(</span><span class="n">_cdf</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="c1">#plt.show()</span>
+        <span class="c1"># Now, we display the graph:</span>
+        <span class="n">FN</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">write</span><span class="p">:</span>
+            <span class="n">FN</span> <span class="o">=</span> <span class="n">output_dir</span><span class="o">+</span><span class="s1">&#39;/pdb_</span><span class="si">%s</span><span class="s1">_r_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">final_name</span><span class="p">,</span><span class="n">cmap</span><span class="p">)</span>
+        <span class="n">figure_object</span> <span class="o">=</span> <span class="n">write_image</span><span class="p">(</span><span class="n">FN</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="n">write</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">)</span><span class="c1">#,new_fig)</span>
+        <span class="n">figures</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;chain_</span><span class="si">{</span><span class="n">chain</span><span class="si">}</span><span class="s1">_val_cmap</span><span class="si">{</span><span class="n">cmap</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">figure_object</span>
+        <span class="c1">#</span>
+    <span class="k">return</span> <span class="n">figures</span></div>
+
+<div class="viewcode-block" id="draw_per_residue_RMSF"><a class="viewcode-back" href="../../reference.html#backmap.backmap.draw_per_residue_RMSF">[docs]</a><span class="k">def</span> <span class="nf">draw_per_residue_RMSF</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Blues&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot per-residue RMSF (frame-to-frame |R| change) for each chain.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        structure_df (pd.DataFrame): Structure dataframe containing ``model``,</span>
+<span class="sd">            ``resid``, ``R``, and ``chain`` columns.</span>
+<span class="sd">        output_dir (str, optional): Directory for written images. Defaults to</span>
+<span class="sd">            the reports directory derived from ``structure_df`` metadata.</span>
+<span class="sd">        write (bool, optional): Whether to write images to disk. Defaults to</span>
+<span class="sd">            False.</span>
+<span class="sd">        show (bool, optional): Whether to display plots interactively. Defaults</span>
+<span class="sd">            to False.</span>
+<span class="sd">        v_limit (tuple, optional): ``(vmin, vmax)`` limits for the colormap.</span>
+<span class="sd">            Defaults to (0, 1).</span>
+<span class="sd">        cmap (str, optional): Matplotlib colormap name. Defaults to &#39;Blues&#39;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict[str, Any]: Mapping of chain identifiers to figure-like objects</span>
+<span class="sd">        produced by ``write_image``. Chains with a single model are skipped.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># The ramachandran plot is limited to [0, 1]</span>
+    <span class="n">vmin</span> <span class="o">=</span> <span class="n">v_limit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">vmax</span> <span class="o">=</span> <span class="n">v_limit</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="n">name</span><span class="p">,</span> <span class="n">pdbfn</span><span class="p">,</span> <span class="n">output_dir</span> <span class="o">=</span> <span class="n">get_pdbfn_name_and_dir</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span>
+
+    <span class="n">structure_df</span> <span class="o">=</span> <span class="n">fill_in_missing_resids</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">fill_with</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+    
+    <span class="n">unique_chains</span> <span class="o">=</span> <span class="n">get_unique_chains</span><span class="p">(</span><span class="n">structure_df</span><span class="p">)</span>
+    <span class="n">figures</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1"># DRAWING A SINGLE GRAPH PER CHAIN</span>
     <span class="k">for</span> <span class="n">chain</span> <span class="ow">in</span> <span class="n">unique_chains</span><span class="p">:</span>
         <span class="n">final_name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()):</span>
@@ -787,23 +802,54 @@
             <span class="n">Z</span> <span class="o">=</span> <span class="n">final_data</span><span class="p">[:,</span><span class="mi">2</span><span class="p">];</span> 
             
             <span class="c1"># Finally, creating (but not showing) the graph </span>
-            <span class="k">if</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
-                <span class="n">is_true</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">draw_xyz</span><span class="p">(</span><span class="n">X</span> <span class="o">=</span> <span class="n">X</span>       <span class="p">,</span>      <span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span>  <span class="p">,</span>                <span class="n">Z</span> <span class="o">=</span> <span class="n">Z</span>
-                    <span class="p">,</span><span class="n">xlabel</span> <span class="o">=</span><span class="s1">&#39;Frame #&#39;</span><span class="p">,</span> <span class="n">ylabel</span> <span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Residue #&quot;</span><span class="p">,</span><span class="n">zlabel</span> <span class="o">=</span><span class="s2">&quot;$D_{-1}$&quot;</span>
-                    <span class="p">,</span><span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;Blues&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Per-residue deviation $D_{-1} = |</span><span class="se">\\</span><span class="s1">mathcal</span><span class="si">{R}</span><span class="s1">_t - </span><span class="se">\\</span><span class="s1">mathcal</span><span class="si">{R}</span><span class="s1">_{t-1}|$</span><span class="se">\n</span><span class="s1">PDB: &#39;</span><span class="o">+</span> <span class="n">final_name</span><span class="p">)</span>
-                
-                <span class="c1"># Now, we display the graph:</span>
-                <span class="n">FN</span> <span class="o">=</span> <span class="kc">None</span>
-                <span class="k">if</span> <span class="n">write</span><span class="p">:</span>
-                    <span class="n">FN</span> <span class="o">=</span> <span class="n">output_dir</span><span class="o">+</span><span class="s1">&#39;/pdb_</span><span class="si">%s</span><span class="s1">_rmsf&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">final_name</span><span class="p">)</span>
-                <span class="n">figure_object</span> <span class="o">=</span> <span class="n">write_image</span><span class="p">(</span><span class="n">FN</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="n">write</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">)</span>
-                <span class="n">figures</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;chain_</span><span class="si">{</span><span class="n">chain</span><span class="si">}</span><span class="s1">_rmsf_cmap</span><span class="si">{</span><span class="n">cmap</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">figure_object</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+            <span class="n">is_true</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">draw_xyz</span><span class="p">(</span><span class="n">X</span> <span class="o">=</span> <span class="n">X</span>       <span class="p">,</span>      <span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span>  <span class="p">,</span>                <span class="n">Z</span> <span class="o">=</span> <span class="n">Z</span>
+                <span class="p">,</span><span class="n">xlabel</span> <span class="o">=</span><span class="s1">&#39;Frame #&#39;</span><span class="p">,</span> <span class="n">ylabel</span> <span class="o">=</span><span class="sa">r</span><span class="s2">&quot;Residue #&quot;</span><span class="p">,</span><span class="n">zlabel</span> <span class="o">=</span><span class="s2">&quot;$D_{-1}$&quot;</span>
+                <span class="p">,</span><span class="n">cmap</span> <span class="o">=</span> <span class="n">cmap</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Per-residue deviation $D_{-1} = |</span><span class="se">\\</span><span class="s1">mathcal</span><span class="si">{R}</span><span class="s1">_t - </span><span class="se">\\</span><span class="s1">mathcal</span><span class="si">{R}</span><span class="s1">_{t-1}|$</span><span class="se">\n</span><span class="s1">PDB: &#39;</span><span class="o">+</span> <span class="n">final_name</span><span class="p">)</span>
+            
+            <span class="c1"># Now, we display the graph:</span>
+            <span class="n">FN</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">write</span><span class="p">:</span>
+                <span class="n">FN</span> <span class="o">=</span> <span class="n">output_dir</span><span class="o">+</span><span class="s1">&#39;/pdb_</span><span class="si">%s</span><span class="s1">_rmsf&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">final_name</span><span class="p">)</span>
+            <span class="n">figure_object</span> <span class="o">=</span> <span class="n">write_image</span><span class="p">(</span><span class="n">FN</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="n">write</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">)</span>
+            <span class="n">figures</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;chain_</span><span class="si">{</span><span class="n">chain</span><span class="si">}</span><span class="s1">_rmsf_cmap</span><span class="si">{</span><span class="n">cmap</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">figure_object</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">Chain &quot;</span><span class="si">%s</span><span class="s1">&quot; has only one model. Not drawing this graph.&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">chain</span><span class="p">))</span>
-    <span class="c1">#</span>
-    <span class="c1">#</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39; 4.  </span><span class="se">\t</span><span class="s1">RMSD (PDB: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+        <span class="c1">#</span>
+    <span class="k">return</span> <span class="n">figures</span></div>
+
+<div class="viewcode-block" id="draw_per_residue_RMSD"><a class="viewcode-back" href="../../reference.html#backmap.backmap.draw_per_residue_RMSD">[docs]</a><span class="k">def</span> <span class="nf">draw_per_residue_RMSD</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Reds&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot per-residue RMSD versus the first model for each chain.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        structure_df (pd.DataFrame): Structure dataframe containing ``model``,</span>
+<span class="sd">            ``resid``, ``R``, and ``chain`` columns.</span>
+<span class="sd">        output_dir (str, optional): Directory for written images. Defaults to</span>
+<span class="sd">            the reports directory derived from ``structure_df`` metadata.</span>
+<span class="sd">        write (bool, optional): Whether to write images to disk. Defaults to</span>
+<span class="sd">            False.</span>
+<span class="sd">        show (bool, optional): Whether to display plots interactively. Defaults</span>
+<span class="sd">            to False.</span>
+<span class="sd">        v_limit (tuple, optional): ``(vmin, vmax)`` limits for the colormap.</span>
+<span class="sd">            Defaults to (0, 1).</span>
+<span class="sd">        cmap (str, optional): Matplotlib colormap name. Defaults to &#39;Reds&#39;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict[str, Any]: Mapping of chain identifiers to figure-like objects</span>
+<span class="sd">        produced by ``write_image``. Chains with a single model are skipped.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># The ramachandran plot is limited to [0, 1]</span>
+    <span class="n">vmin</span> <span class="o">=</span> <span class="n">v_limit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">vmax</span> <span class="o">=</span> <span class="n">v_limit</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="n">name</span><span class="p">,</span> <span class="n">pdbfn</span><span class="p">,</span> <span class="n">output_dir</span> <span class="o">=</span> <span class="n">get_pdbfn_name_and_dir</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span>
+
+    <span class="n">structure_df</span> <span class="o">=</span> <span class="n">fill_in_missing_resids</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">fill_with</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+    
+    <span class="n">unique_chains</span> <span class="o">=</span> <span class="n">get_unique_chains</span><span class="p">(</span><span class="n">structure_df</span><span class="p">)</span>
+    <span class="n">figures</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1"># DRAWING A SINGLE GRAPH PER CHAIN</span>
     <span class="k">for</span> <span class="n">chain</span> <span class="ow">in</span> <span class="n">unique_chains</span><span class="p">:</span>
         <span class="n">final_name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()):</span>
@@ -837,22 +883,153 @@
             <span class="n">Y</span> <span class="o">=</span> <span class="n">final_data</span><span class="p">[:,</span><span class="mi">1</span><span class="p">];</span> 
             <span class="n">Z</span> <span class="o">=</span> <span class="n">final_data</span><span class="p">[:,</span><span class="mi">2</span><span class="p">];</span> 
             
-            
-            <span class="k">if</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="c1"># Finally, creating (but not showing) the graph </span>
-                <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
-                <span class="n">is_true</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">draw_xyz</span><span class="p">(</span><span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">Z</span><span class="p">,</span>
-                                <span class="n">xlabel</span> <span class="o">=</span> <span class="s1">&#39;Frame #&#39;</span><span class="p">,</span> <span class="n">ylabel</span> <span class="o">=</span> <span class="s2">&quot;Residue #&quot;</span><span class="p">,</span> <span class="n">zlabel</span> <span class="o">=</span><span class="s2">&quot;$D_</span><span class="si">{1}</span><span class="s2">$&quot;</span><span class="p">,</span>
-                                <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;Reds&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;Per-residue deviation $D_</span><span class="si">{1}</span><span class="s1"> = |\mathcal</span><span class="si">{R}</span><span class="s1">_t - \mathcal</span><span class="si">{R}</span><span class="s1">_</span><span class="si">{1}</span><span class="s1">|$&#39;</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">PDB: &#39;</span><span class="o">+</span><span class="n">final_name</span><span class="p">)</span>
-                <span class="c1">#plt.yticks(np.arange(0,1.00001,0.2))</span>
-                <span class="c1"># Now, we display the graph:</span>
-                <span class="n">FN</span> <span class="o">=</span> <span class="kc">None</span>
-                <span class="k">if</span> <span class="n">write</span><span class="p">:</span>
-                    <span class="n">FN</span> <span class="o">=</span> <span class="n">output_dir</span><span class="o">+</span><span class="s1">&#39;/pdb_</span><span class="si">%s</span><span class="s1">_rmsd&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">final_name</span><span class="p">)</span>
-                <span class="n">figure_object</span> <span class="o">=</span> <span class="n">write_image</span><span class="p">(</span><span class="n">FN</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="n">write</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">)</span>
-                <span class="n">figures</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;chain_</span><span class="si">{</span><span class="n">chain</span><span class="si">}</span><span class="s1">_rmsd_cmap</span><span class="si">{</span><span class="n">cmap</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">figure_object</span>
+            <span class="c1"># Finally, creating (but not showing) the graph </span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+            <span class="n">is_true</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">draw_xyz</span><span class="p">(</span><span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">Z</span><span class="p">,</span>
+                            <span class="n">xlabel</span> <span class="o">=</span> <span class="s1">&#39;Frame #&#39;</span><span class="p">,</span> <span class="n">ylabel</span> <span class="o">=</span> <span class="s2">&quot;Residue #&quot;</span><span class="p">,</span> <span class="n">zlabel</span> <span class="o">=</span><span class="s2">&quot;$D_</span><span class="si">{1}</span><span class="s2">$&quot;</span><span class="p">,</span>
+                            <span class="n">cmap</span> <span class="o">=</span> <span class="n">cmap</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;Per-residue deviation $D_</span><span class="si">{1}</span><span class="s1"> = |\mathcal</span><span class="si">{R}</span><span class="s1">_t - \mathcal</span><span class="si">{R}</span><span class="s1">_</span><span class="si">{1}</span><span class="s1">|$&#39;</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">PDB: &#39;</span><span class="o">+</span><span class="n">final_name</span><span class="p">)</span>
+            <span class="c1">#plt.yticks(np.arange(0,1.00001,0.2))</span>
+            <span class="c1"># Now, we display the graph:</span>
+            <span class="n">FN</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">write</span><span class="p">:</span>
+                <span class="n">FN</span> <span class="o">=</span> <span class="n">output_dir</span><span class="o">+</span><span class="s1">&#39;/pdb_</span><span class="si">%s</span><span class="s1">_rmsd&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">final_name</span><span class="p">)</span>
+            <span class="n">figure_object</span> <span class="o">=</span> <span class="n">write_image</span><span class="p">(</span><span class="n">FN</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="n">write</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">)</span>
+            <span class="n">figures</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;chain_</span><span class="si">{</span><span class="n">chain</span><span class="si">}</span><span class="s1">_rmsd_cmap</span><span class="si">{</span><span class="n">cmap</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">figure_object</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">Chain &quot;</span><span class="si">%s</span><span class="s1">&quot; has only one model. Not drawing this graph.&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">chain</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">figures</span></div>
+
+
+<div class="viewcode-block" id="draw_per_model_histogram"><a class="viewcode-back" href="../../reference.html#backmap.backmap.draw_per_model_histogram">[docs]</a><span class="k">def</span> <span class="nf">draw_per_model_histogram</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">bin_steps</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Greys&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot per-model histograms of Ramachandran values for each chain.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        structure_df (pd.DataFrame): Structure dataframe containing ``model``,</span>
+<span class="sd">            ``chain``, ``resid``, and ``R`` columns.</span>
+<span class="sd">        output_dir (str, optional): Directory for written images. Defaults to</span>
+<span class="sd">            the reports directory derived from ``structure_df`` metadata.</span>
+<span class="sd">        write (bool, optional): Whether to write images to disk. Defaults to</span>
+<span class="sd">            False.</span>
+<span class="sd">        show (bool, optional): Whether to display plots interactively. Defaults</span>
+<span class="sd">            to False.</span>
+<span class="sd">        bin_steps (float, optional): Y-axis tick spacing for the probability</span>
+<span class="sd">            axis. Defaults to 0.2.</span>
+<span class="sd">        v_limit (tuple, optional): ``(vmin, vmax)`` limits for histogram</span>
+<span class="sd">            values. Defaults to (0, 1).</span>
+<span class="sd">        cmap (str, optional): Matplotlib colormap name. Defaults to &#39;Greys&#39;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict[str, Any]: Mapping of chain identifiers to figure-like objects</span>
+<span class="sd">        produced by ``write_image`` for each histogram.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># The ramachandran plot is limited to [0, 1]</span>
+    <span class="n">vmin</span> <span class="o">=</span> <span class="n">v_limit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">vmax</span> <span class="o">=</span> <span class="n">v_limit</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="n">name</span><span class="p">,</span> <span class="n">pdbfn</span><span class="p">,</span> <span class="n">output_dir</span> <span class="o">=</span> <span class="n">get_pdbfn_name_and_dir</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span>
+
+    <span class="n">structure_df</span> <span class="o">=</span> <span class="n">fill_in_missing_resids</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">fill_with</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+    
+    <span class="n">unique_chains</span> <span class="o">=</span> <span class="n">get_unique_chains</span><span class="p">(</span><span class="n">structure_df</span><span class="p">)</span>
+    <span class="n">figures</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1"># DRAWING A SINGLE GRAPH PER CHAIN</span>
+    <span class="k">for</span> <span class="n">chain</span> <span class="ow">in</span> <span class="n">unique_chains</span><span class="p">:</span>
+        <span class="n">final_name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()):</span>
+            <span class="n">final_name</span><span class="o">+=</span><span class="s1">&#39;-&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">chain</span><span class="p">)</span>
+        
+        <span class="c1"># Getting the X,Y,Z values for each entry</span>
+        <span class="c1">#models, residues, Rs = grouped_data[chain]</span>
+        <span class="n">_cdf</span> <span class="o">=</span> <span class="n">structure_df</span><span class="p">[</span><span class="n">structure_df</span><span class="p">[</span><span class="s1">&#39;chain&#39;</span><span class="p">]</span><span class="o">==</span><span class="n">chain</span><span class="p">]</span>
+        <span class="n">models</span><span class="p">,</span> <span class="n">residues</span><span class="p">,</span> <span class="n">Rs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">_cdf</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]),</span><span class="nb">list</span><span class="p">(</span><span class="n">_cdf</span><span class="p">[</span><span class="s1">&#39;resid&#39;</span><span class="p">]),</span><span class="nb">list</span><span class="p">(</span><span class="n">_cdf</span><span class="p">[</span><span class="s1">&#39;R&#39;</span><span class="p">])</span>
+        
+        <span class="n">X</span> <span class="o">=</span> <span class="p">[];</span> <span class="n">Y</span><span class="o">=</span><span class="p">[];</span> <span class="n">Z</span><span class="o">=</span><span class="p">[];</span> <span class="c1"># Will set X=model, Y=R, Z=P(R)</span>
+        <span class="c1"># Bundling the three lists into one 2d array</span>
+        <span class="n">new_data</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">models</span><span class="p">,</span><span class="n">residues</span><span class="p">,</span><span class="n">Rs</span><span class="p">)))</span>
+        <span class="c1"># Getting all R values, model by model</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">new_data</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])):</span> <span class="c1"># column 0 is the model column</span>
+            <span class="c1"># Getting all Rs for that model #</span>
+            <span class="n">current_rs</span> <span class="o">=</span> <span class="n">new_data</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">new_data</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="n">m</span><span class="p">)][:,</span><span class="mi">2</span><span class="p">]</span> <span class="c1"># column 2 contains R</span>
+            <span class="c1"># Getting the histogram</span>
+            <span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">current_rs</span><span class="p">,</span><span class="n">bins</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span><span class="n">vmax</span><span class="o">+</span><span class="mf">0.0001</span><span class="p">,</span><span class="mf">0.01</span><span class="p">))</span>
+            <span class="n">max_count</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)):</span>
+                <span class="n">X</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+                <span class="n">Y</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="mf">2.0</span><span class="p">)</span>
+                <span class="n">Z</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">a</span><span class="p">)))</span>
+        
+    
+        <span class="c1"># Finally, creating (but not showing) the graph </span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+        <span class="n">is_true</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">draw_xyz</span><span class="p">(</span><span class="n">X</span> <span class="o">=</span> <span class="n">X</span>       <span class="p">,</span>      <span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span>  <span class="p">,</span>                <span class="n">Z</span> <span class="o">=</span> <span class="n">Z</span>
+        <span class="p">,</span><span class="n">xlabel</span> <span class="o">=</span><span class="s1">&#39;Frame #&#39;</span><span class="p">,</span> <span class="n">ylabel</span> <span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$\mathcal</span><span class="si">{R}</span><span class="s2">$&quot;</span><span class="p">,</span><span class="n">zlabel</span> <span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$P&#39;(\mathcal</span><span class="si">{R}</span><span class="s2">)$:&quot;</span>
+            <span class="p">,</span><span class="n">cmap</span> <span class="o">=</span> <span class="n">cmap</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="n">vmin</span><span class="p">,</span><span class="n">vmax</span><span class="p">],</span><span class="n">title</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;Per-model $\mathcal</span><span class="si">{R}</span><span class="s1">$-histogram&#39;</span><span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">PDB: &#39;</span><span class="o">+</span><span class="n">final_name</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span><span class="n">vmax</span><span class="o">+</span><span class="n">bin_steps</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span><span class="n">bin_steps</span><span class="p">))</span>
+        <span class="c1"># Now, we display the graph:</span>
+        <span class="n">FN</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">write</span><span class="p">:</span>
+            <span class="n">FN</span> <span class="o">=</span> <span class="n">output_dir</span><span class="o">+</span><span class="s1">&#39;/pdb_</span><span class="si">%s</span><span class="s1">_his&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">final_name</span><span class="p">)</span>
+        <span class="n">figure_object</span> <span class="o">=</span> <span class="n">write_image</span><span class="p">(</span><span class="n">FN</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="n">write</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">)</span>
+        <span class="n">figures</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;chain_</span><span class="si">{</span><span class="n">chain</span><span class="si">}</span><span class="s1">_his_cmap</span><span class="si">{</span><span class="n">cmap</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">figure_object</span>
+        <span class="c1">#print(&quot;\tSaved to:&quot;,FN)</span>
+
+    <span class="k">return</span> <span class="n">figures</span></div>
+
+
+<div class="viewcode-block" id="draw_figures"><a class="viewcode-back" href="../../reference.html#backmap.backmap.draw_figures">[docs]</a><span class="k">def</span> <span class="nf">draw_figures</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate per-chain Ramachandran visualizations and optionally save/show them.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        structure_df (pd.DataFrame): Per-residue Ramachandran data containing at</span>
+<span class="sd">            least ``model``, ``chain``, ``resid``, and ``R`` columns.</span>
+<span class="sd">        output_dir (str, optional): Directory to write figures; defaults to</span>
+<span class="sd">            ``&lt;pdbdir&gt;/reports`` when empty and ``write`` is ``True``.</span>
+<span class="sd">        write (bool): If ``True``, save ``.eps`` and ``.png`` files for each plot.</span>
+<span class="sd">        show (bool): If ``True``, display figures after creation.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple[bool, dict]: ``(True, figures)`` where ``figures`` maps plot labels</span>
+<span class="sd">        to matplotlib figure objects for the value maps, histograms, RMSF, and</span>
+<span class="sd">        RMSD heatmaps computed per chain.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># All figure elements (of plt.gcf() type) are returned with the figures dict </span>
+    <span class="n">figures</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1">#</span>
+    <span class="n">structure_df</span> <span class="o">=</span> <span class="n">fill_in_missing_resids</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">fill_with</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+    <span class="c1">#</span>
+    <span class="c1">#</span>
+    <span class="n">vmin</span><span class="p">,</span><span class="n">vmax</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span> <span class="n">ss_cmap</span> <span class="o">=</span> <span class="s1">&#39;SecondaryStructure&#39;</span><span class="p">;</span> <span class="n">chirality_cmap</span> <span class="o">=</span> <span class="s1">&#39;Chirality&#39;</span>
+    <span class="k">if</span> <span class="n">signed</span><span class="p">:</span>
+        <span class="n">vmin</span><span class="p">,</span><span class="n">vmax</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span> <span class="n">ss_cmap</span> <span class="o">=</span> <span class="n">ss_cmap</span> <span class="o">+</span> <span class="s1">&#39;FourColor&#39;</span><span class="p">;</span> <span class="n">chirality_cmap</span> <span class="o">=</span> <span class="n">chirality_cmap</span> <span class="o">+</span> <span class="s1">&#39;FourColor&#39;</span>
+    <span class="c1">#</span>
+    <span class="c1"># SECTION 1</span>
+    <span class="c1"># setting the name of the colormap</span>
+    <span class="k">for</span> <span class="n">cmap</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ss_cmap</span><span class="p">,</span><span class="n">chirality_cmap</span><span class="p">]:</span> <span class="c1">#, &#39;Chirality_r&#39;, &#39;SecondaryStructureHard&#39;]:</span>
+        <span class="n">current_figures</span> <span class="o">=</span> <span class="n">draw_per_residue_plot</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> 
+                                                <span class="n">write</span><span class="p">,</span> <span class="n">show</span><span class="p">,</span> 
+                                                <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="n">vmin</span><span class="p">,</span><span class="n">vmax</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">)</span>
+        <span class="n">figures</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">current_figures</span><span class="p">)</span>
+    <span class="c1">#</span>
+    <span class="c1">#</span>
+    <span class="c1"># SECTION 2: RMSF</span>
+    <span class="n">current_figures</span> <span class="o">=</span> <span class="n">draw_per_residue_RMSF</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> 
+                                            <span class="n">write</span><span class="p">,</span> <span class="n">show</span><span class="p">,</span> 
+                                            <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Blues&#39;</span><span class="p">)</span>
+    <span class="n">figures</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">current_figures</span><span class="p">)</span>
+    <span class="c1">#</span>
+    <span class="c1">#</span>
+    <span class="c1"># SECTION 3: RMSD</span>
+    <span class="n">current_figures</span> <span class="o">=</span> <span class="n">draw_per_residue_RMSD</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> 
+                                            <span class="n">write</span><span class="p">,</span> <span class="n">show</span><span class="p">,</span> 
+                                            <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Reds&#39;</span><span class="p">)</span>
+    <span class="n">figures</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">current_figures</span><span class="p">)</span>
+    <span class="c1">#</span>
+    <span class="c1"># SECTION 4</span>
+    <span class="n">current_figures</span> <span class="o">=</span> <span class="n">draw_per_model_histogram</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> 
+                                               <span class="n">write</span><span class="p">,</span> <span class="n">show</span><span class="p">,</span> <span class="n">bin_steps</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> 
+                                               <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Greys&#39;</span><span class="p">)</span>
+    <span class="n">figures</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">current_figures</span><span class="p">)</span>
     <span class="c1">#</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
     <span class="c1">#</span>

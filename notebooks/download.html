@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Downloading and viewing a PDB from RCSB &mdash; BackMAP 1.0.0 documentation</title>
+  <title>Downloading and viewing deep dive &mdash; BackMAP 1.0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
@@ -53,7 +53,17 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../notebooks.html">NOTEBOOK EXAMPLES</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="examples.html">BackMAP EXAMPLES</a></li>
 <li class="toctree-l2"><a class="reference internal" href="proof.html">Derivation of R</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Downloading and viewing a PDB from RCSB</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Downloading and viewing deep dive</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Downloading-and-analyzing">Downloading and analyzing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#VIEWING-SPECIFIC-GRAPHS">VIEWING SPECIFIC GRAPHS</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Per-model,-per-residue-R-heatmaps">Per-model, per-residue R heatmaps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Per-model,-per-residue-RMSD(R)-heatmaps">Per-model, per-residue RMSD(R) heatmaps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#Per-model-histograms-of-R">Per-model histograms of R</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#For-completeness,-using-backmap.draw_figures()">For completeness, using backmap.draw_figures()</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../reference.html">CODE/API MANUAL</a></li>
@@ -75,7 +85,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../notebooks.html">NOTEBOOK EXAMPLES</a></li>
-      <li class="breadcrumb-item active">Downloading and viewing a PDB from RCSB</li>
+      <li class="breadcrumb-item active">Downloading and viewing deep dive</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/notebooks/download.nblink.txt" rel="nofollow"> View page source</a>
       </li>
@@ -85,9 +95,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="Downloading-and-viewing-a-PDB-from-RCSB">
-<h1>Downloading and viewing a PDB from RCSB<a class="headerlink" href="#Downloading-and-viewing-a-PDB-from-RCSB" title="Permalink to this heading"></a></h1>
+  <section id="Downloading-and-viewing-deep-dive">
+<h1>Downloading and viewing deep dive<a class="headerlink" href="#Downloading-and-viewing-deep-dive" title="Permalink to this heading"></a></h1>
 <p>So far, we have gone through loading PDBs locally. This script walks you through the process of accessing a PDB from the internet without having to create a file.</p>
+<section id="Downloading-and-analyzing">
+<h2>Downloading and analyzing<a class="headerlink" href="#Downloading-and-analyzing" title="Permalink to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -122,8 +134,205 @@
 
 <span class="c1"># Analyzing the PDB and creating a new row &quot;R&quot;</span>
 <span class="n">structure_df</span> <span class="o">=</span> <span class="n">backmap</span><span class="o">.</span><span class="n">process_PDB</span><span class="p">(</span><span class="n">fh</span><span class="p">)</span>
-<span class="c1"># Displaying this data in multiple formats</span>
-<span class="n">should_be_true</span><span class="p">,</span> <span class="n">figure_dict</span>    <span class="o">=</span> <span class="n">backmap</span><span class="o">.</span><span class="n">draw_figures</span><span class="p">(</span><span class="n">structure_df</span><span class="o">=</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># Displaying the dataframe</span>
+<span class="n">structure_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>atomno</th>
+      <th>resname</th>
+      <th>chain</th>
+      <th>resid</th>
+      <th>occupancy</th>
+      <th>tf</th>
+      <th>segname</th>
+      <th>model</th>
+      <th>phi</th>
+      <th>psi</th>
+      <th>R</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>SER</td>
+      <td>A</td>
+      <td>1</td>
+      <td>1.0</td>
+      <td>2.00</td>
+      <td>None</td>
+      <td>1</td>
+      <td>NaN</td>
+      <td>29.085181</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>12</td>
+      <td>ALA</td>
+      <td>A</td>
+      <td>2</td>
+      <td>1.0</td>
+      <td>14.23</td>
+      <td>None</td>
+      <td>1</td>
+      <td>-161.710494</td>
+      <td>157.217687</td>
+      <td>0.493760</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>22</td>
+      <td>ALA</td>
+      <td>A</td>
+      <td>3</td>
+      <td>1.0</td>
+      <td>32.33</td>
+      <td>None</td>
+      <td>1</td>
+      <td>-163.929703</td>
+      <td>124.036378</td>
+      <td>0.444593</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>32</td>
+      <td>LYS</td>
+      <td>A</td>
+      <td>4</td>
+      <td>1.0</td>
+      <td>11.44</td>
+      <td>None</td>
+      <td>1</td>
+      <td>56.513637</td>
+      <td>-176.083053</td>
+      <td>0.333931</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>54</td>
+      <td>GLY</td>
+      <td>A</td>
+      <td>5</td>
+      <td>1.0</td>
+      <td>1.34</td>
+      <td>None</td>
+      <td>1</td>
+      <td>155.540044</td>
+      <td>-157.825870</td>
+      <td>0.496825</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="VIEWING-SPECIFIC-GRAPHS">
+<h2>VIEWING SPECIFIC GRAPHS<a class="headerlink" href="#VIEWING-SPECIFIC-GRAPHS" title="Permalink to this heading"></a></h2>
+<p>So far, we have been using the <code class="docutils literal notranslate"><span class="pre">backmap.draw_figures()</span></code> function to view a set of figures (heatmaps showing per-residue R values, RMSD, RMSF, and per modle R histograms). In most situations, only some images may be, needed. In that situation, one could one of the four functions:</p>
+<section id="Per-model,-per-residue-R-heatmaps">
+<h3>Per-model, per-residue R heatmaps<a class="headerlink" href="#Per-model,-per-residue-R-heatmaps" title="Permalink to this heading"></a></h3>
+<p>The following figure is colored by the <code class="docutils literal notranslate"><span class="pre">SecondaryStructure</span></code> cmap. But You can use <code class="docutils literal notranslate"><span class="pre">Chirality</span></code>, <code class="docutils literal notranslate"><span class="pre">Greys</span></code>, or any other legitimate cmap name available to <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">current_figures</span> <span class="o">=</span> <span class="n">backmap</span><span class="o">.</span><span class="n">draw_per_residue_plot</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                                <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;SecondaryStructure&#39;</span><span class="p">)</span>
+
+<span class="c1"># FOR REFERENCE: this is how we used to call all plots at once:</span>
+<span class="c1"># should_be_true, figure_dict    = backmap.draw_figures(structure_df=structure_df, output_dir=&#39;&#39;,</span>
+<span class="c1">#                                                       write=False, show=True)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_download_3_0.png" src="../_images/notebooks_download_3_0.png" />
+</div>
+</div>
+</section>
+<section id="Per-model,-per-residue-RMSD(R)-heatmaps">
+<h3>Per-model, per-residue RMSD(R) heatmaps<a class="headerlink" href="#Per-model,-per-residue-RMSD(R)-heatmaps" title="Permalink to this heading"></a></h3>
+<p>Here, for each model index <span class="math notranslate nohighlight">\(t\)</span>, the per-residue <span class="math notranslate nohighlight">\(RMSD(R)\)</span> represents the root mean squared deviation of that model and residue’s R vs the first model and corresponding residue’s R (i.e., for any residue in model <span class="math notranslate nohighlight">\(t\)</span>, the heatmap value would be represented by <span class="math notranslate nohighlight">\(|R_t-R_1|\)</span>, where <span class="math notranslate nohighlight">\(1\)</span> represents the first model).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">current_figures</span> <span class="o">=</span> <span class="n">backmap</span><span class="o">.</span><span class="n">draw_per_residue_RMSD</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                            <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                            <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Reds&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_download_5_0.png" src="../_images/notebooks_download_5_0.png" />
+</div>
+</div>
+<p>Identical to the function above, you can use the <code class="docutils literal notranslate"><span class="pre">backmap.draw_per_residue_RMSF()</span></code> function to get root mean squared fluctions; i.e., in stead of comparing corresponding residues between the current model <span class="math notranslate nohighlight">\(t\)</span> and the first model <span class="math notranslate nohighlight">\(1\)</span>, one would compare to the previous model for any residue in model <span class="math notranslate nohighlight">\(t\)</span>, the heatmap value would be represented by <span class="math notranslate nohighlight">\(|R_t-R_{t-1}|\)</span>, where <span class="math notranslate nohighlight">\(t-1\)</span> represents the previous model.</p>
+</section>
+<section id="Per-model-histograms-of-R">
+<h3>Per-model histograms of R<a class="headerlink" href="#Per-model-histograms-of-R" title="Permalink to this heading"></a></h3>
+<p>As the sub-title says, it allows you to see the histogram distribution of <span class="math notranslate nohighlight">\(R\)</span> for each model (so, <span class="math notranslate nohighlight">\(R\)</span> is now on the y-axis, and the color represents occupancy of the model’s residues in that regions of <span class="math notranslate nohighlight">\(R\)</span>)</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">current_figures</span> <span class="o">=</span> <span class="n">backmap</span><span class="o">.</span><span class="n">draw_per_model_histogram</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                           <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                           <span class="n">bin_steps</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+                                           <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Greys&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_download_7_0.png" src="../_images/notebooks_download_7_0.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="For-completeness,-using-backmap.draw_figures()">
+<h2>For completeness, using backmap.draw_figures()<a class="headerlink" href="#For-completeness,-using-backmap.draw_figures()" title="Permalink to this heading"></a></h2>
+<p>This usage is identical to the one used in the first walkthrough notebook.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">should_be_true</span><span class="p">,</span> <span class="n">figure_dict</span>    <span class="o">=</span> <span class="n">backmap</span><span class="o">.</span><span class="n">draw_figures</span><span class="p">(</span><span class="n">structure_df</span><span class="o">=</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                                       <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -131,75 +340,35 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
- ----   ---------
- 1      Ramachandran number (PDB: https://files.rcsb.org/download/2FFT.pdb)
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_download_1_1.png" src="../_images/notebooks_download_1_1.png" />
+<img alt="../_images/notebooks_download_9_0.png" src="../_images/notebooks_download_9_0.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_download_1_2.png" src="../_images/notebooks_download_1_2.png" />
+<img alt="../_images/notebooks_download_9_1.png" src="../_images/notebooks_download_9_1.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_download_1_3.png" src="../_images/notebooks_download_1_3.png" />
+<img alt="../_images/notebooks_download_9_2.png" src="../_images/notebooks_download_9_2.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
- 2.     Histogram (PDB: 1xqq)
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_download_1_5.png" src="../_images/notebooks_download_1_5.png" />
+<img alt="../_images/notebooks_download_9_3.png" src="../_images/notebooks_download_9_3.png" />
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
- 3.     RMSF (PDB: 2FFT)
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_download_1_7.png" src="../_images/notebooks_download_1_7.png" />
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
- 4.     RMSD (PDB: 2FFT)
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/notebooks_download_1_9.png" src="../_images/notebooks_download_1_9.png" />
+<img alt="../_images/notebooks_download_9_4.png" src="../_images/notebooks_download_9_4.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -210,6 +379,7 @@
 &lt;Figure size 640x480 with 0 Axes&gt;
 </pre></div></div>
 </div>
+</section>
 </section>
 
 

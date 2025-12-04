@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Authors" href="authors_link.html" />
-    <link rel="prev" title="Downloading and viewing a PDB from RCSB" href="notebooks/download.html" /> 
+    <link rel="prev" title="Downloading and viewing deep dive" href="notebooks/download.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -61,6 +61,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.process_PDB"><code class="docutils literal notranslate"><span class="pre">process_PDB()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.fill_in_missing_resids"><code class="docutils literal notranslate"><span class="pre">fill_in_missing_resids()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.mark_figure"><code class="docutils literal notranslate"><span class="pre">mark_figure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.get_pdbfn_name_and_dir"><code class="docutils literal notranslate"><span class="pre">get_pdbfn_name_and_dir()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.draw_per_residue_plot"><code class="docutils literal notranslate"><span class="pre">draw_per_residue_plot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.draw_per_residue_RMSF"><code class="docutils literal notranslate"><span class="pre">draw_per_residue_RMSF()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.draw_per_residue_RMSD"><code class="docutils literal notranslate"><span class="pre">draw_per_residue_RMSD()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.draw_per_model_histogram"><code class="docutils literal notranslate"><span class="pre">draw_per_model_histogram()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#backmap.backmap.draw_figures"><code class="docutils literal notranslate"><span class="pre">draw_figures()</span></code></a></li>
 </ul>
 </li>
@@ -309,7 +314,9 @@ to <code class="docutils literal notranslate"><span class="pre">False</span></co
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Reindexed dataframe spanning continuous residue ranges for
-each chain and model, filled with <code class="docutils literal notranslate"><span class="pre">fill_with</span></code> where data was absent.</p>
+each chain and model, filled with <code class="docutils literal notranslate"><span class="pre">fill_with</span></code> where data was absent.
+An additional key-value pair is added to the structure_df.attrs: {‘filled_na’: True},
+which prevents this function from being recalculated downstream</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
@@ -337,6 +344,158 @@ current matplotlib axes.</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>matplotlib.axes.Axes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backmap.backmap.get_pdbfn_name_and_dir">
+<span class="sig-prename descclassname"><span class="pre">backmap.backmap.</span></span><span class="sig-name descname"><span class="pre">get_pdbfn_name_and_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/backmap.html#get_pdbfn_name_and_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.backmap.get_pdbfn_name_and_dir" title="Permalink to this definition"></a></dt>
+<dd><p>Infer PDB filename, directory, and base name from dataframe metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>structure_df</strong> (<em>pd.DataFrame</em>) – Structure dataframe carrying a <code class="docutils literal notranslate"><span class="pre">pdbfn</span></code>
+entry in <code class="docutils literal notranslate"><span class="pre">attrs</span></code> when available.</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em><em>, </em><em>optional</em>) – Preferred output directory. Defaults to the
+PDB directory + <code class="docutils literal notranslate"><span class="pre">/reports/</span></code> when unset.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">(name,</span> <span class="pre">pdbfn,</span> <span class="pre">output_dir)</span></code> where <code class="docutils literal notranslate"><span class="pre">name</span></code> is the</dt><dd><p>PDB file stem, <code class="docutils literal notranslate"><span class="pre">pdbfn</span></code> is the full path (or empty string), and
+<code class="docutils literal notranslate"><span class="pre">output_dir</span></code> is the resolved reports directory. If a <cite>io.StringIO</cite>
+was provided instead of a filehandle, then the returned <code class="docutils literal notranslate"><span class="pre">output_dir</span></code>
+reverts to ‘./reports/’)</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[str, str, str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backmap.backmap.draw_per_residue_plot">
+<span class="sig-prename descclassname"><span class="pre">backmap.backmap.</span></span><span class="sig-name descname"><span class="pre">draw_per_residue_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SecondaryStructure'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/backmap.html#draw_per_residue_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.backmap.draw_per_residue_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Plot per-residue R values for each chain and optionally save/show images.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>structure_df</strong> (<em>pd.DataFrame</em>) – Structure dataframe containing <code class="docutils literal notranslate"><span class="pre">model</span></code>,
+<code class="docutils literal notranslate"><span class="pre">resid</span></code>, <code class="docutils literal notranslate"><span class="pre">R</span></code>, and <code class="docutils literal notranslate"><span class="pre">chain</span></code> columns.</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em><em>, </em><em>optional</em>) – Directory for written images. Defaults to
+the reports directory derived from <code class="docutils literal notranslate"><span class="pre">structure_df</span></code> metadata.</p></li>
+<li><p><strong>write</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to write images to disk. Defaults to
+False.</p></li>
+<li><p><strong>show</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to display plots interactively. Defaults
+to False.</p></li>
+<li><p><strong>v_limit</strong> (<em>tuple</em><em>, </em><em>optional</em>) – <code class="docutils literal notranslate"><span class="pre">(vmin,</span> <span class="pre">vmax)</span></code> limits for the colormap.
+Defaults to (0, 1).</p></li>
+<li><p><strong>cmap</strong> (<em>str</em><em>, </em><em>optional</em>) – Matplotlib colormap name. Defaults to
+‘SecondaryStructure’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mapping of chain identifiers to figure-like objects
+produced by <code class="docutils literal notranslate"><span class="pre">write_image</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backmap.backmap.draw_per_residue_RMSF">
+<span class="sig-prename descclassname"><span class="pre">backmap.backmap.</span></span><span class="sig-name descname"><span class="pre">draw_per_residue_RMSF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Blues'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/backmap.html#draw_per_residue_RMSF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.backmap.draw_per_residue_RMSF" title="Permalink to this definition"></a></dt>
+<dd><p>Plot per-residue RMSF (frame-to-frame <a href="#id1"><span class="problematic" id="id2">|R|</span></a> change) for each chain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>structure_df</strong> (<em>pd.DataFrame</em>) – Structure dataframe containing <code class="docutils literal notranslate"><span class="pre">model</span></code>,
+<code class="docutils literal notranslate"><span class="pre">resid</span></code>, <code class="docutils literal notranslate"><span class="pre">R</span></code>, and <code class="docutils literal notranslate"><span class="pre">chain</span></code> columns.</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em><em>, </em><em>optional</em>) – Directory for written images. Defaults to
+the reports directory derived from <code class="docutils literal notranslate"><span class="pre">structure_df</span></code> metadata.</p></li>
+<li><p><strong>write</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to write images to disk. Defaults to
+False.</p></li>
+<li><p><strong>show</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to display plots interactively. Defaults
+to False.</p></li>
+<li><p><strong>v_limit</strong> (<em>tuple</em><em>, </em><em>optional</em>) – <code class="docutils literal notranslate"><span class="pre">(vmin,</span> <span class="pre">vmax)</span></code> limits for the colormap.
+Defaults to (0, 1).</p></li>
+<li><p><strong>cmap</strong> (<em>str</em><em>, </em><em>optional</em>) – Matplotlib colormap name. Defaults to ‘Blues’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mapping of chain identifiers to figure-like objects
+produced by <code class="docutils literal notranslate"><span class="pre">write_image</span></code>. Chains with a single model are skipped.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backmap.backmap.draw_per_residue_RMSD">
+<span class="sig-prename descclassname"><span class="pre">backmap.backmap.</span></span><span class="sig-name descname"><span class="pre">draw_per_residue_RMSD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Reds'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/backmap.html#draw_per_residue_RMSD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.backmap.draw_per_residue_RMSD" title="Permalink to this definition"></a></dt>
+<dd><p>Plot per-residue RMSD versus the first model for each chain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>structure_df</strong> (<em>pd.DataFrame</em>) – Structure dataframe containing <code class="docutils literal notranslate"><span class="pre">model</span></code>,
+<code class="docutils literal notranslate"><span class="pre">resid</span></code>, <code class="docutils literal notranslate"><span class="pre">R</span></code>, and <code class="docutils literal notranslate"><span class="pre">chain</span></code> columns.</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em><em>, </em><em>optional</em>) – Directory for written images. Defaults to
+the reports directory derived from <code class="docutils literal notranslate"><span class="pre">structure_df</span></code> metadata.</p></li>
+<li><p><strong>write</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to write images to disk. Defaults to
+False.</p></li>
+<li><p><strong>show</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to display plots interactively. Defaults
+to False.</p></li>
+<li><p><strong>v_limit</strong> (<em>tuple</em><em>, </em><em>optional</em>) – <code class="docutils literal notranslate"><span class="pre">(vmin,</span> <span class="pre">vmax)</span></code> limits for the colormap.
+Defaults to (0, 1).</p></li>
+<li><p><strong>cmap</strong> (<em>str</em><em>, </em><em>optional</em>) – Matplotlib colormap name. Defaults to ‘Reds’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mapping of chain identifiers to figure-like objects
+produced by <code class="docutils literal notranslate"><span class="pre">write_image</span></code>. Chains with a single model are skipped.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="backmap.backmap.draw_per_model_histogram">
+<span class="sig-prename descclassname"><span class="pre">backmap.backmap.</span></span><span class="sig-name descname"><span class="pre">draw_per_model_histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">write</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Greys'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/backmap/backmap.html#draw_per_model_histogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#backmap.backmap.draw_per_model_histogram" title="Permalink to this definition"></a></dt>
+<dd><p>Plot per-model histograms of Ramachandran values for each chain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>structure_df</strong> (<em>pd.DataFrame</em>) – Structure dataframe containing <code class="docutils literal notranslate"><span class="pre">model</span></code>,
+<code class="docutils literal notranslate"><span class="pre">chain</span></code>, <code class="docutils literal notranslate"><span class="pre">resid</span></code>, and <code class="docutils literal notranslate"><span class="pre">R</span></code> columns.</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em><em>, </em><em>optional</em>) – Directory for written images. Defaults to
+the reports directory derived from <code class="docutils literal notranslate"><span class="pre">structure_df</span></code> metadata.</p></li>
+<li><p><strong>write</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to write images to disk. Defaults to
+False.</p></li>
+<li><p><strong>show</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to display plots interactively. Defaults
+to False.</p></li>
+<li><p><strong>bin_steps</strong> (<em>float</em><em>, </em><em>optional</em>) – Y-axis tick spacing for the probability
+axis. Defaults to 0.2.</p></li>
+<li><p><strong>v_limit</strong> (<em>tuple</em><em>, </em><em>optional</em>) – <code class="docutils literal notranslate"><span class="pre">(vmin,</span> <span class="pre">vmax)</span></code> limits for histogram
+values. Defaults to (0, 1).</p></li>
+<li><p><strong>cmap</strong> (<em>str</em><em>, </em><em>optional</em>) – Matplotlib colormap name. Defaults to ‘Greys’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mapping of chain identifiers to figure-like objects
+produced by <code class="docutils literal notranslate"><span class="pre">write_image</span></code> for each histogram.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -866,7 +1025,7 @@ and axes are returned so callers can further customize or save the visualization
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="notebooks/download.html" class="btn btn-neutral float-left" title="Downloading and viewing a PDB from RCSB" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="notebooks/download.html" class="btn btn-neutral float-left" title="Downloading and viewing deep dive" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="authors_link.html" class="btn btn-neutral float-right" title="Authors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
