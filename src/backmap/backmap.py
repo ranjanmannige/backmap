@@ -561,6 +561,22 @@ def get_unique_chains(structure_df,chain_col='chain'):
     return unique_chains
 
 def get_pdbfn_name_and_dir(structure_df, output_dir=''):
+    """Infer PDB filename, directory, and base name from dataframe metadata.
+
+    Args:
+        structure_df (pd.DataFrame): Structure dataframe carrying a ``pdbfn``
+            entry in ``attrs`` when available.
+        output_dir (str, optional): Preferred output directory. Defaults to the
+            PDB directory + ``/reports/`` when unset. 
+
+    Returns:
+        tuple[str, str, str]: ``(name, pdbfn, output_dir)`` where ``name`` is the
+            PDB file stem, ``pdbfn`` is the full path (or empty string), and
+            ``output_dir`` is the resolved reports directory. If a `io.StringIO`
+            was provided instead of a filehandle, then the returned ``output_dir`` 
+            reverts to './reports/')
+    """
+    
     pdbfn = ''
     pdbdir = './'
     if 'pdbfn' in structure_df.attrs:
@@ -581,6 +597,27 @@ def get_pdbfn_name_and_dir(structure_df, output_dir=''):
     return name, pdbfn, output_dir
 
 def draw_per_residue_plot(structure_df, output_dir='', write=False, show=False, v_limit = (0,1), cmap='SecondaryStructure'):
+    """Plot per-residue R values for each chain and optionally save/show images.
+
+    Args:
+        structure_df (pd.DataFrame): Structure dataframe containing ``model``,
+            ``resid``, ``R``, and ``chain`` columns.
+        output_dir (str, optional): Directory for written images. Defaults to
+            the reports directory derived from ``structure_df`` metadata.
+        write (bool, optional): Whether to write images to disk. Defaults to
+            False.
+        show (bool, optional): Whether to display plots interactively. Defaults
+            to False.
+        v_limit (tuple, optional): ``(vmin, vmax)`` limits for the colormap.
+            Defaults to (0, 1).
+        cmap (str, optional): Matplotlib colormap name. Defaults to
+            'SecondaryStructure'.
+
+    Returns:
+        dict[str, Any]: Mapping of chain identifiers to figure-like objects
+        produced by ``write_image``.
+    """
+    
     # The ramachandran plot is limited to [0, 1]
     vmin = v_limit[0]
     vmax = v_limit[1]
@@ -619,6 +656,26 @@ def draw_per_residue_plot(structure_df, output_dir='', write=False, show=False, 
     return figures
 
 def draw_per_residue_RMSF(structure_df, output_dir='', write=False, show=False, v_limit = (0,1), cmap='Blues'):
+    """Plot per-residue RMSF (frame-to-frame |R| change) for each chain.
+
+    Args:
+        structure_df (pd.DataFrame): Structure dataframe containing ``model``,
+            ``resid``, ``R``, and ``chain`` columns.
+        output_dir (str, optional): Directory for written images. Defaults to
+            the reports directory derived from ``structure_df`` metadata.
+        write (bool, optional): Whether to write images to disk. Defaults to
+            False.
+        show (bool, optional): Whether to display plots interactively. Defaults
+            to False.
+        v_limit (tuple, optional): ``(vmin, vmax)`` limits for the colormap.
+            Defaults to (0, 1).
+        cmap (str, optional): Matplotlib colormap name. Defaults to 'Blues'.
+
+    Returns:
+        dict[str, Any]: Mapping of chain identifiers to figure-like objects
+        produced by ``write_image``. Chains with a single model are skipped.
+    """
+    
     # The ramachandran plot is limited to [0, 1]
     vmin = v_limit[0]
     vmax = v_limit[1]
@@ -686,6 +743,26 @@ def draw_per_residue_RMSF(structure_df, output_dir='', write=False, show=False, 
     return figures
 
 def draw_per_residue_RMSD(structure_df, output_dir='', write=False, show=False, v_limit = (0,1), cmap='Reds'):
+    """Plot per-residue RMSD versus the first model for each chain.
+
+    Args:
+        structure_df (pd.DataFrame): Structure dataframe containing ``model``,
+            ``resid``, ``R``, and ``chain`` columns.
+        output_dir (str, optional): Directory for written images. Defaults to
+            the reports directory derived from ``structure_df`` metadata.
+        write (bool, optional): Whether to write images to disk. Defaults to
+            False.
+        show (bool, optional): Whether to display plots interactively. Defaults
+            to False.
+        v_limit (tuple, optional): ``(vmin, vmax)`` limits for the colormap.
+            Defaults to (0, 1).
+        cmap (str, optional): Matplotlib colormap name. Defaults to 'Reds'.
+
+    Returns:
+        dict[str, Any]: Mapping of chain identifiers to figure-like objects
+        produced by ``write_image``. Chains with a single model are skipped.
+    """
+    
     # The ramachandran plot is limited to [0, 1]
     vmin = v_limit[0]
     vmax = v_limit[1]
@@ -749,6 +826,27 @@ def draw_per_residue_RMSD(structure_df, output_dir='', write=False, show=False, 
 
 
 def draw_per_model_histogram(structure_df, output_dir='', write=False, show=False, bin_steps=0.2, v_limit = (0,1), cmap='Greys'):
+    """Plot per-model histograms of Ramachandran values for each chain.
+
+    Args:
+        structure_df (pd.DataFrame): Structure dataframe containing ``model``,
+            ``chain``, ``resid``, and ``R`` columns.
+        output_dir (str, optional): Directory for written images. Defaults to
+            the reports directory derived from ``structure_df`` metadata.
+        write (bool, optional): Whether to write images to disk. Defaults to
+            False.
+        show (bool, optional): Whether to display plots interactively. Defaults
+            to False.
+        bin_steps (float, optional): Y-axis tick spacing for the probability
+            axis. Defaults to 0.2.
+        v_limit (tuple, optional): ``(vmin, vmax)`` limits for histogram
+            values. Defaults to (0, 1).
+        cmap (str, optional): Matplotlib colormap name. Defaults to 'Greys'.
+
+    Returns:
+        dict[str, Any]: Mapping of chain identifiers to figure-like objects
+        produced by ``write_image`` for each histogram.
+    """
     # The ramachandran plot is limited to [0, 1]
     vmin = v_limit[0]
     vmax = v_limit[1]
