@@ -27,7 +27,10 @@
 .. contents::
 
 
-Full documentation available here: https://ranjanmannige.github.io/backmap/.
+Full documentation available here: https://ranjanmannige.github.io/backmap.
+
+GitHub repository available here: https://github.com/ranjanmannige/backmap.
+
 
 
 Introduction
