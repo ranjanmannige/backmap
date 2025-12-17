@@ -92,7 +92,9 @@ In-script usage
     import backmap
     print backmap.R(phi=0,psi=0) # Should print '0.5'
 
-For more information about in-script module usage, refer to the `manuscript <https://raw.githubusercontent.com/ranjanmannige/backmap/master/manuscript/manuscript/backmap.pdf>`_ associated with this module.
+For more information about in-script module usage, refer to the 
+`notebook examples <https://ranjanmannige.github.io/backmap/notebooks.html>`__ section 
+of the `documentation pages <https://ranjanmannige.github.io/backmap>`__.
 
 Standalone usage
 ----------------
