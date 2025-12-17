@@ -1,23 +1,23 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BackMAP EXAMPLES &mdash; BackMAP 1.0.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
-      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
 
   
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
-      <script src="../_static/jquery.js"></script>
-      <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-      <script src="../_static/doctools.js"></script>
-      <script src="../_static/sphinx_highlight.js"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
       <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
       <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -96,16 +96,16 @@
            <div itemprop="articleBody">
              
   <section id="BackMAP-EXAMPLES">
-<h1>BackMAP EXAMPLES<a class="headerlink" href="#BackMAP-EXAMPLES" title="Permalink to this heading"></a></h1>
+<h1>BackMAP EXAMPLES<a class="headerlink" href="#BackMAP-EXAMPLES" title="Link to this heading"></a></h1>
 <section id="Calculating-Ramachandran-numbers-from-phi,-psi-angles">
-<h2>Calculating Ramachandran numbers from phi, psi angles<a class="headerlink" href="#Calculating-Ramachandran-numbers-from-phi,-psi-angles" title="Permalink to this heading"></a></h2>
+<h2>Calculating Ramachandran numbers from phi, psi angles<a class="headerlink" href="#Calculating-Ramachandran-numbers-from-phi,-psi-angles" title="Link to this heading"></a></h2>
 <p>Firstly, the Ramachandran number is easy to calculate if you already have each residue’s <span class="math notranslate nohighlight">\(Φ\)</span> (phi) and <span class="math notranslate nohighlight">\(Ψ\)</span> (psi) values.</p>
 <p>E.g.:</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">backmap</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">backmap</span>
 <span class="n">phi</span><span class="o">=</span><span class="mi">110</span>
 <span class="n">psi</span><span class="o">=</span><span class="mi">100</span>
 <span class="n">R_local</span> <span class="o">=</span> <span class="p">(</span><span class="n">phi</span><span class="o">+</span><span class="n">psi</span><span class="o">+</span><span class="mi">360</span><span class="p">)</span><span class="o">/</span><span class="mf">720.0</span>
@@ -118,7 +118,7 @@
 <p>The equation above (<span class="math notranslate nohighlight">\((\phi+\psi+360)/720\)</span>) was derived in <a class="reference external" href="https://doi.org/10.7717/peerj.5745">Mannige, 2018</a>. The next notebook that shows how the proof was derived.</p>
 </section>
 <section id="Using-BackMAP-to-extract-per-residue-descriptors-without-displaying-them">
-<h2>Using BackMAP to extract per-residue descriptors without displaying them<a class="headerlink" href="#Using-BackMAP-to-extract-per-residue-descriptors-without-displaying-them" title="Permalink to this heading"></a></h2>
+<h2>Using BackMAP to extract per-residue descriptors without displaying them<a class="headerlink" href="#Using-BackMAP-to-extract-per-residue-descriptors-without-displaying-them" title="Link to this heading"></a></h2>
 <p><span class="math notranslate nohighlight">\(Φ\)</span> (phi) and <span class="math notranslate nohighlight">\(Ψ\)</span> (psi) values are hard to calculate on the fly. If per residue phi, psi, and Ramachandran (R) numbers alal you need, then use <code class="docutils literal notranslate"><span class="pre">backmap.process_PDB()</span></code>.</p>
 <p>Here is an example (<a class="reference external" href="https://www.rcsb.org/structure/1MBA">1MBA</a>) of a simple PDB that has only one structure:</p>
 <div class="nbinput docutils container">
@@ -294,7 +294,7 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># A more complicated PDB, with multiple models</span>
-<span class="kn">import</span> <span class="nn">backmap</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">backmap</span>
 <span class="n">pdbfn</span> <span class="o">=</span> <span class="s1">&#39;../tests/pdbs/2fft.pdb.gz&#39;</span>
 <span class="n">structure_df2</span> <span class="o">=</span> <span class="n">backmap</span><span class="o">.</span><span class="n">process_PDB</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pdbfn</span><span class="si">}</span><span class="s2"> starts with:&quot;</span><span class="p">)</span>
@@ -459,7 +459,7 @@
 </div>
 </section>
 <section id="Bonus:-marking-specific-residues">
-<h2>Bonus: marking specific residues<a class="headerlink" href="#Bonus:-marking-specific-residues" title="Permalink to this heading"></a></h2>
+<h2>Bonus: marking specific residues<a class="headerlink" href="#Bonus:-marking-specific-residues" title="Link to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
@@ -483,11 +483,11 @@
 </div>
 </section>
 <section id="Displaying-structures-and-ensembles">
-<h2>Displaying structures and ensembles<a class="headerlink" href="#Displaying-structures-and-ensembles" title="Permalink to this heading"></a></h2>
+<h2>Displaying structures and ensembles<a class="headerlink" href="#Displaying-structures-and-ensembles" title="Link to this heading"></a></h2>
 <p>Sometimes, displaying these structures can reveal interesting features quickly</p>
 <p><strong>For a detailed discussion on these graphs, refer to the downloading and viewing python notebook</strong></p>
 <section id="A-slightly-boring-example:-1MBA">
-<h3>A slightly boring example: 1MBA<a class="headerlink" href="#A-slightly-boring-example:-1MBA" title="Permalink to this heading"></a></h3>
+<h3>A slightly boring example: 1MBA<a class="headerlink" href="#A-slightly-boring-example:-1MBA" title="Link to this heading"></a></h3>
 <p>For example, for PDB ID 1mba, the second figure under heading 1 immediately reveals that the protein is dominantly alpha helical.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -540,7 +540,7 @@
 </div>
 </section>
 <section id="A-more-interesting-structure:-2FFT">
-<h3>A more interesting structure: 2FFT<a class="headerlink" href="#A-more-interesting-structure:-2FFT" title="Permalink to this heading"></a></h3>
+<h3>A more interesting structure: 2FFT<a class="headerlink" href="#A-more-interesting-structure:-2FFT" title="Link to this heading"></a></h3>
 <p>Note that looking at just one structure does not matter much, however, if you look at ensembles, then the value of the Ramachandran number is more visible.</p>
 <p>For example, the black-and-white histogram (Fig 1) shows that there is a single stable segment of the protein around residue number 20, which turns out to be an alpha helix.</p>
 <p>Also, the same figure shows an interesting stable point at residue numbe 60. If there were two stable sections in a protein, you would only visualize the first or the second section by aligning all structures to that sections, but, given that their relative positions are always fluctuating due to the variable regions, you can not align both section together (also see 3 and 4).</p>

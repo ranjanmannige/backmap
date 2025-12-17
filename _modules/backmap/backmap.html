@@ -1,21 +1,21 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>backmap.backmap &mdash; BackMAP 1.0.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
-      <script src="../../_static/jquery.js"></script>
-      <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-      <script src="../../_static/doctools.js"></script>
-      <script src="../../_static/sphinx_highlight.js"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -75,32 +75,32 @@
              
   <h1>Source code for backmap.backmap</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Main module. Example usage: ``backmap.R()``, which is equal to ``backmap.backmap.R()``&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">local_colormaps</span>
-<span class="kn">import</span> <span class="nn">matplotlib.patches</span> <span class="k">as</span> <span class="nn">patches</span> <span class="c1"># for drawing markers</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">local_colormaps</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.patches</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">patches</span> <span class="c1"># for drawing markers</span>
 
-<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="c1">#warnings.filterwarnings(&quot;ignore&quot;, category=matplotlib.MatplotlibDeprecationWarning)</span>
 <span class="c1"># Using the following warning because plt.gca() give out a DeprecationWarning when pytest runs in Python 3.9</span>
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span> 
 
 
 <span class="c1"># Standard imports</span>
-<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span><span class="nn">re</span><span class="o">,</span><span class="nn">os</span><span class="o">,</span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span><span class="o">,</span><span class="nn">re</span><span class="o">,</span><span class="nn">os</span><span class="o">,</span><span class="nn">math</span>
 
 <span class="c1"># Commonly available imports</span>
-<span class="kn">import</span> <span class="nn">copy</span><span class="o">,</span><span class="nn">glob</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span><span class="o">,</span><span class="nn">glob</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 
 
 <span class="c1"># matplotlib imports</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 
 
@@ -171,7 +171,9 @@
 <span class="n">rcode_cmap</span> <span class="o">=</span> <span class="n">local_colormaps</span><span class="o">.</span><span class="n">cmaps</span><span class="p">[</span><span class="s1">&#39;ChiralityFourColor&#39;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="normalized_ramachandran_number"><a class="viewcode-back" href="../../reference.html#backmap.backmap.normalized_ramachandran_number">[docs]</a><span class="k">def</span> <span class="nf">normalized_ramachandran_number</span><span class="p">(</span><span class="n">phi</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">psi</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="normalized_ramachandran_number">
+<a class="viewcode-back" href="../../reference.html#backmap.backmap.normalized_ramachandran_number">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">normalized_ramachandran_number</span><span class="p">(</span><span class="n">phi</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">psi</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the normalized Ramachandran number for given backbone angles (``phi`` and ``psi``).</span>
 
 <span class="sd">    Args:</span>
@@ -192,32 +194,44 @@
         <span class="c1">#</span>
     <span class="c1">#</span>
     <span class="k">return</span> <span class="n">r</span></div>
+
 <span class="c1">#</span>
 
-<div class="viewcode-block" id="ramachandran_number"><a class="viewcode-back" href="../../reference.html#backmap.backmap.ramachandran_number">[docs]</a><span class="k">def</span> <span class="nf">ramachandran_number</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span><span class="n">psi</span><span class="p">,</span><span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="ramachandran_number">
+<a class="viewcode-back" href="../../reference.html#backmap.backmap.ramachandran_number">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">ramachandran_number</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span><span class="n">psi</span><span class="p">,</span><span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Different abbreviated ways to request the ramachandran number</span>
 <span class="sd">    Refer to :py:func:`backmap.backmap.normalized_ramachandran_number` for usage details.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">normalized_ramachandran_number</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span><span class="n">psi</span><span class="p">,</span><span class="n">signed</span><span class="p">)</span></div>
+
 <span class="c1">#</span>
 
-<div class="viewcode-block" id="r"><a class="viewcode-back" href="../../reference.html#backmap.backmap.r">[docs]</a><span class="k">def</span> <span class="nf">r</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span><span class="n">psi</span><span class="p">,</span><span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="r">
+<a class="viewcode-back" href="../../reference.html#backmap.backmap.r">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">r</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span><span class="n">psi</span><span class="p">,</span><span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Different abbreviated ways to request the ramachandran number</span>
 <span class="sd">    Refer to :py:func:`backmap.backmap.normalized_ramachandran_number` for usage details.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">return</span> <span class="n">normalized_ramachandran_number</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span><span class="n">psi</span><span class="p">,</span><span class="n">signed</span><span class="p">)</span></div>
+
 <span class="c1">#</span>
 
-<div class="viewcode-block" id="R"><a class="viewcode-back" href="../../reference.html#backmap.backmap.R">[docs]</a><span class="k">def</span> <span class="nf">R</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span><span class="n">psi</span><span class="p">,</span><span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="R">
+<a class="viewcode-back" href="../../reference.html#backmap.backmap.R">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">R</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span><span class="n">psi</span><span class="p">,</span><span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Different abbreviated ways to request the ramachandran number</span>
 <span class="sd">    Refer to :py:func:`backmap.backmap.normalized_ramachandran_number` for usage details.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">return</span> <span class="n">normalized_ramachandran_number</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span><span class="n">psi</span><span class="p">,</span><span class="n">signed</span><span class="p">)</span></div>
+
 <span class="c1">#</span>
 
-<div class="viewcode-block" id="write_image"><a class="viewcode-back" href="../../reference.html#backmap.backmap.write_image">[docs]</a><span class="k">def</span> <span class="nf">write_image</span><span class="p">(</span><span class="n">fn_base</span><span class="p">,</span> <span class="n">figure_object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="write_image">
+<a class="viewcode-back" href="../../reference.html#backmap.backmap.write_image">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">write_image</span><span class="p">(</span><span class="n">fn_base</span><span class="p">,</span> <span class="n">figure_object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Save a figure to disk and optionally display it.</span>
 
 <span class="sd">    Args:</span>
@@ -244,13 +258,16 @@
     <span class="k">if</span> <span class="n">show</span><span class="p">:</span> 
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">figure_object</span></div>
+
 <span class="c1">#</span>
 
-<span class="k">def</span> <span class="nf">set_nan_color</span><span class="p">(</span><span class="n">cmap</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">set_nan_color</span><span class="p">(</span><span class="n">cmap</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">):</span>
     <span class="n">cmap</span><span class="o">.</span><span class="n">set_bad</span><span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">cmap</span>
 
-<div class="viewcode-block" id="draw_xyz"><a class="viewcode-back" href="../../reference.html#backmap.backmap.draw_xyz">[docs]</a><span class="k">def</span> <span class="nf">draw_xyz</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">Y</span><span class="p">,</span><span class="n">Z</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Greys&#39;</span><span class="p">,</span> <span class="n">missing_color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">ylabel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">zlabel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="draw_xyz">
+<a class="viewcode-back" href="../../reference.html#backmap.backmap.draw_xyz">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">draw_xyz</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">Y</span><span class="p">,</span><span class="n">Z</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Greys&#39;</span><span class="p">,</span> <span class="n">missing_color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">ylabel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">zlabel</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Render a heatmap-style plot for spatially indexed values.</span>
 
 <span class="sd">    Args:</span>
@@ -369,9 +386,12 @@
     <span class="c1"># To see this graph and quit, uncomment the following:</span>
     <span class="c1">#plt.show(); exit();</span>
     <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ax</span></div>
+
 <span class="c1">#</span>
 
-<div class="viewcode-block" id="obtain_ramachandran_dataframe"><a class="viewcode-back" href="../../reference.html#backmap.backmap.obtain_ramachandran_dataframe">[docs]</a><span class="k">def</span> <span class="nf">obtain_ramachandran_dataframe</span><span class="p">(</span><span class="n">coordinates_df</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="obtain_ramachandran_dataframe">
+<a class="viewcode-back" href="../../reference.html#backmap.backmap.obtain_ramachandran_dataframe">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">obtain_ramachandran_dataframe</span><span class="p">(</span><span class="n">coordinates_df</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Aggregate residue-level dihedral angles from per-atom backbone coordinates.</span>
 
 <span class="sd">    Args:</span>
@@ -443,7 +463,10 @@
     
     <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">final_records</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="read_pdb_from_pdbfn_or_filehandle"><a class="viewcode-back" href="../../reference.html#backmap.backmap.read_pdb_from_pdbfn_or_filehandle">[docs]</a><span class="k">def</span> <span class="nf">read_pdb_from_pdbfn_or_filehandle</span><span class="p">(</span><span class="n">pdbfn_or_filehandle</span><span class="p">,</span> <span class="n">structure_df</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(),</span> <span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="read_pdb_from_pdbfn_or_filehandle">
+<a class="viewcode-back" href="../../reference.html#backmap.backmap.read_pdb_from_pdbfn_or_filehandle">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_pdb_from_pdbfn_or_filehandle</span><span class="p">(</span><span class="n">pdbfn_or_filehandle</span><span class="p">,</span> <span class="n">structure_df</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(),</span> <span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse PDB content, compute Ramachandran metrics, and merge with an existing dataframe.</span>
 
 <span class="sd">    Args:</span>
@@ -485,7 +508,10 @@
     <span class="n">structure_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">structure_df</span><span class="p">,</span><span class="n">latest_structure_df</span><span class="o">.</span><span class="n">copy</span><span class="p">()])</span>
     <span class="k">return</span> <span class="n">structure_df</span></div>
 
-<div class="viewcode-block" id="process_PDB"><a class="viewcode-back" href="../../reference.html#backmap.backmap.process_PDB">[docs]</a><span class="k">def</span> <span class="nf">process_PDB</span><span class="p">(</span><span class="n">pdbfn_or_filehandle</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="process_PDB">
+<a class="viewcode-back" href="../../reference.html#backmap.backmap.process_PDB">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">process_PDB</span><span class="p">(</span><span class="n">pdbfn_or_filehandle</span><span class="p">,</span> <span class="n">signed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Collect residue-level Ramachandran data from one or more PDB inputs.</span>
 
 <span class="sd">    Accepts either an open file handle or a path to a PDB file/directory/archive,</span>
@@ -563,7 +589,10 @@
     <span class="k">return</span> <span class="n">structure_df</span></div>
 
 
-<div class="viewcode-block" id="fill_in_missing_resids"><a class="viewcode-back" href="../../reference.html#backmap.backmap.fill_in_missing_resids">[docs]</a><span class="k">def</span> <span class="nf">fill_in_missing_resids</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">fill_with</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="fill_in_missing_resids">
+<a class="viewcode-back" href="../../reference.html#backmap.backmap.fill_in_missing_resids">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fill_in_missing_resids</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">fill_with</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Insert placeholder rows for missing residue IDs per chain and model.</span>
 
 <span class="sd">    Args:</span>
@@ -601,7 +630,10 @@
             <span class="n">final_structure_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">final_structure_df</span><span class="p">,</span><span class="n">_model_df</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">final_structure_df</span></div>
 
-<div class="viewcode-block" id="mark_figure"><a class="viewcode-back" href="../../reference.html#backmap.backmap.mark_figure">[docs]</a><span class="k">def</span> <span class="nf">mark_figure</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">mark_column</span><span class="o">=</span><span class="s1">&#39;mark&#39;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="mark_figure">
+<a class="viewcode-back" href="../../reference.html#backmap.backmap.mark_figure">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">mark_figure</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">mark_column</span><span class="o">=</span><span class="s1">&#39;mark&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Add right-side markers to rows flagged in ``mark_column`` on the current plot.</span>
 
 <span class="sd">    Args:</span>
@@ -630,13 +662,16 @@
             <span class="c1"># Add the patch to the Axes</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ax</span></div>
+
         
 
-<span class="k">def</span> <span class="nf">get_unique_chains</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span><span class="n">chain_col</span><span class="o">=</span><span class="s1">&#39;chain&#39;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_unique_chains</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span><span class="n">chain_col</span><span class="o">=</span><span class="s1">&#39;chain&#39;</span><span class="p">):</span>
     <span class="n">unique_chains</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">structure_df</span><span class="p">[</span><span class="s1">&#39;chain&#39;</span><span class="p">])))</span>
     <span class="k">return</span> <span class="n">unique_chains</span>
 
-<div class="viewcode-block" id="get_pdbfn_name_and_dir"><a class="viewcode-back" href="../../reference.html#backmap.backmap.get_pdbfn_name_and_dir">[docs]</a><span class="k">def</span> <span class="nf">get_pdbfn_name_and_dir</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="get_pdbfn_name_and_dir">
+<a class="viewcode-back" href="../../reference.html#backmap.backmap.get_pdbfn_name_and_dir">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_pdbfn_name_and_dir</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Infer PDB filename, directory, and base name from dataframe metadata.</span>
 
 <span class="sd">    Args:</span>
@@ -672,7 +707,10 @@
     
     <span class="k">return</span> <span class="n">name</span><span class="p">,</span> <span class="n">pdbfn</span><span class="p">,</span> <span class="n">output_dir</span></div>
 
-<div class="viewcode-block" id="draw_per_residue_plot"><a class="viewcode-back" href="../../reference.html#backmap.backmap.draw_per_residue_plot">[docs]</a><span class="k">def</span> <span class="nf">draw_per_residue_plot</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;SecondaryStructure&#39;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="draw_per_residue_plot">
+<a class="viewcode-back" href="../../reference.html#backmap.backmap.draw_per_residue_plot">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">draw_per_residue_plot</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;SecondaryStructure&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot per-residue R values for each chain and optionally save/show images.</span>
 
 <span class="sd">    Args:</span>
@@ -731,8 +769,11 @@
         <span class="c1">#</span>
     <span class="k">return</span> <span class="n">figures</span></div>
 
-<div class="viewcode-block" id="draw_per_residue_RMSF"><a class="viewcode-back" href="../../reference.html#backmap.backmap.draw_per_residue_RMSF">[docs]</a><span class="k">def</span> <span class="nf">draw_per_residue_RMSF</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Blues&#39;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot per-residue RMSF (frame-to-frame |R| change) for each chain.</span>
+
+<div class="viewcode-block" id="draw_per_residue_RMSF">
+<a class="viewcode-back" href="../../reference.html#backmap.backmap.draw_per_residue_RMSF">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">draw_per_residue_RMSF</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Blues&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot per-residue RMSF (frame-to-frame change in R) for each chain.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        structure_df (pd.DataFrame): Structure dataframe containing ``model``,</span>
@@ -818,7 +859,10 @@
         <span class="c1">#</span>
     <span class="k">return</span> <span class="n">figures</span></div>
 
-<div class="viewcode-block" id="draw_per_residue_RMSD"><a class="viewcode-back" href="../../reference.html#backmap.backmap.draw_per_residue_RMSD">[docs]</a><span class="k">def</span> <span class="nf">draw_per_residue_RMSD</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Reds&#39;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="draw_per_residue_RMSD">
+<a class="viewcode-back" href="../../reference.html#backmap.backmap.draw_per_residue_RMSD">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">draw_per_residue_RMSD</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Reds&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot per-residue RMSD versus the first model for each chain.</span>
 
 <span class="sd">    Args:</span>
@@ -901,7 +945,10 @@
     <span class="k">return</span> <span class="n">figures</span></div>
 
 
-<div class="viewcode-block" id="draw_per_model_histogram"><a class="viewcode-back" href="../../reference.html#backmap.backmap.draw_per_model_histogram">[docs]</a><span class="k">def</span> <span class="nf">draw_per_model_histogram</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">bin_steps</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Greys&#39;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="draw_per_model_histogram">
+<a class="viewcode-back" href="../../reference.html#backmap.backmap.draw_per_model_histogram">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">draw_per_model_histogram</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">bin_steps</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Greys&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot per-model histograms of Ramachandran values for each chain.</span>
 
 <span class="sd">    Args:</span>
@@ -977,7 +1024,10 @@
     <span class="k">return</span> <span class="n">figures</span></div>
 
 
-<div class="viewcode-block" id="draw_figures"><a class="viewcode-back" href="../../reference.html#backmap.backmap.draw_figures">[docs]</a><span class="k">def</span> <span class="nf">draw_figures</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="draw_figures">
+<a class="viewcode-back" href="../../reference.html#backmap.backmap.draw_figures">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">draw_figures</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate per-chain Ramachandran visualizations and optionally save/show them.</span>
 
 <span class="sd">    Args:</span>
@@ -1034,6 +1084,7 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
     <span class="c1">#</span>
     <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">figures</span></div>
+
 <span class="c1">#</span>
 
 <span class="c1"># from ._version import get_versions</span>

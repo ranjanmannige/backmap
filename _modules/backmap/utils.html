@@ -1,21 +1,21 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>backmap.utils &mdash; BackMAP 1.0.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
-      <script src="../../_static/jquery.js"></script>
-      <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-      <script src="../../_static/doctools.js"></script>
-      <script src="../../_static/sphinx_highlight.js"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -78,20 +78,20 @@
 <span class="sd">Functions following ``calculate_dihedral_angle()`` are probably not very </span>
 <span class="sd">interesting to most.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">zipfile</span>
-<span class="kn">import</span> <span class="nn">gzip</span>
-<span class="kn">import</span> <span class="nn">io</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">glob</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">zipfile</span> <span class="kn">import</span> <span class="n">ZipFile</span>
-<span class="kn">from</span> <span class="nn">gzip</span> <span class="kn">import</span> <span class="nb">open</span> <span class="k">as</span> <span class="n">gzopen</span>
-<span class="kn">import</span> <span class="nn">tarfile</span><span class="o">,</span> <span class="nn">io</span> <span class="c1"># to open tar.gz or tgz files</span>
-<span class="kn">import</span> <span class="nn">string</span><span class="o">,</span><span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">zipfile</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">gzip</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">io</span><span class="o">,</span><span class="w"> </span><span class="nn">os</span><span class="o">,</span><span class="w"> </span><span class="nn">glob</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">zipfile</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZipFile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gzip</span><span class="w"> </span><span class="kn">import</span> <span class="nb">open</span> <span class="k">as</span> <span class="n">gzopen</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tarfile</span><span class="o">,</span><span class="w"> </span><span class="nn">io</span> <span class="c1"># to open tar.gz or tgz files</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">string</span><span class="o">,</span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
 <span class="n">fn_or_filehandle</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">,</span><span class="n">io</span><span class="o">.</span><span class="n">IOBase</span><span class="p">]</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Literal</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="n">ascii_uppercase</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">ascii_uppercase</span>
@@ -125,7 +125,9 @@
      <span class="s1">&#39;ALA&#39;</span><span class="p">:</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;VAL&#39;</span><span class="p">:</span><span class="s1">&#39;V&#39;</span><span class="p">,</span> <span class="s1">&#39;GLU&#39;</span><span class="p">:</span> <span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="s1">&#39;TYR&#39;</span><span class="p">:</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;MET&#39;</span><span class="p">:</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span><span class="s1">&#39;XXX&#39;</span><span class="p">:</span><span class="s1">&#39;X&#39;</span><span class="p">}</span>
 <span class="c1">#</span>
 <span class="c1"># ===================================================================================</span>
-<div class="viewcode-block" id="read_pdb"><a class="viewcode-back" href="../../reference.html#backmap.utils.read_pdb">[docs]</a><span class="k">def</span> <span class="nf">read_pdb</span><span class="p">(</span><span class="n">filename_or_filehandle</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]):</span>
+<div class="viewcode-block" id="read_pdb">
+<a class="viewcode-back" href="../../reference.html#backmap.utils.read_pdb">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_pdb</span><span class="p">(</span><span class="n">filename_or_filehandle</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reads a PDB and outputs graphs representing Ramachandran number plots.</span>
 <span class="sd">    </span>
 <span class="sd">    Load a PDB file, preferring BioPython parsing with an in-house fallback.</span>
@@ -151,6 +153,7 @@
     <span class="c1">#     raw_pdb_data = read_pdb_inhouse(fn)</span>
     <span class="c1">#</span>
     <span class="k">return</span> <span class="n">raw_pdb_data</span></div>
+
 
 <span class="c1"># --------------------------------------</span>
 <span class="c1"># MOVING AWAY FROM BIOPYTHON ALLTOGETHER </span>
@@ -226,7 +229,9 @@
 <span class="c1">#     #</span>
 <span class="c1">#     #return model_to_chain_to_resno_atom_to_vals</span>
 
-<div class="viewcode-block" id="bytecheck"><a class="viewcode-back" href="../../reference.html#backmap.utils.bytecheck">[docs]</a><span class="k">def</span>  <span class="nf">bytecheck</span><span class="p">(</span><span class="n">fileblock</span><span class="p">):</span>
+<div class="viewcode-block" id="bytecheck">
+<a class="viewcode-back" href="../../reference.html#backmap.utils.bytecheck">[docs]</a>
+<span class="k">def</span><span class="w">  </span><span class="nf">bytecheck</span><span class="p">(</span><span class="n">fileblock</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return ``fileblock`` as text, decoding bytes-like input with UTF-8 (if </span>
 <span class="sd">    not UTF-8 already).</span>
 
@@ -240,7 +245,10 @@
         <span class="n">fileblock</span> <span class="o">=</span> <span class="n">fileblock</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">fileblock</span></div>
 
-<div class="viewcode-block" id="parse_PDB_lines"><a class="viewcode-back" href="../../reference.html#backmap.utils.parse_PDB_lines">[docs]</a><span class="k">def</span> <span class="nf">parse_PDB_lines</span><span class="p">(</span><span class="n">pdb_block</span><span class="p">):</span>
+
+<div class="viewcode-block" id="parse_PDB_lines">
+<a class="viewcode-back" href="../../reference.html#backmap.utils.parse_PDB_lines">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_PDB_lines</span><span class="p">(</span><span class="n">pdb_block</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a PDB text block into a list of atom dictionaries.</span>
 <span class="sd">    File parsing based on: </span>
 <span class="sd">    https://www.cgl.ucsf.edu/chimera/docs/UsersGuide/tutorials/pdbintro.html</span>
@@ -300,9 +308,12 @@
     <span class="c1">#</span>
     <span class="k">return</span> <span class="n">atom_dictionary_list</span></div>
 
+
 <span class="c1"># OLD VERSION (IN HOUSE). IT IS FASTER THAN THE CURRENT &quot;read_pdb&quot;, WHICH IS BIOPDB RUN, BUT IT IS NOT </span>
 <span class="c1"># AS WELL TESTED.</span>
-<div class="viewcode-block" id="read_pdb_inhouse"><a class="viewcode-back" href="../../reference.html#backmap.utils.read_pdb_inhouse">[docs]</a><span class="k">def</span> <span class="nf">read_pdb_inhouse</span><span class="p">(</span><span class="n">fn_or_filehandle</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]):</span>
+<div class="viewcode-block" id="read_pdb_inhouse">
+<a class="viewcode-back" href="../../reference.html#backmap.utils.read_pdb_inhouse">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_pdb_inhouse</span><span class="p">(</span><span class="n">fn_or_filehandle</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse a PDB file without BioPython and extract backbone atoms.</span>
 
 <span class="sd">    Args:</span>
@@ -365,10 +376,13 @@
         <span class="n">df</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
     <span class="c1">#</span>
     <span class="k">return</span> <span class="n">df</span></div>
+
 <span class="c1">#</span>
 
 <span class="c1"># Does a sniff test for whether this is a legitimate pdb file</span>
-<div class="viewcode-block" id="check_pdb"><a class="viewcode-back" href="../../reference.html#backmap.utils.check_pdb">[docs]</a><span class="k">def</span> <span class="nf">check_pdb</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]):</span>
+<div class="viewcode-block" id="check_pdb">
+<a class="viewcode-back" href="../../reference.html#backmap.utils.check_pdb">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_pdb</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Heuristically validate that a PDB file is safe to parse with Biopython.</span>
 
 <span class="sd">    The check catches common CHARMM/PDB quirks (four-letter residue names shifting</span>
@@ -417,9 +431,12 @@
         <span class="k">return</span> <span class="mi">0</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="mi">1</span></div>
+
 <span class="c1">#</span>
 
-<div class="viewcode-block" id="calculate_dihedral_angle"><a class="viewcode-back" href="../../reference.html#backmap.utils.calculate_dihedral_angle">[docs]</a><span class="k">def</span> <span class="nf">calculate_dihedral_angle</span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<div class="viewcode-block" id="calculate_dihedral_angle">
+<a class="viewcode-back" href="../../reference.html#backmap.utils.calculate_dihedral_angle">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_dihedral_angle</span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the dihedral angle defined by four 3D points. </span>
 <span class="sd">    </span>
 <span class="sd">    E.g., providing positions for four contiguous backbone `(C-)(N)(CA)(C)` </span>
@@ -445,8 +462,11 @@
     <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="p">))</span>
     <span class="k">return</span> <span class="n">d</span>     </div>
+
     
-<div class="viewcode-block" id="is_filehandle"><a class="viewcode-back" href="../../reference.html#backmap.utils.is_filehandle">[docs]</a><span class="k">def</span> <span class="nf">is_filehandle</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<div class="viewcode-block" id="is_filehandle">
+<a class="viewcode-back" href="../../reference.html#backmap.utils.is_filehandle">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_filehandle</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Determine whether an object behaves like a file handle.</span>
 
 <span class="sd">    Args:</span>
@@ -458,7 +478,10 @@
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">IOBase</span><span class="p">,</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">TarFile</span><span class="p">,</span> <span class="n">gzip</span><span class="o">.</span><span class="n">GzipFile</span><span class="p">,</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="get_pdb_filenames"><a class="viewcode-back" href="../../reference.html#backmap.utils.get_pdb_filenames">[docs]</a><span class="k">def</span> <span class="nf">get_pdb_filenames</span><span class="p">(</span><span class="n">pdbfn_or_dir</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_pdb_filenames">
+<a class="viewcode-back" href="../../reference.html#backmap.utils.get_pdb_filenames">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_pdb_filenames</span><span class="p">(</span><span class="n">pdbfn_or_dir</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Collect `.pdb` filenames from a file or directory and sort them numerically.</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
@@ -494,13 +517,16 @@
     <span class="c1"># (e.g., list_pdbfilenames = [something2part1,something1part2,something1part1,something10part1]</span>
     <span class="c1"># list_pdbfilenames.sort() this list to: [something1part1,something1part2,something2part1,something10part1]</span>
     <span class="n">REXP</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span> <span class="sa">r</span><span class="s1">&#39;\d+&#39;</span> <span class="p">)</span>
-    <span class="k">def</span> <span class="nf">key_function</span><span class="p">(</span> <span class="n">s</span> <span class="p">):</span> <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">REXP</span><span class="p">,</span> <span class="n">s</span> <span class="p">)))</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">key_function</span><span class="p">(</span> <span class="n">s</span> <span class="p">):</span> <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">REXP</span><span class="p">,</span> <span class="n">s</span> <span class="p">)))</span>
     <span class="n">list_pdbfilenames</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key_function</span><span class="p">)</span>
     <span class="c1">#</span>
     <span class="k">return</span> <span class="n">list_pdbfilenames</span><span class="p">,</span> <span class="n">pdbdir</span></div>
 
 
-<div class="viewcode-block" id="return_tgz_filehandle"><a class="viewcode-back" href="../../reference.html#backmap.utils.return_tgz_filehandle">[docs]</a><span class="k">def</span> <span class="nf">return_tgz_filehandle</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">):</span>
+
+<div class="viewcode-block" id="return_tgz_filehandle">
+<a class="viewcode-back" href="../../reference.html#backmap.utils.return_tgz_filehandle">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">return_tgz_filehandle</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return file-like handles for every regular file in a tar.gz or tgz archive.</span>
 
 <span class="sd">    Args:</span>
@@ -524,7 +550,10 @@
     <span class="c1">#first_filehandle_in_list = file_objects[0]</span>
     <span class="k">return</span> <span class="n">file_objects</span></div>
 
-<div class="viewcode-block" id="return_zip_file_handle"><a class="viewcode-back" href="../../reference.html#backmap.utils.return_zip_file_handle">[docs]</a><span class="k">def</span> <span class="nf">return_zip_file_handle</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="return_zip_file_handle">
+<a class="viewcode-back" href="../../reference.html#backmap.utils.return_zip_file_handle">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">return_zip_file_handle</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Open the first file inside a zip archive and return a readable handle.</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
@@ -542,8 +571,11 @@
         <span class="n">first_file_in_archive</span> <span class="o">=</span> <span class="n">all_handles_in_archive</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="c1">#</span>
         <span class="k">return</span> <span class="n">all_handles_in_archive</span></div>
+
 <span class="c1">#</span>
-<div class="viewcode-block" id="return_gz_filehandle"><a class="viewcode-back" href="../../reference.html#backmap.utils.return_gz_filehandle">[docs]</a><span class="k">def</span> <span class="nf">return_gz_filehandle</span><span class="p">(</span><span class="n">pdb_fn</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;rt&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="return_gz_filehandle">
+<a class="viewcode-back" href="../../reference.html#backmap.utils.return_gz_filehandle">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">return_gz_filehandle</span><span class="p">(</span><span class="n">pdb_fn</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;rt&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Open a gzipped PDB file and return a file-like handle.</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
@@ -556,8 +588,11 @@
 <span class="sd">        with the requested mode.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">gzopen</span><span class="p">(</span><span class="n">pdb_fn</span><span class="p">,</span><span class="n">mode</span><span class="p">)]</span></div>
+
 <span class="c1">#</span>
-<div class="viewcode-block" id="return_normal_filehandle"><a class="viewcode-back" href="../../reference.html#backmap.utils.return_normal_filehandle">[docs]</a><span class="k">def</span> <span class="nf">return_normal_filehandle</span><span class="p">(</span><span class="n">pdb</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;rt&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="return_normal_filehandle">
+<a class="viewcode-back" href="../../reference.html#backmap.utils.return_normal_filehandle">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">return_normal_filehandle</span><span class="p">(</span><span class="n">pdb</span><span class="p">,</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;rt&#39;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Open an uncompressed PDB file and return it as a single-item list.</span>
 
 <span class="sd">    Args:</span>
@@ -570,6 +605,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[</span><span class="nb">open</span><span class="p">(</span><span class="n">pdb</span><span class="p">,</span><span class="n">mode</span><span class="p">)]</span></div>
 
+
 <span class="c1"># A dictionary that returns the appropriate filhandle given the file extension</span>
 <span class="n">dict_extention_to_open_object</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;.pdb.tar.gz&#39;</span><span class="p">:</span><span class="n">return_tgz_filehandle</span><span class="p">,</span>
@@ -579,7 +615,9 @@
     <span class="s1">&#39;.pdb&#39;</span><span class="p">:</span><span class="n">return_normal_filehandle</span><span class="p">,</span>
 <span class="p">}</span>
 
-<div class="viewcode-block" id="return_filehandle_from_gz_zip_or_normal_file"><a class="viewcode-back" href="../../reference.html#backmap.utils.return_filehandle_from_gz_zip_or_normal_file">[docs]</a><span class="k">def</span> <span class="nf">return_filehandle_from_gz_zip_or_normal_file</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">):</span>
+<div class="viewcode-block" id="return_filehandle_from_gz_zip_or_normal_file">
+<a class="viewcode-back" href="../../reference.html#backmap.utils.return_filehandle_from_gz_zip_or_normal_file">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">return_filehandle_from_gz_zip_or_normal_file</span><span class="p">(</span><span class="n">pdbfn</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a readable handle for `.pdb`, `.pdb.gz`, or `.pdb.zip` inputs.</span>
 
 <span class="sd">    Args:</span>
@@ -595,7 +633,10 @@
         <span class="k">if</span> <span class="n">pdbfn</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">file_extension</span><span class="p">):]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">file_extension</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dict_extention_to_open_object</span><span class="p">[</span><span class="n">file_extension</span><span class="p">](</span><span class="n">pdbfn</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="get_filename_and_filehandle"><a class="viewcode-back" href="../../reference.html#backmap.utils.get_filename_and_filehandle">[docs]</a><span class="k">def</span> <span class="nf">get_filename_and_filehandle</span><span class="p">(</span><span class="n">filename_or_filehandle</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_filename_and_filehandle">
+<a class="viewcode-back" href="../../reference.html#backmap.utils.get_filename_and_filehandle">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_filename_and_filehandle</span><span class="p">(</span><span class="n">filename_or_filehandle</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return lists of filenames and corresponding file handles.</span>
 <span class="sd">    </span>
 <span class="sd">    Accepts either a path to a PDB file (plain or compressed) or an existing</span>
@@ -630,6 +671,7 @@
     <span class="c1">#</span>
     <span class="k">return</span> <span class="n">fn</span><span class="p">,</span> <span class="n">f</span></div>
 
+
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Simple smoothing function that returns the median value of </span>
 <span class="sd">    each element and its nearest neighbors (+/-).</span>
@@ -642,7 +684,9 @@
 <span class="sd">        new_vals [List of floats]    Modified list with the median filter applied.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-<div class="viewcode-block" id="median_filter"><a class="viewcode-back" href="../../reference.html#backmap.utils.median_filter">[docs]</a><span class="k">def</span> <span class="nf">median_filter</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span><span class="n">nearest_neighbors</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="median_filter">
+<a class="viewcode-back" href="../../reference.html#backmap.utils.median_filter">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">median_filter</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span><span class="n">nearest_neighbors</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply a 1D median filter, leaving edge elements unchanged. </span>
 
 <span class="sd">    Args:</span>
@@ -662,10 +706,13 @@
             <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">vals</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">nearest_neighbors</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">nearest_neighbors</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
         <span class="n">new_vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">new_vals</span></div>
+
 <span class="c1">#</span>
 
 <span class="c1"># From: https://stackoverflow.com/questions/7965743/how-can-i-set-the-aspect-ratio-in-matplotlib</span>
-<div class="viewcode-block" id="forceAspect"><a class="viewcode-back" href="../../reference.html#backmap.utils.forceAspect">[docs]</a><span class="k">def</span> <span class="nf">forceAspect</span><span class="p">(</span><span class="n">aspect</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="forceAspect">
+<a class="viewcode-back" href="../../reference.html#backmap.utils.forceAspect">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">forceAspect</span><span class="p">(</span><span class="n">aspect</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the axis data aspect ratio using current plot limits.</span>
 
 <span class="sd">    Args:</span>
@@ -678,7 +725,10 @@
     <span class="n">extent</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">()</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="nb">abs</span><span class="p">((</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">-</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span><span class="o">/</span><span class="n">aspect</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="get_coord_by_key_value_match"><a class="viewcode-back" href="../../reference.html#backmap.utils.get_coord_by_key_value_match">[docs]</a><span class="k">def</span> <span class="nf">get_coord_by_key_value_match</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">,</span><span class="n">list_of_dict</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_coord_by_key_value_match">
+<a class="viewcode-back" href="../../reference.html#backmap.utils.get_coord_by_key_value_match">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_coord_by_key_value_match</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">,</span><span class="n">list_of_dict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Fetch the first matching record&#39;s coordinates for a given key/value pair.</span>
 
 <span class="sd">    Args:</span>
@@ -696,6 +746,7 @@
         <span class="n">coordinates</span> <span class="o">=</span> <span class="p">[</span><span class="n">record_to_use</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span><span class="n">record_to_use</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span><span class="n">record_to_use</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]]</span>
     
     <span class="k">return</span> <span class="n">coordinates</span></div>
+
 </pre></div>
 
            </div>
