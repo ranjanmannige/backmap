@@ -1,3 +1,5 @@
+sphinx-markdown-builder==0.6.9
+sphinx-rtd-theme
 pandas
 matplotlib
 Bio
@@ -11,5 +13,4 @@ nbsphinx
 nbsphinx-link
 shapely
 sphinx
-sphinx-markdown-builder
-sphinx-rtd-theme
+
