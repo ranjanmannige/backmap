@@ -656,7 +656,7 @@ def draw_per_residue_plot(structure_df, output_dir='', write=False, show=False, 
     return figures
 
 def draw_per_residue_RMSF(structure_df, output_dir='', write=False, show=False, v_limit = (0,1), cmap='Blues'):
-    """Plot per-residue RMSF (frame-to-frame |R| change) for each chain.
+    """Plot per-residue RMSF (frame-to-frame change in R) for each chain.
 
     Args:
         structure_df (pd.DataFrame): Structure dataframe containing ``model``,
