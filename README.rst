@@ -27,11 +27,12 @@
 .. contents::
 
 
-Full documentation available here: https://ranjanmannige.github.io/backmap.
+Full documentation, including 
+`notebook examples <https://ranjanmannige.github.io/backmap/notebooks.html>`_ and 
+`API docs <https://ranjanmannige.github.io/backmap/notebooks.html>`_, 
+are available here: https://ranjanmannige.github.io/backmap.
 
-GitHub repository available here: https://github.com/ranjanmannige/backmap.
-
-
+GitHub repository: https://github.com/ranjanmannige/backmap.
 
 Introduction
 ============
