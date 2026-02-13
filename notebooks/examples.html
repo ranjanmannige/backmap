@@ -119,7 +119,7 @@
 </section>
 <section id="Using-BackMAP-to-extract-per-residue-descriptors-without-displaying-them">
 <h2>Using BackMAP to extract per-residue descriptors without displaying them<a class="headerlink" href="#Using-BackMAP-to-extract-per-residue-descriptors-without-displaying-them" title="Link to this heading"></a></h2>
-<p><span class="math notranslate nohighlight">\(Φ\)</span> (phi) and <span class="math notranslate nohighlight">\(Ψ\)</span> (psi) values are hard to calculate on the fly. If per residue phi, psi, and Ramachandran (R) numbers alal you need, then use <code class="docutils literal notranslate"><span class="pre">backmap.process_PDB()</span></code>.</p>
+<p><span class="math notranslate nohighlight">\(Φ\)</span> (phi) and <span class="math notranslate nohighlight">\(Ψ\)</span> (psi) values are hard to calculate on the fly. If per residue phi, psi, and Ramachandran (<span class="math notranslate nohighlight">\(R\)</span>) numbers are all you need, then use <code class="docutils literal notranslate"><span class="pre">backmap.process_PDB()</span></code>.</p>
 <p>Here is an example (<a class="reference external" href="https://www.rcsb.org/structure/1MBA">1MBA</a>) of a simple PDB that has only one structure:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
@@ -469,9 +469,12 @@
 <span class="c1"># them adjacent to the right y axis</span>
 
 <span class="c1"># Marking all lycines (normally, you would want to mark something more specific)</span>
+<span class="c1"># First, setting all mark elements to False</span>
 <span class="n">structure_df1</span><span class="p">[</span><span class="s1">&#39;mark&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># Then setting LYS residues to True</span>
 <span class="n">structure_df1</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">structure_df1</span><span class="p">[</span><span class="s1">&#39;resname&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;LYS&#39;</span><span class="p">,</span><span class="s1">&#39;mark&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
+<span class="c1"># Same for the second dataframe</span>
 <span class="n">structure_df2</span><span class="p">[</span><span class="s1">&#39;mark&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="n">structure_df2</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">structure_df2</span><span class="p">[</span><span class="s1">&#39;resname&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;LYS&#39;</span><span class="p">,</span><span class="s1">&#39;mark&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 

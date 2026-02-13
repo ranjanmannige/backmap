@@ -98,7 +98,7 @@
              
   <section id="Downloading-and-viewing-deep-dive">
 <h1>Downloading and viewing deep dive<a class="headerlink" href="#Downloading-and-viewing-deep-dive" title="Link to this heading"></a></h1>
-<p>So far, we have gone through loading PDBs locally. This script walks you through the process of accessing a PDB from the internet without having to create a file.</p>
+<p>So far, we have gone through loading protein structures (PDBs) locally. This script walks you through the process of accessing a PDB from the internet without having to create a file.</p>
 <section id="Downloading-and-analyzing">
 <h2>Downloading and analyzing<a class="headerlink" href="#Downloading-and-analyzing" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
@@ -262,9 +262,12 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">current_figures</span> <span class="o">=</span> <span class="n">backmap</span><span class="o">.</span><span class="n">draw_per_residue_plot</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-                                                <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                                                <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;SecondaryStructure&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">current_figures</span> <span class="o">=</span> <span class="n">backmap</span><span class="o">.</span><span class="n">draw_per_residue_plot</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span>
+                                                <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                                <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+                                                <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;SecondaryStructure&#39;</span><span class="p">)</span>
 
 <span class="c1"># FOR REFERENCE: this is how we used to call all plots at once:</span>
 <span class="c1"># should_be_true, figure_dict    = backmap.draw_figures(structure_df=structure_df, output_dir=&#39;&#39;,</span>
@@ -287,9 +290,12 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">current_figures</span> <span class="o">=</span> <span class="n">backmap</span><span class="o">.</span><span class="n">draw_per_residue_RMSD</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-                                            <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                                            <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Reds&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">current_figures</span> <span class="o">=</span> <span class="n">backmap</span><span class="o">.</span><span class="n">draw_per_residue_RMSD</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span>
+                                                <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                                <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+                                                <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Reds&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -309,10 +315,13 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">current_figures</span> <span class="o">=</span> <span class="n">backmap</span><span class="o">.</span><span class="n">draw_per_model_histogram</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-                                           <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                                           <span class="n">bin_steps</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
-                                           <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Greys&#39;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">current_figures</span> <span class="o">=</span> <span class="n">backmap</span><span class="o">.</span><span class="n">draw_per_model_histogram</span><span class="p">(</span><span class="n">structure_df</span><span class="p">,</span>
+                                                   <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                                   <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                   <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                   <span class="n">bin_steps</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+                                                   <span class="n">v_limit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+                                                   <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Greys&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -355,8 +364,10 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">should_be_true</span><span class="p">,</span> <span class="n">figure_dict</span>    <span class="o">=</span> <span class="n">backmap</span><span class="o">.</span><span class="n">draw_figures</span><span class="p">(</span><span class="n">structure_df</span><span class="o">=</span><span class="n">structure_df</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-                                                       <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">should_be_true</span><span class="p">,</span> <span class="n">figure_dict</span> <span class="o">=</span> <span class="n">backmap</span><span class="o">.</span><span class="n">draw_figures</span><span class="p">(</span><span class="n">structure_df</span><span class="o">=</span><span class="n">structure_df</span><span class="p">,</span>
+                                                   <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                                   <span class="n">write</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                   <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
