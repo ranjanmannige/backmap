@@ -36,7 +36,7 @@ Welcome to BackMAP's documentation!
 BackMAP is a Python module that helps with the visualization of 
 large amounts of structural protein backbone trajectories/ensembles 
 in single graphs. It uses the Ramachandran number, a new 
-per-residue backbone metric (`Mannige, 2018 <https://doi.org/10.7717/peerj.5745>`_, 
+per-residue backbone metric (`Mannige, 2018 <https://doi.org/10.7717/peerj.5745>`_; 
 `Mannige, Kundu & Whitelam, 2016 <https://doi.org/10.1371/journal.pone.0160023>`_).
 
 .. toctree::
